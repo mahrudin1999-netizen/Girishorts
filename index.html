@@ -167,6 +167,47 @@ function updateCreatorInfo() {
   });
 }
 
+function updateVideoCounts() {
+  let likes = [];
+  let comments = {};
+
+  try {
+    likes = JSON.parse(
+      localStorage.getItem('girishorts_likes') || '[]'
+    );
+  } catch (e) {}
+
+  try {
+    comments = JSON.parse(
+      localStorage.getItem('girishorts_comments') || '{}'
+    );
+  } catch (e) {}
+
+  document.querySelectorAll('#feed .post').forEach(function(post) {
+    const id = post.dataset.id;
+    const likeButton = post.querySelector('.like');
+    const commentButton = Array.from(
+      post.querySelectorAll('.actions button')
+    ).find(function(button) {
+      return button.textContent.includes('Komentar');
+    });
+
+    if (likeButton) {
+      likeButton.textContent =
+        (likes.includes(id) ? '♥ Disukai' : '♡ Suka') +
+        ' (' + (likes.includes(id) ? 1 : 0) + ')';
+    }
+
+    if (commentButton) {
+      const total = Array.isArray(comments[id])
+        ? comments[id].length
+        : 0;
+
+      commentButton.textContent = '💬 Komentar (' + total + ')';
+    }
+  });
+}
+
 function refreshLikeButtons(){
   updateCreatorInfo();
 const likes=getLikes();
@@ -176,7 +217,7 @@ if(!button)return;
 const liked=likes.includes(post.dataset.id);
 button.dataset.liked=liked?'yes':'no';
 button.textContent=liked?'♥ Disukai':'♡ Suka';
-});
+updateVideoCounts();});
 }
 
 function likeVideo(button){
@@ -286,7 +327,7 @@ p.style.color='#aaa';
 p.textContent='Belum ada komentar. Jadilah yang pertama!';
 commentList.appendChild(p);
 return;
-}
+updateVideoCounts();}
 comments.forEach(item=>{
 const div=document.createElement('div');
 div.className='comment';

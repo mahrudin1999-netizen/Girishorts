@@ -8,25 +8,32 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080808;color:white;font-family:Arial,sans-serif}
-header{height:55px;padding:15px;background:#151515;font-size:23px;font-weight:bold}
+header{padding:12px 15px;background:#151515;font-size:23px;font-weight:bold}
 header span{color:#ff3158}
-main{height:calc(100dvh - 110px);overflow-y:auto;scroll-snap-type:y mandatory}
-.post{height:calc(100dvh - 110px);position:relative;scroll-snap-align:start;background:#000;overflow:hidden}
-video{width:100%;height:100%;object-fit:contain;background:#000}
-.caption{position:absolute;bottom:20px;left:14px;right:75px;text-shadow:0 1px 5px black;pointer-events:none}
+.search{padding:10px;background:#151515}
+.search input{width:100%;padding:12px;border:0;border-radius:20px;background:#292929;color:white;font-size:15px;outline:none}
+main{height:calc(100dvh - 160px);overflow-y:auto;scroll-snap-type:y mandatory}
+.post{height:calc(100dvh - 160px);position:relative;scroll-snap-align:start;background:#000;overflow:hidden}
+video{width:100%;height:100%;object-fit:contain}
+.caption{position:absolute;bottom:18px;left:14px;right:80px;text-shadow:0 1px 5px black;pointer-events:none}
 .caption p{font-size:14px}
-.actions{position:absolute;right:10px;bottom:60px;display:grid;gap:12px}
+.actions{position:absolute;right:10px;bottom:55px;display:grid;gap:12px}
 button{background:#292929;color:white;border:0;border-radius:25px;padding:11px 9px;font-size:14px}
-nav{height:55px;position:fixed;bottom:0;left:0;right:0;background:#151515;display:flex;justify-content:space-around;align-items:center;font-size:11px}
+nav{height:48px;position:fixed;bottom:0;left:0;right:0;background:#151515;display:flex;justify-content:space-around;align-items:center;font-size:11px}
+#empty{display:none;padding:25px;text-align:center}
 </style>
 </head>
 <body>
 <header>Giri<span>Shorts</span></header>
-<main>
-<section class="post">
+
+<div class="search">
+<input id="search" type="search" placeholder="🔍 Cari video atau kreator..." oninput="searchVideos()">
+</div>
+
+<main id="feed">
+<section class="post" data-search="video pertama girishorts kreator">
 <video controls playsinline loop preload="metadata">
 <source src="https://mahrudin1999-netizen.github.io/Girishorts/1793074906225.mp4" type="video/mp4">
-Video tidak dapat diputar.
 </video>
 <div class="caption">
 <strong>@GiriShorts</strong>
@@ -38,10 +45,9 @@ Video tidak dapat diputar.
 </div>
 </section>
 
-<section class="post">
+<section class="post" data-search="video kedua girishorts kreator">
 <video controls playsinline loop preload="metadata">
 <source src="https://mahrudin1999-netizen.github.io/Girishorts/1793074558310.mp4" type="video/mp4">
-Video tidak dapat diputar.
 </video>
 <div class="caption">
 <strong>@GiriShorts</strong>
@@ -53,28 +59,72 @@ Video tidak dapat diputar.
 </div>
 </section>
 </main>
+
+<div id="empty">Video tidak ditemukan.</div>
+
 <nav>
-<span>⌂ Beranda</span>
-<span>⌕ Cari</span>
+<span onclick="resetSearch()">⌂ Beranda</span>
+<span onclick="focusSearch()">⌕ Cari</span>
 <span>＋ Unggah</span>
 <span>♡ Suka</span>
 <span>♙ Profil</span>
 </nav>
+
 <script>
-function likeVideo(button){
-const liked=button.dataset.liked==="yes";
-button.dataset.liked=liked?"no":"yes";
-button.textContent=liked?"♡ Suka":"♥ Disukai";
+function searchVideos(){
+const q=document.getElementById('search').value.toLowerCase().trim();
+const posts=document.querySelectorAll('.post');
+let count=0;
+
+posts.forEach(post=>{
+const match=post.dataset.search.includes(q);
+post.style.display=match?'block':'none';
+const video=post.querySelector('video');
+if(!match)video.pause();
+if(match)count++;
+});
+
+document.getElementById('empty').style.display=count?'none':'block';
 }
+
+function resetSearch(){
+document.getElementById('search').value='';
+searchVideos();
+document.getElementById('feed').scrollTop=0;
+}
+
+function focusSearch(){
+document.getElementById('search').focus();
+}
+
+function likeVideo(button){
+const liked=button.dataset.liked==='yes';
+button.dataset.liked=liked?'no':'yes';
+button.textContent=liked?'♡ Suka':'♥ Disukai';
+}
+
 async function sharePage(){
 try{
 if(navigator.share){
-await navigator.share({title:"GiriShorts",url:location.href});
+await navigator.share({title:'GiriShorts',url:location.href});
 }else{
-prompt("Salin tautan GiriShorts:",location.href);
+prompt('Salin tautan GiriShorts:',location.href);
 }
 }catch(e){}
 }
+
+const observer=new IntersectionObserver(entries=>{
+entries.forEach(entry=>{
+const video=entry.target;
+if(entry.isIntersecting && entry.intersectionRatio>=0.6){
+video.play().catch(()=>{});
+}else{
+video.pause();
+}
+});
+},{threshold:[0,0.6,1]});
+
+document.querySelectorAll('video').forEach(video=>observer.observe(video));
 </script>
 </body>
 </html>

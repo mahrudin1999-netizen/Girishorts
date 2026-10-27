@@ -112,7 +112,63 @@ catch(e){alert('Penyimpanan browser penuh atau tidak tersedia.');return false}
 
 function getLikes(){return getStored('girishorts_likes',[])}
 
+function updateCreatorInfo() {
+  let profile = {};
+
+  try {
+    profile = JSON.parse(
+      localStorage.getItem('girishorts_profile') || '{}'
+    );
+  } catch (e) {
+    profile = {};
+  }
+
+  document.querySelectorAll('#feed .post').forEach(function(post) {
+    let info = post.querySelector('.creator-info');
+
+    if (!info) {
+      info = document.createElement('div');
+      info.className = 'creator-info';
+
+      info.style.cssText =
+        'position:absolute;left:14px;bottom:115px;' +
+        'display:flex;align-items:center;gap:9px;' +
+        'z-index:2;color:white;text-shadow:0 1px 4px black;' +
+        'pointer-events:none;';
+
+      const avatar = document.createElement('img');
+      avatar.className = 'creator-avatar';
+      avatar.style.cssText =
+        'width:38px;height:38px;border-radius:50%;' +
+        'object-fit:cover;background:#444;border:2px solid white;';
+
+      const name = document.createElement('strong');
+      name.className = 'creator-name';
+      name.style.cssText = 'font-size:14px;';
+
+      info.append(avatar, name);
+      post.appendChild(info);
+    }
+
+    const avatar = info.querySelector('.creator-avatar');
+    const name = info.querySelector('.creator-name');
+
+    name.textContent = '@' + (
+      profile.name || 'GiriShorts'
+    ).replace(/^@+/, '');
+
+    if (profile.photo) {
+      avatar.src = profile.photo;
+      avatar.style.display = 'block';
+    } else {
+      avatar.removeAttribute('src');
+      avatar.style.display = 'none';
+    }
+  });
+}
+
 function refreshLikeButtons(){
+  updateCreatorInfo();
 const likes=getLikes();
 document.querySelectorAll('.post').forEach(post=>{
 const button=post.querySelector('.like');
@@ -402,7 +458,7 @@ photoInput.addEventListener('change', function () {
     };
 
     try {
-      localStorage.setItem(key, JSON.stringify(data));
+      localStorage.setItem(key, JSON.stringify(data));updateCreatorInfo();
       message.textContent = 'Profil berhasil disimpan!';
     } catch (e) {
       message.textContent = 'Penyimpanan gagal. Coba foto lebih kecil.';

@@ -83,13 +83,16 @@ nav button{background:none;border:0;color:white;font-size:11px;padding:8px 5px}
 </div>
 </div>
 
+
 <nav>
 <button onclick="showHome()">⌂ Beranda</button>
 <button onclick="openSearch()">⌕ Cari</button>
 <button onclick="openUpload()">＋ Unggah</button>
+<button onclick="showFollowing()">♡ Mengikuti</button>
 <button onclick="showLikes()">♥ Suka</button>
 <button onclick="showProfile()">♙ Profil</button>
 </nav>
+
 
 <script>
 const feed=document.getElementById('feed');
@@ -364,6 +367,105 @@ search.placeholder='🔍 Cari video yang disukai...';
 filterVideos();
 feed.scrollTop=0;
 }
+
+function showFollowing() {
+  const old = document.getElementById('followingOverlay');
+  if (old) old.remove();
+
+  let followed = [];
+
+  try {
+    followed = JSON.parse(
+      localStorage.getItem('girishorts_following') || '[]'
+    );
+  } catch (e) {
+    followed = [];
+  }
+
+  let profile = {};
+
+  try {
+    profile = JSON.parse(
+      localStorage.getItem('girishorts_profile') || '{}'
+    );
+  } catch (e) {}
+
+  const overlay = document.createElement('div');
+  overlay.id = 'followingOverlay';
+
+  overlay.style.cssText =
+    'position:fixed;inset:0;z-index:9998;' +
+    'background:#080808;color:white;padding:20px;' +
+    'overflow-y:auto;font-family:Arial,sans-serif;';
+
+  const header = document.createElement('div');
+  header.style.cssText =
+    'display:flex;justify-content:space-between;' +
+    'align-items:center;margin-bottom:20px;';
+
+  const title = document.createElement('h2');
+  title.textContent = '♡ Akun yang Diikuti';
+
+  const close = document.createElement('button');
+  close.textContent = 'Tutup ✕';
+  close.style.cssText =
+    'padding:9px 12px;border:0;border-radius:20px;' +
+    'background:#333;color:white;';
+
+  close.onclick = () => overlay.remove();
+  header.append(title, close);
+  overlay.appendChild(header);
+
+  if (followed.length === 0) {
+    const emptyMessage = document.createElement('p');
+    emptyMessage.textContent =
+      'Belum ada akun yang diikuti. Buka video, lalu tekan tombol + Ikuti.';
+    emptyMessage.style.color = '#bbb';
+    overlay.appendChild(emptyMessage);
+  } else {
+    followed.forEach(id => {
+      const row = document.createElement('div');
+
+      row.style.cssText =
+        'display:flex;align-items:center;gap:12px;' +
+        'padding:14px 0;border-bottom:1px solid #333;';
+
+      const avatar = document.createElement('div');
+      avatar.textContent = '👤';
+      avatar.style.fontSize = '30px';
+
+      if (id === 'girishorts_creator' && profile.photo) {
+        const img = document.createElement('img');
+        img.src = profile.photo;
+        img.style.cssText =
+          'width:45px;height:45px;border-radius:50%;' +
+          'object-fit:cover;';
+        avatar.textContent = '';
+        avatar.appendChild(img);
+      }
+
+      const info = document.createElement('div');
+      const name = document.createElement('strong');
+
+      name.textContent =
+        id === 'girishorts_creator'
+          ? '@' + (profile.name || 'GiriShorts').replace(/^@+/, '')
+          : '@' + id;
+
+      const description = document.createElement('p');
+      description.textContent = 'Kreator yang kamu ikuti';
+      description.style.cssText =
+        'margin:5px 0 0;color:#aaa;font-size:12px;';
+
+      info.append(name, description);
+      row.append(avatar, info);
+      overlay.appendChild(row);
+    });
+  }
+
+  document.body.appendChild(overlay);
+}
+
 function openSearch(){search.focus();window.scrollTo(0,0)}
 function openUpload(){uploadFile.click()}
 

@@ -19,7 +19,12 @@
 <script>
 const feed=document.getElementById('feed'),search=document.getElementById('search'),uploadFile=document.getElementById('uploadFile'),empty=document.getElementById('empty'),commentLayer=document.getElementById('commentLayer');let activePost=null,pendingPhoto='';
 function getStored(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v===null?d:v}catch(e){return d}}function saveStored(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){alert('Penyimpanan browser penuh atau tidak tersedia.');return false}}function getLikes(){return getStored('girishorts_likes',[])}function getProfile(){return getStored('girishorts_profile',{})}function getFollowing(){return getStored('girishorts_following',[])}
-function updateCreatorInfo(){const p=getProfile();document.querySelectorAll('#feed .post').forEach(post=>{let info=post.querySelector('.creator-info');if(!info){info=document.createElement('div');info.className='creator-info';const img=document.createElement('img');img.className='creator-avatar';const name=document.createElement('strong');name.className='creator-name';info.append(img,name);post.appendChild(info)}const img=info.querySelector('img');img.src=p.photo||'';img.style.display=p.photo?'block':'none';info.querySelector('.creator-name').textContent='@'+(p.name||'GiriShorts').replace(/^@+/,'');const cn=post.querySelector('.caption strong');if(cn)cn.textContent='@'+(p.name||'GiriShorts').replace(/^@+/,'')})}
+function updateCreatorInfo(){const p=getProfile();document.querySelectorAll('#feed .post').forEach(post=>{let info=post.querySelector('.creator-info');if(!info){info=document.createElement('div');info.className='creator-info';const img=document.createElement('img');img.className='creator-avatar';const name=document.createElement('strong');name.className='creator-name';info.append(img,name);post.appendChild(info)}const img=info.querySelector('img');img.src=p.photo||'';img.style.display=p.photo?'block':'none';info.querySelector('.creator-name')info.style.pointerEvents = 'auto';
+info.style.cursor = 'pointer';
+
+info.onclick = function() {
+  openCreatorProfile();
+};.textContent='@'+(p.name||'GiriShorts').replace(/^@+/,'');const cn=post.querySelector('.caption strong');if(cn)cn.textContent='@'+(p.name||'GiriShorts').replace(/^@+/,'')})}
 function updateFollowButtons(){const followed=getFollowing();document.querySelectorAll('#feed .post').forEach(post=>{let b=post.querySelector('.follow-creator');if(!b){b=document.createElement('button');b.className='follow-creator';b.addEventListener('click',()=>toggleFollow(post));post.appendChild(b)}b.textContent=followed.includes(post.dataset.creatorId||'girishorts_creator')?'✓ Mengikuti':'+ Ikuti'})}function toggleFollow(post){const id=post.dataset.creatorId||'girishorts_creator';let a=getFollowing();a=a.includes(id)?a.filter(x=>x!==id):[...a,id];if(saveStored('girishorts_following',a)){updateFollowButtons();if(document.getElementById('followingLayer').style.display==='flex')renderFollowing()}}
 function updateVideoCounts(){const likes=getLikes(),comments=getStored('girishorts_comments',{});document.querySelectorAll('#feed .post').forEach(p=>{const id=p.dataset.id,b=p.querySelector('.like'),c=[...p.querySelectorAll('.actions button')].find(x=>x.textContent.includes('Komentar'));if(b)b.textContent=(likes.includes(id)?'♥ Disukai':'♡ Suka')+' ('+(likes.includes(id)?1:0)+')';if(c)c.textContent='💬 Komentar ('+((comments[id]||[]).length)+')'})}function refreshLikeButtons(){updateVideoCounts()}function likeVideo(b){const id=b.closest('.post').dataset.id;let a=getLikes();a=a.includes(id)?a.filter(x=>x!==id):[...a,id];if(saveStored('girishorts_likes',a)){updateVideoCounts();filterVideos()}}
 function filterVideos(){const q=search.value.toLowerCase().trim(),likes=getLikes();let n=0;document.querySelectorAll('#feed .post').forEach(p=>{const t=((p.dataset.search||'')+' '+(p.querySelector('.caption')?.innerText||'')).toLowerCase(),visible=t.includes(q)&&(document.body.dataset.page!=='likes'||likes.includes(p.dataset.id));p.style.display=visible?'':'none';if(!visible)p.querySelector('video')?.pause();if(visible)n++});empty.style.display=n?'none':'block'}search.addEventListener('input',filterVideos);function showHome(){document.body.dataset.page='home';search.value='';search.placeholder='🔍 Cari video atau kreator...';filterVideos();feed.scrollTop=0}function showLikes(){document.body.dataset.page='likes';search.value='';search.placeholder='🔍 Cari video yang disukai...';filterVideos();feed.scrollTop=0}function openSearch(){showHome();search.focus()}function openUpload(){uploadFile.click()}
@@ -27,5 +32,63 @@ uploadFile.addEventListener('change',function(){const file=this.files&&this.file
 function getComments(){return getStored('girishorts_comments',{})}function openComments(b){activePost=b.closest('.post');renderComments();commentLayer.style.display='flex';document.querySelectorAll('#feed video').forEach(v=>v.pause())}function closeComments(){commentLayer.style.display='none';activePost=null}function renderComments(){const list=document.getElementById('commentList');list.replaceChildren();if(!activePost)return;const a=getComments()[activePost.dataset.id]||[];if(!a.length){const p=document.createElement('p');p.style.color='#aaa';p.textContent='Belum ada komentar. Jadilah yang pertama!';list.appendChild(p);return}a.forEach(x=>{const d=document.createElement('div');d.className='comment';const n=document.createElement('strong');n.textContent='@Pengguna';const t=document.createElement('div');t.textContent=x.text;const time=document.createElement('small');time.textContent=x.time;d.append(n,t,time);list.appendChild(d)})}document.getElementById('commentForm').addEventListener('submit',e=>{e.preventDefault();if(!activePost)return;const text=document.getElementById('commentInput').value.trim();if(!text)return;const a=getComments(),id=activePost.dataset.id;if(!a[id])a[id]=[];a[id].push({text,time:new Date().toLocaleString('id-ID')});if(saveStored('girishorts_comments',a)){document.getElementById('commentInput').value='';renderComments();updateVideoCounts()}});
 async function sharePage(){try{if(navigator.share)await navigator.share({title:'GiriShorts',url:location.href});else prompt('Salin tautan GiriShorts:',location.href)}catch(e){}}function closeLayer(id){document.getElementById(id).style.display='none'}function showProfile(){const p=getProfile();document.getElementById('profileName').value=p.name||'GiriShorts';document.getElementById('profileBio').value=p.bio||'';pendingPhoto=p.photo||'';document.getElementById('profilePreview').src=pendingPhoto;document.getElementById('profilePhoto').value='';document.getElementById('profileMessage').textContent='Profil tersimpan di browser/perangkat ini.';document.getElementById('profileLayer').style.display='flex'}document.getElementById('profilePhoto').addEventListener('change',function(){const f=this.files&&this.files[0];if(!f)return;if(!f.type.startsWith('image/')){alert('Pilih file gambar.');return}const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas'),size=240,scale=Math.min(1,size/Math.max(img.width,img.height));c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);pendingPhoto=c.toDataURL('image/jpeg',.78);document.getElementById('profilePreview').src=pendingPhoto};img.src=r.result};r.readAsDataURL(f)});function saveProfile(){const p={name:document.getElementById('profileName').value.trim()||'GiriShorts',bio:document.getElementById('profileBio').value.trim(),photo:pendingPhoto};if(saveStored('girishorts_profile',p)){updateCreatorInfo();document.getElementById('profileMessage').textContent='Profil berhasil disimpan!'}}
 function showFollowing(){renderFollowing();document.getElementById('followingLayer').style.display='flex'}function renderFollowing(){const list=document.getElementById('followingList');list.replaceChildren();const ids=getFollowing();if(!ids.length){const p=document.createElement('p');p.className='hint';p.textContent='Kamu belum mengikuti kreator mana pun.';list.appendChild(p);return}ids.forEach(id=>{const row=document.createElement('div');row.className='creator-row';const img=document.createElement('img'),p=getProfile();img.src=p.photo||'';const info=document.createElement('div'),name=document.createElement('strong'),sub=document.createElement('div');name.textContent='@'+(p.name||'GiriShorts').replace(/^@+/,'');sub.className='hint';sub.textContent='Kreator yang kamu ikuti';info.append(name,sub);const b=document.createElement('button');b.className='secondary';b.textContent='Batal ikuti';b.onclick=()=>{saveStored('girishorts_following',getFollowing().filter(x=>x!==id));renderFollowing();updateFollowButtons()};row.append(img,info,b);list.appendChild(row)})}
-const observer=new IntersectionObserver(entries=>entries.forEach(e=>{const v=e.target;if(e.isIntersecting&&e.intersectionRatio>=.6&&commentLayer.style.display!=='flex'){if(document.body.dataset.page!=='likes'||getLikes().includes(v.closest('.post').dataset.id))v.play().catch(()=>{})}else v.pause()}),{threshold:[0,.6,1]});function observeVideos(){document.querySelectorAll('#feed .post video').forEach(v=>{if(!v.dataset.observed){observer.observe(v);v.dataset.observed='yes'}})}new MutationObserver(observeVideos).observe(feed,{childList:true,subtree:true});document.body.dataset.page='home';observeVideos();updateCreatorInfo();updateFollowButtons();refreshLikeButtons();filterVideos();
+const observer=new IntersectionObserver(entries=>entries.forEach(e=>{const v=e.target;if(e.isIntersecting&&e.intersectionRatio>=.6&&commentLayer.style.display!=='flex'){if(document.body.dataset.page!=='likes'||getLikes().includes(v.closest('.post').dataset.id))v.play().catch(()=>{})}else v.pause()}),{threshold:[0,.6,1]});function observeVideos(){document.querySelectorAll('#feed .post video').forEach(v=>{if(!v.dataset.observed){observer.observe(v);v.dataset.observed='yes'}})}new MutationObserver(observeVideos).observe(feed,{childList:true,subtree:true});document.body.dataset.page='home';observeVideos();function openCreatorProfile() {
+  const profile = JSON.parse(
+    localStorage.getItem('girishorts_profile') || '{}'
+  );
+
+  const name = profile.name || 'GiriShorts';
+  const bio = profile.bio || 'Kreator video GiriShorts';
+  const photo = profile.photo || '';
+
+  const old = document.getElementById('creatorProfileLayer');
+  if (old) old.remove();
+
+  const layer = document.createElement('div');
+  layer.id = 'creatorProfileLayer';
+  layer.style.cssText =
+    'position:fixed;inset:0;z-index:9999;background:#111;color:white;overflow:auto;padding:24px;font-family:Arial';
+
+  const img = document.createElement('img');
+  img.src = photo;
+  img.alt = 'Foto kreator';
+  img.style.cssText =
+    'width:100px;height:100px;border-radius:50%;object-fit:cover;display:block;margin:25px auto';
+
+  const title = document.createElement('h2');
+  title.textContent = name;
+  title.style.textAlign = 'center';
+
+  const description = document.createElement('p');
+  description.textContent = bio;
+  description.style.textAlign = 'center';
+
+  const heading = document.createElement('h3');
+  heading.textContent = 'Video Kreator';
+
+  const videos = document.createElement('div');
+  document.querySelectorAll('#feed .post').forEach(post => {
+    const copy = post.cloneNode(true);
+    copy.style.cssText =
+      'position:relative;height:180px;margin:12px 0;border-radius:12px;overflow:hidden';
+    const video = copy.querySelector('video');
+    if (video) {
+      video.pause();
+      video.controls = true;
+      video.style.cssText = 'width:100%;height:100%;object-fit:contain';
+    }
+    copy.querySelectorAll('.follow-creator').forEach(btn => btn.remove());
+    videos.appendChild(copy);
+  });
+
+  const close = document.createElement('button');
+  close.textContent = '← Kembali';
+  close.style.cssText =
+    'position:sticky;top:0;padding:12px 18px;background:#ff3158;color:white;border:0;border-radius:20px';
+  close.onclick = () => layer.remove();
+
+  layer.append(close, img, title, description, heading, videos);
+  document.body.appendChild(layer);
+  }
+  updateCreatorInfo();updateFollowButtons();refreshLikeButtons();filterVideos();
 </script></body></html>

@@ -344,30 +344,56 @@ function showProfile() {
 
   let photo = profile.photo || '';
 
-  photoInput.addEventListener('change', function () {
-    const file = photoInput.files && photoInput.files[0];
-    if (!file) return;
+  
+photoInput.addEventListener('change', function () {
+  const file = photoInput.files && photoInput.files[0];
+  if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      message.textContent = 'Pilih file gambar.';
-      return;
-    }
+  if (!file.type.startsWith('image/')) {
+    message.textContent = 'Pilih file gambar.';
+    return;
+  }
 
-    if (file.size > 1024 * 1024) {
-      message.textContent = 'Pilih foto berukuran maksimal 1 MB.';
-      photoInput.value = '';
-      return;
-    }
+  if (file.size > 1024 * 1024) {
+    message.textContent = 'Foto maksimal 1 MB.';
+    photoInput.value = '';
+    return;
+  }
 
-    const reader = new FileReader();
-    reader.onload = function () {
-      photo = reader.result;
+  const reader = new FileReader();
+
+  reader.onload = function () {
+    const image = new Image();
+
+    image.onload = function () {
+      const canvas = document.createElement('canvas');
+      const maxSize = 300;
+      const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+
+      canvas.width = Math.round(image.width * scale);
+      canvas.height = Math.round(image.height * scale);
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      photo = canvas.toDataURL('image/jpeg', 0.8);
       avatar.src = photo;
-      message.textContent = 'Foto siap disimpan.';
+      message.textContent = 'Foto siap disimpan. Tekan Simpan Profil.';
     };
-    reader.readAsDataURL(file);
-  });
 
+    image.onerror = function () {
+      message.textContent = 'Foto tidak bisa dibaca. Coba gambar lain.';
+    };
+
+    image.src = reader.result;
+  };
+
+  reader.onerror = function () {
+    message.textContent = 'Gagal membaca foto. Coba lagi.';
+  };
+
+  reader.readAsDataURL(file);
+});
   save.addEventListener('click', function () {
     const data = {
       name: name.value.trim() || 'GiriShorts',

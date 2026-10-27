@@ -15,19 +15,27 @@ header span{color:#ff3158}
 main{height:calc(100dvh - 158px);overflow-y:auto;scroll-snap-type:y mandatory}
 .post{height:calc(100dvh - 158px);position:relative;scroll-snap-align:start;background:#000;overflow:hidden}
 video{width:100%;height:100%;object-fit:contain;background:#000}
-.caption{position:absolute;bottom:20px;left:14px;right:78px;text-shadow:0 1px 5px #000;pointer-events:none}
+.caption{position:absolute;bottom:20px;left:14px;right:80px;text-shadow:0 1px 5px #000;pointer-events:none}
 .caption p{font-size:14px;overflow-wrap:anywhere}
-.actions{position:absolute;right:9px;bottom:65px;display:grid;gap:12px}
-.actions button{background:#292929;color:white;border:0;border-radius:25px;padding:12px 8px;font-size:13px}
+.actions{position:absolute;right:8px;bottom:55px;display:grid;gap:9px}
+.actions button{background:#292929;color:white;border:0;border-radius:25px;padding:11px 7px;font-size:12px}
 nav{height:50px;position:fixed;bottom:0;left:0;right:0;background:#151515;display:flex;justify-content:space-around;align-items:center;font-size:11px;z-index:5}
 nav button{background:none;border:0;color:white;font-size:11px;padding:8px 5px}
 #uploadFile{display:none}
 #empty{display:none;text-align:center;padding:25px;color:#bbb}
+#commentLayer{display:none;position:fixed;inset:0;background:#0009;z-index:20;align-items:flex-end}
+#commentPanel{width:100%;max-height:72%;background:#171717;border-radius:18px 18px 0 0;padding:16px;display:flex;flex-direction:column}
+#commentHeader{display:flex;justify-content:space-between;align-items:center;font-weight:bold}
+#commentList{overflow-y:auto;min-height:90px;max-height:40vh;padding:10px 0}
+.comment{padding:9px 0;border-bottom:1px solid #333;overflow-wrap:anywhere}
+.comment small{display:block;color:#aaa;margin-top:4px}
+#commentForm{display:flex;gap:8px;padding-bottom:12px}
+#commentInput{flex:1;min-width:0;padding:12px;border:0;border-radius:22px;background:#303030;color:white}
+#commentForm button{border:0;border-radius:22px;padding:0 16px;background:#ff3158;color:white}
 </style>
 </head>
 <body>
 <header>Giri<span>Shorts</span></header>
-
 <div class="search">
 <input id="search" type="search" placeholder="🔍 Cari video atau kreator...">
 </div>
@@ -40,6 +48,7 @@ nav button{background:none;border:0;color:white;font-size:11px;padding:8px 5px}
 <div class="caption"><strong>@GiriShorts</strong><p>Video pertama di GiriShorts 🎬</p></div>
 <div class="actions">
 <button class="like" onclick="likeVideo(this)">♡ Suka</button>
+<button onclick="openComments(this)">💬 Komentar</button>
 <button onclick="sharePage()">↗ Bagikan</button>
 </div>
 </section>
@@ -51,13 +60,28 @@ nav button{background:none;border:0;color:white;font-size:11px;padding:8px 5px}
 <div class="caption"><strong>@GiriShorts</strong><p>Video kedua di GiriShorts 🔥</p></div>
 <div class="actions">
 <button class="like" onclick="likeVideo(this)">♡ Suka</button>
+<button onclick="openComments(this)">💬 Komentar</button>
 <button onclick="sharePage()">↗ Bagikan</button>
 </div>
 </section>
 </main>
 
-<div id="empty">Belum ada video yang disukai atau cocok dengan pencarian.</div>
+<div id="empty">Video tidak ditemukan.</div>
 <input id="uploadFile" type="file" accept="video/*">
+
+<div id="commentLayer">
+<div id="commentPanel">
+<div id="commentHeader">
+<span>Komentar 💬</span>
+<button onclick="closeComments()" style="background:#333;color:white;border:0;border-radius:20px;padding:8px 12px">Tutup ✕</button>
+</div>
+<div id="commentList"></div>
+<form id="commentForm">
+<input id="commentInput" maxlength="500" placeholder="Tulis komentar..." required>
+<button type="submit">Kirim</button>
+</form>
+</div>
+</div>
 
 <nav>
 <button onclick="showHome()">⌂ Beranda</button>
@@ -72,16 +96,21 @@ const feed=document.getElementById('feed');
 const search=document.getElementById('search');
 const uploadFile=document.getElementById('uploadFile');
 const empty=document.getElementById('empty');
+const commentLayer=document.getElementById('commentLayer');
+const commentList=document.getElementById('commentList');
+const commentInput=document.getElementById('commentInput');
+let activePost=null;
 
-function getLikes(){
-try{return JSON.parse(localStorage.getItem('girishorts_likes')||'[]')}
-catch(e){return []}
+function getStored(key,fallback=[]){
+try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback))}
+catch(e){return fallback}
+}
+function saveStored(key,value){
+try{localStorage.setItem(key,JSON.stringify(value));return true}
+catch(e){alert('Penyimpanan browser penuh atau tidak tersedia.');return false}
 }
 
-function saveLikes(ids){
-try{localStorage.setItem('girishorts_likes',JSON.stringify(ids))}
-catch(e){alert('Browser tidak dapat menyimpan data suka.')}
-}
+function getLikes(){return getStored('girishorts_likes',[])}
 
 function refreshLikeButtons(){
 const likes=getLikes();
@@ -95,19 +124,10 @@ button.textContent=liked?'♥ Disukai':'♡ Suka';
 }
 
 function likeVideo(button){
-const post=button.closest('.post');
-const id=post.dataset.id;
+const id=button.closest('.post').dataset.id;
 let likes=getLikes();
-
-if(likes.includes(id)){
-likes=likes.filter(item=>item!==id);
-}else{
-likes.push(id);
-}
-
-saveLikes(likes);
-refreshLikeButtons();
-
+likes=likes.includes(id)?likes.filter(x=>x!==id):[...likes,id];
+if(saveStored('girishorts_likes',likes))refreshLikeButtons();
 if(document.body.dataset.page==='likes')filterVideos();
 }
 
@@ -115,18 +135,13 @@ function filterVideos(){
 const q=search.value.toLowerCase().trim();
 const likes=getLikes();
 let count=0;
-
 document.querySelectorAll('#feed .post').forEach(post=>{
 const text=((post.dataset.search||'')+' '+(post.querySelector('.caption')?.innerText||'')).toLowerCase();
-const matchesSearch=text.includes(q);
-const matchesPage=document.body.dataset.page!=='likes'||likes.includes(post.dataset.id);
-const visible=matchesSearch&&matchesPage;
-
+const visible=text.includes(q)&&(document.body.dataset.page!=='likes'||likes.includes(post.dataset.id));
 post.style.display=visible?'':'none';
 if(!visible)post.querySelector('video').pause();
 if(visible)count++;
 });
-
 empty.style.display=count?'none':'block';
 }
 
@@ -139,7 +154,6 @@ search.placeholder='🔍 Cari video atau kreator...';
 filterVideos();
 feed.scrollTop=0;
 }
-
 function showLikes(){
 document.body.dataset.page='likes';
 search.value='';
@@ -147,24 +161,13 @@ search.placeholder='🔍 Cari video yang disukai...';
 filterVideos();
 feed.scrollTop=0;
 }
-
-function openSearch(){
-search.focus();
-window.scrollTo(0,0);
-}
-
-function openUpload(){
-uploadFile.click();
-}
+function openSearch(){search.focus();window.scrollTo(0,0)}
+function openUpload(){uploadFile.click()}
 
 uploadFile.addEventListener('change',function(){
 const file=this.files&&this.files[0];
 if(!file)return;
-if(!file.type.startsWith('video/')){
-alert('Silakan pilih file video.');
-this.value='';
-return;
-}
+if(!file.type.startsWith('video/')){alert('Pilih file video.');this.value='';return}
 
 const url=URL.createObjectURL(file);
 const post=document.createElement('section');
@@ -173,33 +176,27 @@ post.dataset.id='local_'+Date.now();
 post.dataset.search=(file.name+' video kreator girishorts').toLowerCase();
 
 const video=document.createElement('video');
-video.controls=true;
-video.playsInline=true;
-video.loop=true;
-video.preload='metadata';
-video.src=url;
+video.controls=true;video.playsInline=true;video.loop=true;video.preload='metadata';video.src=url;
 
 const caption=document.createElement('div');
 caption.className='caption';
 const creator=document.createElement('strong');
 creator.textContent='@GiriShorts';
-const description=document.createElement('p');
-description.textContent=file.name;
-caption.append(creator,description);
+const desc=document.createElement('p');
+desc.textContent=file.name;
+caption.append(creator,desc);
 
 const actions=document.createElement('div');
 actions.className='actions';
 const like=document.createElement('button');
-like.className='like';
-like.textContent='♡ Suka';
-like.onclick=function(){likeVideo(this)};
+like.className='like';like.textContent='♡ Suka';like.onclick=function(){likeVideo(this)};
+const comment=document.createElement('button');
+comment.textContent='💬 Komentar';comment.onclick=function(){openComments(this)};
 const share=document.createElement('button');
-share.textContent='↗ Bagikan';
-share.onclick=sharePage;
-actions.append(like,share);
+share.textContent='↗ Bagikan';share.onclick=sharePage;
+actions.append(like,comment,share);
 post.append(video,caption,actions);
 feed.prepend(post);
-
 document.body.dataset.page='home';
 search.value='';
 filterVideos();
@@ -208,16 +205,69 @@ video.play().catch(()=>{});
 this.value='';
 });
 
+function getComments(){
+const all=getStored('girishorts_comments',{});
+return all;
+}
+function openComments(button){
+activePost=button.closest('.post');
+renderComments();
+commentLayer.style.display='flex';
+document.querySelectorAll('#feed video').forEach(v=>v.pause());
+}
+function closeComments(){
+commentLayer.style.display='none';
+activePost=null;
+}
+function renderComments(){
+commentList.replaceChildren();
+if(!activePost)return;
+const all=getComments();
+const comments=all[activePost.dataset.id]||[];
+if(!comments.length){
+const p=document.createElement('p');
+p.style.color='#aaa';
+p.textContent='Belum ada komentar. Jadilah yang pertama!';
+commentList.appendChild(p);
+return;
+}
+comments.forEach(item=>{
+const div=document.createElement('div');
+div.className='comment';
+const name=document.createElement('strong');
+name.textContent='@Pengguna';
+const text=document.createElement('div');
+text.textContent=item.text;
+const time=document.createElement('small');
+time.textContent=item.time;
+div.append(name,text,time);
+commentList.appendChild(div);
+});
+}
+document.getElementById('commentForm').addEventListener('submit',function(event){
+event.preventDefault();
+if(!activePost)return;
+const text=commentInput.value.trim();
+if(!text)return;
+const all=getComments();
+const id=activePost.dataset.id;
+if(!all[id])all[id]=[];
+all[id].push({text:text,time:new Date().toLocaleString('id-ID')});
+if(saveStored('girishorts_comments',all)){
+commentInput.value='';
+renderComments();
+}
+});
+commentLayer.addEventListener('click',function(event){
+if(event.target===commentLayer)closeComments();
+});
+
 async function sharePage(){
 try{
-if(navigator.share){
-await navigator.share({title:'GiriShorts',url:location.href});
-}else{
-prompt('Salin tautan GiriShorts:',location.href);
-}
+if(navigator.share)await navigator.share({title:'GiriShorts',url:location.href});
+else prompt('Salin tautan GiriShorts:',location.href);
 }catch(e){}
 }
-
 function showProfile(){
 alert('PROFIL KREATOR\n\nNama: @GiriShorts\nTotal video: '+document.querySelectorAll('#feed .post').length+'\nVideo disukai: '+getLikes().length);
 }
@@ -225,25 +275,17 @@ alert('PROFIL KREATOR\n\nNama: @GiriShorts\nTotal video: '+document.querySelecto
 const observer=new IntersectionObserver(entries=>{
 entries.forEach(entry=>{
 const video=entry.target;
-if(entry.isIntersecting&&entry.intersectionRatio>=0.6){
-if(document.body.dataset.page!=='likes'||getLikes().includes(video.closest('.post').dataset.id)){
-video.play().catch(()=>{});
-}
-}else{
-video.pause();
-}
+if(entry.isIntersecting&&entry.intersectionRatio>=0.6&&commentLayer.style.display!=='flex'){
+if(document.body.dataset.page!=='likes'||getLikes().includes(video.closest('.post').dataset.id))video.play().catch(()=>{});
+}else video.pause();
 });
 },{threshold:[0,0.6,1]});
 
 function observeVideos(){
 document.querySelectorAll('#feed .post video').forEach(video=>{
-if(!video.dataset.observed){
-observer.observe(video);
-video.dataset.observed='yes';
-}
+if(!video.dataset.observed){observer.observe(video);video.dataset.observed='yes'}
 });
 }
-
 new MutationObserver(observeVideos).observe(feed,{childList:true,subtree:true});
 document.body.dataset.page='home';
 observeVideos();

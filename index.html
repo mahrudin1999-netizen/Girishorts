@@ -65,12 +65,34 @@ nav{height:48px;position:fixed;bottom:0;left:0;right:0;background:#151515;displa
 <nav>
 <span onclick="resetSearch()">⌂ Beranda</span>
 <span onclick="openSearch()" style="cursor:pointer">⌕ Cari</span>
-<span>＋ Unggah</span>
+<span onclick="document.getElementById('uploadFile').click()" style="cursor:pointer">＋ Unggah</span>
 <span>♡ Suka</span>
 <span>♙ Profil</span>
 </nav>
 
-<script>
+<function previewUpload(event){
+  const file=event.target.files[0];
+  if(!file)return;
+
+  const url=URL.createObjectURL(file);
+  const post=document.createElement('section');
+  post.className='post';
+  post.dataset.search=(file.name+' kreator').toLowerCase();
+
+  post.innerHTML=`
+    <video controls playsinline loop autoplay></video>
+    <div class="caption">
+      <strong>@GiriShorts</strong>
+      <p></p>
+    </div>`;
+
+  post.querySelector('video').src=url;
+  post.querySelector('.caption p').textContent=file.name;
+  document.getElementById('feed').prepend(post);
+  post.scrollIntoView();
+}script>
+  <input id="uploadFile" type="file" accept="video/*" hidden
+onchange="previewUpload(event)">
 function searchVideos(){
 const q=document.getElementById('search').value.toLowerCase().trim();
 const posts=document.querySelectorAll('.post');

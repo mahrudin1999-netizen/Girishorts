@@ -207,7 +207,20 @@ alert('Fitur daftar video yang disukai akan kita kembangkan berikutnya.');
 }
 
 function showProfile(){
-alert('Profil kreator akan kita kembangkan berikutnya.');
+  const posts = document.querySelectorAll('#feed .post');
+  const total = posts.length;
+
+  const likes = document.querySelectorAll(
+    '#feed button[data-liked="yes"]'
+  ).length;
+
+  alert(
+    'PROFIL KREATOR GIRISHORTS\n\n' +
+    'Nama: @GiriShorts\n' +
+    'Total video: ' + total + '\n' +
+    'Video disukai: ' + likes + '\n\n' +
+    'Profil ini masih versi awal.'
+  );
 }
 
 const observer=new IntersectionObserver(entries=>{

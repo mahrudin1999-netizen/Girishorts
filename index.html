@@ -269,18 +269,31 @@ else prompt('Salin tautan GiriShorts:',location.href);
 }catch(e){}
 }
 
-function showProfile(){
+
+function showProfile() {
   const key = 'girishorts_profile';
+
   let profile = {};
   try {
     profile = JSON.parse(localStorage.getItem(key) || '{}');
-  } catch(e) {}
+  } catch (e) {
+    profile = {};
+  }
+
+  const old = document.getElementById('creatorProfileOverlay');
+  if (old) old.remove();
 
   const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:#000d;z-index:50;display:flex;align-items:center;justify-content:center;padding:20px;color:white;font-family:Arial,sans-serif';
+  overlay.id = 'creatorProfileOverlay';
+  overlay.style.cssText =
+    'position:fixed;inset:0;z-index:9999;background:#000e;' +
+    'display:flex;align-items:center;justify-content:center;padding:18px;' +
+    'color:white;font-family:Arial,sans-serif;';
 
   const panel = document.createElement('div');
-  panel.style.cssText = 'background:#191919;padding:22px;border-radius:18px;width:100%;max-width:380px;max-height:90vh;overflow:auto';
+  panel.style.cssText =
+    'width:100%;max-width:380px;max-height:90vh;overflow:auto;' +
+    'padding:22px;background:#191919;border-radius:18px;';
 
   const title = document.createElement('h2');
   title.textContent = 'Profil Kreator';
@@ -288,84 +301,97 @@ function showProfile(){
   const avatar = document.createElement('img');
   avatar.alt = 'Foto profil';
   avatar.src = profile.photo || '';
-  avatar.style.cssText = 'width:90px;height:90px;border-radius:50%;object-fit:cover;background:#333;display:block;margin:12px auto';
+  avatar.style.cssText =
+    'width:90px;height:90px;border-radius:50%;object-fit:cover;' +
+    'background:#333;display:block;margin:12px auto;';
 
   const photoInput = document.createElement('input');
   photoInput.type = 'file';
   photoInput.accept = 'image/*';
-  photoInput.style.cssText = 'width:100%;margin:8px 0;color:white';
+  photoInput.style.cssText = 'width:100%;margin:8px 0;color:white;';
 
   const name = document.createElement('input');
   name.placeholder = 'Nama pengguna';
-  name.value = profile.name || 'GiriShorts';
   name.maxLength = 30;
-  name.style.cssText = 'width:100%;padding:12px;margin:8px 0;box-sizing:border-box;border:0;border-radius:8px;background:#333;color:white';
+  name.value = profile.name || 'GiriShorts';
+  name.style.cssText =
+    'width:100%;padding:12px;margin:8px 0;box-sizing:border-box;' +
+    'border:0;border-radius:8px;background:#333;color:white;';
 
   const bio = document.createElement('textarea');
   bio.placeholder = 'Tulis bio kamu...';
-  bio.value = profile.bio || '';
   bio.maxLength = 160;
   bio.rows = 3;
-  bio.style.cssText = 'width:100%;padding:12px;margin:8px 0;box-sizing:border-box;border:0;border-radius:8px;background:#333;color:white';
+  bio.value = profile.bio || '';
+  bio.style.cssText =
+    'width:100%;padding:12px;margin:8px 0;box-sizing:border-box;' +
+    'border:0;border-radius:8px;background:#333;color:white;';
 
   const message = document.createElement('p');
-  message.style.cssText = 'font-size:12px;color:#bbb';
+  message.style.cssText = 'font-size:13px;color:#ddd;';
 
   const save = document.createElement('button');
   save.textContent = 'Simpan Profil';
-  save.style.cssText = 'width:100%;padding:12px;background:#ff3158;color:white;border:0;border-radius:24px;margin-top:8px;font-size:15px';
+  save.style.cssText =
+    'width:100%;padding:12px;background:#ff3158;color:white;' +
+    'border:0;border-radius:24px;margin-top:8px;';
 
   const close = document.createElement('button');
   close.textContent = 'Tutup';
-  close.style.cssText = 'width:100%;padding:12px;background:#333;color:white;border:0;border-radius:24px;margin-top:8px';
-
-  panel.append(title, avatar, photoInput, name, bio, message, save, close);
-  overlay.appendChild(panel);
-  document.body.appendChild(overlay);
+  close.style.cssText =
+    'width:100%;padding:12px;background:#333;color:white;' +
+    'border:0;border-radius:24px;margin-top:8px;';
 
   let photo = profile.photo || '';
 
-  photoInput.onchange = function(){
-    const file = photoInput.files[0];
+  photoInput.addEventListener('change', function () {
+    const file = photoInput.files && photoInput.files[0];
     if (!file) return;
+
     if (!file.type.startsWith('image/')) {
       message.textContent = 'Pilih file gambar.';
       return;
     }
+
     if (file.size > 1024 * 1024) {
-      message.textContent = 'Ukuran foto maksimal 1 MB.';
+      message.textContent = 'Pilih foto berukuran maksimal 1 MB.';
       photoInput.value = '';
       return;
     }
+
     const reader = new FileReader();
-    reader.onload = function(){
+    reader.onload = function () {
       photo = reader.result;
       avatar.src = photo;
       message.textContent = 'Foto siap disimpan.';
     };
     reader.readAsDataURL(file);
-  };
+  });
 
-  save.onclick = function(){
+  save.addEventListener('click', function () {
     const data = {
       name: name.value.trim() || 'GiriShorts',
       bio: bio.value.trim(),
       photo: photo
     };
+
     try {
       localStorage.setItem(key, JSON.stringify(data));
-      message.textContent = 'Profil berhasil disimpan di HP ini!';
-    } catch(e) {
-      message.textContent = 'Penyimpanan penuh. Coba foto yang lebih kecil.';
+      message.textContent = 'Profil berhasil disimpan!';
+    } catch (e) {
+      message.textContent = 'Penyimpanan gagal. Coba foto lebih kecil.';
     }
-  };
+  });
 
-  close.onclick = function(){
+  close.addEventListener('click', function () {
     overlay.remove();
-  };
+  });
+
+  panel.append(title, avatar, photoInput, name, bio, message, save, close);
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
 }
-alert('PROFIL KREATOR\n\nNama: @GiriShorts\nTotal video: '+document.querySelectorAll('#feed .post').length+'\nVideo disukai: '+getLikes().length);
-}
+
 
 const observer=new IntersectionObserver(entries=>{
 entries.forEach(entry=>{

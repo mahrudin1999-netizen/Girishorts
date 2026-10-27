@@ -6,16 +6,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GiriShorts</title>
 <style>
+*{box-sizing:border-box}
 body{margin:0;background:#080808;color:white;font-family:Arial,sans-serif}
-header{padding:15px;background:#151515;font-size:24px;font-weight:bold}
+header{height:55px;padding:15px;background:#151515;font-size:23px;font-weight:bold}
 header span{color:#ff3158}
-main{height:calc(100vh - 120px);overflow-y:auto;scroll-snap-type:y mandatory}
-.post{height:100%;position:relative;scroll-snap-align:start;background:#000}
-video{width:100%;height:100%;object-fit:contain}
-.caption{position:absolute;bottom:20px;left:15px;text-shadow:0 1px 5px black}
-.actions{position:absolute;right:12px;bottom:60px;display:grid;gap:12px}
-button{background:#292929;color:white;border:0;border-radius:25px;padding:12px;font-size:18px}
-nav{position:fixed;bottom:0;left:0;right:0;background:#151515;display:flex;justify-content:space-around;padding:15px 0;font-size:12px}
+main{height:calc(100dvh - 110px);overflow-y:auto;scroll-snap-type:y mandatory}
+.post{height:calc(100dvh - 110px);position:relative;scroll-snap-align:start;background:#000;overflow:hidden}
+video{width:100%;height:100%;object-fit:contain;background:#000}
+.caption{position:absolute;bottom:20px;left:14px;right:75px;text-shadow:0 1px 5px black;pointer-events:none}
+.caption p{font-size:14px}
+.actions{position:absolute;right:10px;bottom:60px;display:grid;gap:12px}
+button{background:#292929;color:white;border:0;border-radius:25px;padding:11px 9px;font-size:14px}
+nav{height:55px;position:fixed;bottom:0;left:0;right:0;background:#151515;display:flex;justify-content:space-around;align-items:center;font-size:11px}
 </style>
 </head>
 <body>
@@ -31,24 +33,48 @@ Video tidak dapat diputar.
 <p>Video pertama di GiriShorts 🎬</p>
 </div>
 <div class="actions">
-<button id="like">♡ Suka</button>
-<button id="share">↗ Bagikan</button>
+<button onclick="likeVideo(this)">♡ Suka</button>
+<button onclick="sharePage()">↗ Bagikan</button>
+</div>
+</section>
+
+<section class="post">
+<video controls playsinline loop preload="metadata">
+<source src="https://mahrudin1999-netizen.github.io/Girishorts/1793074558310.mp4" type="video/mp4">
+Video tidak dapat diputar.
+</video>
+<div class="caption">
+<strong>@GiriShorts</strong>
+<p>Video kedua di GiriShorts 🔥</p>
+</div>
+<div class="actions">
+<button onclick="likeVideo(this)">♡ Suka</button>
+<button onclick="sharePage()">↗ Bagikan</button>
 </div>
 </section>
 </main>
-<nav><span>⌂ Beranda</span><span>⌕ Cari</span><span>＋ Unggah</span><span>♡ Suka</span><span>♙ Profil</span></nav>
+<nav>
+<span>⌂ Beranda</span>
+<span>⌕ Cari</span>
+<span>＋ Unggah</span>
+<span>♡ Suka</span>
+<span>♙ Profil</span>
+</nav>
 <script>
-let liked=false;
-document.getElementById('like').onclick=function(){
-liked=!liked;this.textContent=liked?'♥ Disukai':'♡ Suka';
-};
-document.getElementById('share').onclick=async function(){
+function likeVideo(button){
+const liked=button.dataset.liked==="yes";
+button.dataset.liked=liked?"no":"yes";
+button.textContent=liked?"♡ Suka":"♥ Disukai";
+}
+async function sharePage(){
 try{
-if(navigator.share)await navigator.share({title:'GiriShorts',url:location.href});
-else prompt('Salin tautan:',location.href);
+if(navigator.share){
+await navigator.share({title:"GiriShorts",url:location.href});
+}else{
+prompt("Salin tautan GiriShorts:",location.href);
+}
 }catch(e){}
-};
+}
 </script>
 </body>
 </html>
-

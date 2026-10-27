@@ -1,12 +1,54 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#111111"><title>GiriShorts</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GiriShorts</title>
 <style>
-:root{--bg:#09090b;--text:#fff;--muted:#b8b8c2;--accent:#ff3158}*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}body{display:flex;justify-content:center}.app{width:100%;max-width:520px;height:100dvh;display:flex;flex-direction:column;background:#0b0b0e;overflow:hidden}.top{height:58px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 17px;border-bottom:1px solid #25252b;background:#101014}.brand{font-weight:850;font-size:21px;letter-spacing:-.6px}.brand span{color:var(--accent)}.top button,.nav button,.action{border:0;background:none;color:inherit;cursor:pointer}.top button{font-size:22px}.tabs{display:flex;gap:18px;align-items:center;justify-content:center;height:42px;flex-shrink:0;color:#92929d;font-size:13px;font-weight:650}.tabs .active{color:white;position:relative}.tabs .active:after{content:"";position:absolute;bottom:-9px;left:25%;width:50%;height:3px;background:var(--accent);border-radius:5px}.feed{position:relative;flex:1;min-height:0;overflow-y:auto;scroll-snap-type:y mandatory}.video-card{position:relative;height:100%;min-height:440px;scroll-snap-align:start;background:radial-gradient(ellipse at 55% 25%,#3c294b 0%,#17172b 38%,#09090b 78%);overflow:hidden}.video-card:nth-child(2){background:radial-gradient(ellipse at 50% 30%,#315b55 0%,#182d31 40%,#09090b 78%)}.video-card:nth-child(3){background:radial-gradient(ellipse at 55% 25%,#6b3c28 0%,#302020 38%,#09090b 78%)}.placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;pointer-events:none}.playmark{font-size:54px;opacity:.88;filter:drop-shadow(0 2px 12px #000)}.placeholder strong{font-size:25px;line-height:1.18;margin-top:14px;text-shadow:0 2px 12px #000}.placeholder small{margin-top:12px;color:#e4e4e7;font-size:13px;text-shadow:0 2px 8px #000}.shade{position:absolute;inset:35% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.78));pointer-events:none}.info{position:absolute;left:16px;right:78px;bottom:22px;z-index:2}.creator{font-weight:750;font-size:14px;margin-bottom:8px}.caption{font-size:14px;line-height:1.45}.tag{color:#f4c4d0;margin-top:8px;font-size:13px}.actions{position:absolute;right:12px;bottom:24px;z-index:3;display:flex;flex-direction:column;gap:18px;align-items:center}.action{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;text-shadow:0 1px 5px #000;padding:0;min-width:44px}.action .ico{font-size:27px;line-height:1.1}.action.liked .ico{color:var(--accent)}.nav{height:64px;flex-shrink:0;background:#101014;border-top:1px solid #28282e;display:flex;align-items:center;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom)}.nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:#aaaab4;min-width:58px}.nav button span:first-child{font-size:21px}.nav button.active{color:white}.nav button.active span:first-child{color:var(--accent)}.toast{position:absolute;left:50%;bottom:78px;transform:translateX(-50%);z-index:9;background:#27272e;padding:10px 14px;border-radius:20px;font-size:12px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none}.toast.show{opacity:1}.upload-note{position:absolute;top:12px;left:12px;z-index:4;background:#0008;border:1px solid #ffffff22;padding:6px 9px;border-radius:14px;font-size:10px;color:#eee}@media(min-width:521px){body{padding:12px 0}.app{height:calc(100dvh - 24px);border:1px solid #292930;border-radius:20px}.top{border-radius:20px 20px 0 0}}
-</style></head><body><div class="app"><header class="top"><div class="brand">Giri<span>Shorts</span></div><button aria-label="Cari" onclick="notify('Fitur pencarian akan ditambahkan berikutnya 🔎')">⌕</button></header><div class="tabs"><span class="active">Untuk Kamu</span><span onclick="notify('Kategori Mengikuti segera hadir')">Mengikuti</span><span onclick="notify('Kategori Trending segera hadir')">Trending</span></div><main class="feed" id="feed">
-<section class="video-card"><div class="upload-note">DEMO • VIDEO CONTOH</div><div class="placeholder"><div class="playmark">▶</div><strong>Jangan menyerah<br>sebelum waktunya</strong><small>Video motivasi • GiriShorts</small></div><div class="shade"></div><div class="info"><div class="creator">@girinatan · Ikuti</div><div class="caption">Perjalanan panjang dimulai dari satu langkah kecil. Terus bergerak, meski pelan. ✨</div><div class="tag">#Motivasi #GiriShorts #Kreator</div></div><div class="actions"><button class="action" onclick="like(this)"><span class="ico">♡</span><span class="count">128</span></button><button class="action" onclick="notify('Kolom komentar akan dibuat pada versi berikutnya 💬')"><span class="ico">◯</span><span>Komentar</span></button><button class="action" onclick="shareVideo()"><span class="ico">↗</span><span>Bagikan</span></button></div></section>
-<section class="video-card"><div class="placeholder"><div class="playmark">▶</div><strong>Fokus pada tujuan,<br>bukan omongan orang</strong><small>Ruang inspirasi untuk semua</small></div><div class="shade"></div><div class="info"><div class="creator">@ruangsemangat · Ikuti</div><div class="caption">Tidak semua orang harus mengerti prosesmu. Yang penting, kamu tahu ke mana melangkah.</div><div class="tag">#Semangat #KataHariIni</div></div><div class="actions"><button class="action" onclick="like(this)"><span class="ico">♡</span><span class="count">96</span></button><button class="action" onclick="notify('Kolom komentar akan dibuat pada versi berikutnya 💬')"><span class="ico">◯</span><span>Komentar</span></button><button class="action" onclick="shareVideo()"><span class="ico">↗</span><span>Bagikan</span></button></div></section>
-<section class="video-card"><div class="placeholder"><div class="playmark">▶</div><strong>Jadilah alasan<br>dirimu bangga</strong><small>Konten kreator lokal • GiriShorts</small></div><div class="shade"></div><div class="info"><div class="creator">@ceritabaik · Ikuti</div><div class="caption">Hari ini mungkin belum sempurna. Tapi kamu masih punya kesempatan untuk mencoba lagi.</div><div class="tag">#CeritaBaik #MotivasiHidup</div></div><div class="actions"><button class="action" onclick="like(this)"><span class="ico">♡</span><span class="count">74</span></button><button class="action" onclick="notify('Kolom komentar akan dibuat pada versi berikutnya 💬')"><span class="ico">◯</span><span>Komentar</span></button><button class="action" onclick="shareVideo()"><span class="ico">↗</span><span>Bagikan</span></button></div></section></main><nav class="nav"><button class="active" onclick="navTo('Beranda',this)"><span>⌂</span><span>Beranda</span></button><button onclick="navTo('Jelajah',this)"><span>⌕</span><span>Jelajah</span></button><button onclick="notify('Fitur unggah video akan dibuat pada tahap berikutnya ＋')"><span>⊕</span><span>Unggah</span></button><button onclick="navTo('Kotak Masuk',this)"><span>♧</span><span>Inbox</span></button><button onclick="navTo('Profil',this)"><span>♙</span><span>Profil</span></button></nav><div class="toast" id="toast"></div></div><script>
-function notify(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.classList.remove('show'),2300)}function like(btn){btn.classList.toggle('liked');const ico=btn.querySelector('.ico');const count=btn.querySelector('.count');let n=parseInt(count.textContent,10);if(btn.classList.contains('liked')){ico.textContent='♥';count.textContent=n+1}else{ico.textContent='♡';count.textContent=n-1}}async function shareVideo(){if(navigator.share){try{await navigator.share({title:'GiriShorts',text:'Lihat video inspiratif di GiriShorts!'})}catch(e){}}else{notify('GiriShorts: video inspiratif untukmu!')}}function navTo(name,btn){document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');if(name!=='Beranda')notify('Halaman '+name+' akan dibuat pada tahap berikutnya')}
-</script></body></html>
+body{margin:0;background:#080808;color:white;font-family:Arial,sans-serif}
+header{padding:15px;background:#151515;font-size:24px;font-weight:bold}
+header span{color:#ff3158}
+main{height:calc(100vh - 120px);overflow-y:auto;scroll-snap-type:y mandatory}
+.post{height:100%;position:relative;scroll-snap-align:start;background:#000}
+video{width:100%;height:100%;object-fit:contain}
+.caption{position:absolute;bottom:20px;left:15px;text-shadow:0 1px 5px black}
+.actions{position:absolute;right:12px;bottom:60px;display:grid;gap:12px}
+button{background:#292929;color:white;border:0;border-radius:25px;padding:12px;font-size:18px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#151515;display:flex;justify-content:space-around;padding:15px 0;font-size:12px}
+</style>
+</head>
+<body>
+<header>Giri<span>Shorts</span></header>
+<main>
+<section class="post">
+<video controls playsinline loop preload="metadata">
+<source src="https://mahrudin1999-netizen.github.io/Girishorts/1793074906225.mp4" type="video/mp4">
+Video tidak dapat diputar.
+</video>
+<div class="caption">
+<strong>@GiriShorts</strong>
+<p>Video pertama di GiriShorts 🎬</p>
+</div>
+<div class="actions">
+<button id="like">♡ Suka</button>
+<button id="share">↗ Bagikan</button>
+</div>
+</section>
+</main>
+<nav><span>⌂ Beranda</span><span>⌕ Cari</span><span>＋ Unggah</span><span>♡ Suka</span><span>♙ Profil</span></nav>
+<script>
+let liked=false;
+document.getElementById('like').onclick=function(){
+liked=!liked;this.textContent=liked?'♥ Disukai':'♡ Suka';
+};
+document.getElementById('share').onclick=async function(){
+try{
+if(navigator.share)await navigator.share({title:'GiriShorts',url:location.href});
+else prompt('Salin tautan:',location.href);
+}catch(e){}
+};
+</script>
+</body>
+</html>
+

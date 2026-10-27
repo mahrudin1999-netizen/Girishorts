@@ -64,7 +64,7 @@ nav{height:48px;position:fixed;bottom:0;left:0;right:0;background:#151515;displa
 
 <nav>
 <span onclick="resetSearch()">⌂ Beranda</span>
-<span onclick="focusSearch()">⌕ Cari</span>
+<span onclick="openSearch()" style="cursor:pointer">⌕ Cari</span>
 <span>＋ Unggah</span>
 <span>♡ Suka</span>
 <span>♙ Profil</span>
@@ -95,6 +95,14 @@ document.getElementById('feed').scrollTop=0;
 
 function focusSearch(){
 document.getElementById('search').focus();
+}
+
+function openSearch(){
+const search=document.getElementById('search');
+search.focus();
+window.scrollTo(0,0);
+document.getElementById('feed').scrollTop=0;
+}
 }
 
 function likeVideo(button){

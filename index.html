@@ -84,22 +84,29 @@ const uploadFile=document.getElementById('uploadFile');
 const empty=document.getElementById('empty');
 
 function searchVideos(){
-const q=search.value.toLowerCase().trim();
-let count=0;
+  const q = search.value.toLowerCase().trim();
+  const posts = document.querySelectorAll('#feed .post');
+  let count = 0;
 
-document.querySelectorAll('.post').forEach(post=>{
-const matched=(post.dataset.search||'').includes(q);
-post.style.display=matched?'block':'none';
+  posts.forEach(function(post){
+    const text = (
+      (post.dataset.search || '') + ' ' +
+      (post.querySelector('.caption')?.innerText || '')
+    ).toLowerCase();
 
-if(!matched){
-const video=post.querySelector('video');
-if(video)video.pause();
-}else{
-count++;
-}
-});
+    const matched = text.includes(q);
 
-empty.style.display=count?'none':'block';
+    post.style.display = matched ? '' : 'none';
+
+    if (!matched) {
+      const video = post.querySelector('video');
+      if (video) video.pause();
+    } else {
+      count++;
+    }
+  });
+
+  empty.style.display = count > 0 ? 'none' : 'block';
 }
 
 search.addEventListener('input',searchVideos);

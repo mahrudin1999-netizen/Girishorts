@@ -167,6 +167,62 @@ function updateCreatorInfo() {
   });
 }
 
+function updateFollowButtons() {
+  let followed = [];
+
+  try {
+    followed = JSON.parse(
+      localStorage.getItem('girishorts_following') || '[]'
+    );
+  } catch (e) {}
+
+  document.querySelectorAll('#feed .post').forEach(function(post) {
+    let button = post.querySelector('.follow-creator');
+
+    if (!button) {
+      button = document.createElement('button');
+      button.className = 'follow-creator';
+      button.style.cssText =
+        'position:absolute;left:62px;bottom:160px;' +
+        'z-index:3;background:#ff3158;color:white;border:0;' +
+        'border-radius:20px;padding:7px 12px;font-size:12px;';
+
+      button.addEventListener('click', function() {
+        const id = post.dataset.creatorId || 'girishorts_creator';
+        let list = [];
+
+        try {
+          list = JSON.parse(
+            localStorage.getItem('girishorts_following') || '[]'
+          );
+        } catch (e) {}
+
+        if (list.includes(id)) {
+          list = list.filter(function(item) {
+            return item !== id;
+          });
+        } else {
+          list.push(id);
+        }
+
+        try {
+          localStorage.setItem('girishorts_following', JSON.stringify(list));
+          updateFollowButtons();
+        } catch (e) {
+          alert('Status mengikuti gagal disimpan.');
+        }
+      });
+
+      post.appendChild(button);
+    }
+
+    const id = post.dataset.creatorId || 'girishorts_creator';
+    button.textContent = followed.includes(id)
+      ? '✓ Mengikuti'
+      : '+ Ikuti';
+  });
+}
+
 function updateVideoCounts() {
   let likes = [];
   let comments = {};
@@ -210,6 +266,7 @@ function updateVideoCounts() {
 
 function refreshLikeButtons(){
   updateCreatorInfo();
+  updateFollowButtons();
 const likes=getLikes();
 document.querySelectorAll('.post').forEach(post=>{
 const button=post.querySelector('.like');

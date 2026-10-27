@@ -274,7 +274,55 @@ if(!button)return;
 const liked=likes.includes(post.dataset.id);
 button.dataset.liked=liked?'yes':'no';
 button.textContent=liked?'♥ Disukai':'♡ Suka';
-updateVideoCounts();});
+
+function updateFollowButtons() {
+  const following = JSON.parse(
+    localStorage.getItem('girishorts_following') || '[]'
+  );
+
+  document.querySelectorAll('#feed .post').forEach(post => {
+    if (post.querySelector('.follow-creator')) return;
+
+    const btn = document.createElement('button');
+    btn.className = 'follow-creator';
+    btn.textContent = 'Ikuti';
+
+    btn.style.cssText =
+      'position:absolute;left:62px;bottom:160px;z-index:20;padding:8px 12px;border:0;border-radius:20px;background:#ff2458;color:white;font-weight:bold;';
+
+    const creatorId =
+      post.dataset.creatorId || 'girishorts_creator';
+
+    btn.textContent = following.includes(creatorId)
+      ? '✓ Mengikuti'
+      : '+ Ikuti';
+
+    btn.onclick = () => {
+      let list = JSON.parse(
+        localStorage.getItem('girishorts_following') || '[]'
+      );
+
+      if (list.includes(creatorId)) {
+        list = list.filter(id => id !== creatorId);
+      } else {
+        list.push(creatorId);
+      }
+
+      localStorage.setItem(
+        'girishorts_following',
+        JSON.stringify(list)
+      );
+
+      btn.textContent = list.includes(creatorId)
+        ? '✓ Mengikuti'
+        : '+ Ikuti';
+    };
+
+    post.appendChild(btn);
+  });
+}
+
+  updateVideoCounts();});
 }
 
 function likeVideo(button){

@@ -8,29 +8,33 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080808;color:white;font-family:Arial,sans-serif}
-header{padding:12px 15px;background:#151515;font-size:23px;font-weight:bold}
+header{height:54px;padding:14px 16px;background:#151515;font-size:23px;font-weight:bold}
 header span{color:#ff3158}
-.search{padding:10px;background:#151515}
-.search input{width:100%;padding:12px;border:0;border-radius:20px;background:#292929;color:white;font-size:15px;outline:none}
-main{height:calc(100dvh - 160px);overflow-y:auto;scroll-snap-type:y mandatory}
-.post{height:calc(100dvh - 160px);position:relative;scroll-snap-align:start;background:#000;overflow:hidden}
-video{width:100%;height:100%;object-fit:contain}
-.caption{position:absolute;bottom:18px;left:14px;right:80px;text-shadow:0 1px 5px black;pointer-events:none}
-.caption p{font-size:14px}
-.actions{position:absolute;right:10px;bottom:55px;display:grid;gap:12px}
-button{background:#292929;color:white;border:0;border-radius:25px;padding:11px 9px;font-size:14px}
-nav{height:48px;position:fixed;bottom:0;left:0;right:0;background:#151515;display:flex;justify-content:space-around;align-items:center;font-size:11px}
-#empty{display:none;padding:25px;text-align:center}
+.search{padding:9px 12px;background:#151515}
+.search input{width:100%;padding:12px 15px;border:0;border-radius:24px;background:#292929;color:white;font-size:15px}
+main{height:calc(100dvh - 158px);overflow-y:auto;scroll-snap-type:y mandatory}
+.post{height:calc(100dvh - 158px);position:relative;scroll-snap-align:start;background:#000;overflow:hidden}
+video{width:100%;height:100%;object-fit:contain;background:#000}
+.caption{position:absolute;bottom:20px;left:14px;right:78px;text-shadow:0 1px 5px #000;pointer-events:none}
+.caption p{font-size:14px;overflow-wrap:anywhere}
+.actions{position:absolute;right:9px;bottom:65px;display:grid;gap:12px}
+.actions button{background:#292929;color:white;border:0;border-radius:25px;padding:12px 8px;font-size:13px}
+nav{height:50px;position:fixed;bottom:0;left:0;right:0;background:#151515;display:flex;justify-content:space-around;align-items:center;font-size:11px;z-index:5}
+nav button{background:none;border:0;color:white;font-size:11px;padding:8px 5px}
+#uploadFile{display:none}
+#empty{display:none;text-align:center;padding:25px;color:#bbb}
 </style>
 </head>
 <body>
+
 <header>Giri<span>Shorts</span></header>
 
 <div class="search">
-<input id="search" type="search" placeholder="🔍 Cari video atau kreator..." oninput="searchVideos()">
+<input id="search" type="search" placeholder="🔍 Cari video atau kreator...">
 </div>
 
 <main id="feed">
+
 <section class="post" data-search="video pertama girishorts kreator">
 <video controls playsinline loop preload="metadata">
 <source src="https://mahrudin1999-netizen.github.io/Girishorts/1793074906225.mp4" type="video/mp4">
@@ -58,74 +62,119 @@ nav{height:48px;position:fixed;bottom:0;left:0;right:0;background:#151515;displa
 <button onclick="sharePage()">↗ Bagikan</button>
 </div>
 </section>
+
 </main>
 
 <div id="empty">Video tidak ditemukan.</div>
 
+<input id="uploadFile" type="file" accept="video/*">
+
 <nav>
-<span onclick="resetSearch()">⌂ Beranda</span>
-<span onclick="openSearch()" style="cursor:pointer">⌕ Cari</span>
-<span onclick="document.getElementById('uploadFile').click()" style="cursor:pointer">＋ Unggah</span>
-<span>♡ Suka</span>
-<span>♙ Profil</span>
+<button onclick="resetSearch()">⌂ Beranda</button>
+<button onclick="openSearch()">⌕ Cari</button>
+<button onclick="openUpload()">＋ Unggah</button>
+<button onclick="showLikes()">♡ Suka</button>
+<button onclick="showProfile()">♙ Profil</button>
 </nav>
 
-<function previewUpload(event){
-  const file=event.target.files[0];
-  if(!file)return;
+<script>
+const feed=document.getElementById('feed');
+const search=document.getElementById('search');
+const uploadFile=document.getElementById('uploadFile');
+const empty=document.getElementById('empty');
 
-  const url=URL.createObjectURL(file);
-  const post=document.createElement('section');
-  post.className='post';
-  post.dataset.search=(file.name+' kreator').toLowerCase();
-
-  post.innerHTML=`
-    <video controls playsinline loop autoplay></video>
-    <div class="caption">
-      <strong>@GiriShorts</strong>
-      <p></p>
-    </div>`;
-
-  post.querySelector('video').src=url;
-  post.querySelector('.caption p').textContent=file.name;
-  document.getElementById('feed').prepend(post);
-  post.scrollIntoView();
-}script>
-  <input id="uploadFile" type="file" accept="video/*" hidden
-onchange="previewUpload(event)">
 function searchVideos(){
-const q=document.getElementById('search').value.toLowerCase().trim();
-const posts=document.querySelectorAll('.post');
+const q=search.value.toLowerCase().trim();
 let count=0;
 
-posts.forEach(post=>{
-const match=post.dataset.search.includes(q);
-post.style.display=match?'block':'none';
+document.querySelectorAll('.post').forEach(post=>{
+const matched=(post.dataset.search||'').includes(q);
+post.style.display=matched?'block':'none';
+
+if(!matched){
 const video=post.querySelector('video');
-if(!match)video.pause();
-if(match)count++;
+if(video)video.pause();
+}else{
+count++;
+}
 });
 
-document.getElementById('empty').style.display=count?'none':'block';
+empty.style.display=count?'none':'block';
 }
+
+search.addEventListener('input',searchVideos);
 
 function resetSearch(){
-document.getElementById('search').value='';
+search.value='';
 searchVideos();
-document.getElementById('feed').scrollTop=0;
-}
-
-function focusSearch(){
-document.getElementById('search').focus();
+feed.scrollTop=0;
+document.querySelectorAll('video').forEach(v=>v.pause());
 }
 
 function openSearch(){
-const search=document.getElementById('search');
 search.focus();
 window.scrollTo(0,0);
-document.getElementById('feed').scrollTop=0;
 }
+
+function openUpload(){
+uploadFile.click();
 }
+
+uploadFile.addEventListener('change',function(){
+const file=this.files&&this.files[0];
+if(!file)return;
+
+if(!file.type.startsWith('video/')){
+alert('Silakan pilih file video.');
+this.value='';
+return;
+}
+
+const url=URL.createObjectURL(file);
+const post=document.createElement('section');
+post.className='post';
+post.dataset.search=(file.name+' video kreator girishorts').toLowerCase();
+
+const video=document.createElement('video');
+video.controls=true;
+video.playsInline=true;
+video.loop=true;
+video.preload='metadata';
+video.src=url;
+
+const caption=document.createElement('div');
+caption.className='caption';
+
+const creator=document.createElement('strong');
+creator.textContent='@GiriShorts';
+
+const description=document.createElement('p');
+description.textContent=file.name;
+
+caption.append(creator,description);
+
+const actions=document.createElement('div');
+actions.className='actions';
+
+const like=document.createElement('button');
+like.textContent='♡ Suka';
+like.onclick=function(){likeVideo(this)};
+
+const share=document.createElement('button');
+share.textContent='↗ Bagikan';
+share.onclick=sharePage;
+
+actions.append(like,share);
+post.append(video,caption,actions);
+feed.prepend(post);
+
+search.value='';
+searchVideos();
+post.scrollIntoView({behavior:'smooth'});
+video.play().catch(()=>{});
+
+this.value='';
+});
 
 function likeVideo(button){
 const liked=button.dataset.liked==='yes';
@@ -137,16 +186,27 @@ async function sharePage(){
 try{
 if(navigator.share){
 await navigator.share({title:'GiriShorts',url:location.href});
+}else if(navigator.clipboard){
+await navigator.clipboard.writeText(location.href);
+alert('Tautan GiriShorts disalin.');
 }else{
 prompt('Salin tautan GiriShorts:',location.href);
 }
 }catch(e){}
 }
 
+function showLikes(){
+alert('Fitur daftar video yang disukai akan kita kembangkan berikutnya.');
+}
+
+function showProfile(){
+alert('Profil kreator akan kita kembangkan berikutnya.');
+}
+
 const observer=new IntersectionObserver(entries=>{
 entries.forEach(entry=>{
 const video=entry.target;
-if(entry.isIntersecting && entry.intersectionRatio>=0.6){
+if(entry.isIntersecting&&entry.intersectionRatio>=0.6){
 video.play().catch(()=>{});
 }else{
 video.pause();
@@ -154,7 +214,18 @@ video.pause();
 });
 },{threshold:[0,0.6,1]});
 
-document.querySelectorAll('video').forEach(video=>observer.observe(video));
+function observeVideos(){
+document.querySelectorAll('.post video').forEach(video=>{
+if(!video.dataset.observed){
+observer.observe(video);
+video.dataset.observed='yes';
+}
+});
+}
+
+const mutationObserver=new MutationObserver(observeVideos);
+mutationObserver.observe(feed,{childList:true,subtree:true});
+observeVideos();
 </script>
 </body>
 </html>

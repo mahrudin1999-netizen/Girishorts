@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "girishorts-v1";
+const CACHE_NAME = "girishorts-v2";
 
 const APP_FILES = [
   "/Girishorts/",
@@ -22,7 +22,11 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter((key) => key !== CACHE_NAME)
+          .filter(
+            (key) =>
+              key.startsWith("girishorts-") &&
+              key !== CACHE_NAME
+          )
           .map((key) => caches.delete(key))
       )
     )
@@ -33,38 +37,62 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
-
-  if (request.method !== "GET") return;
-
   const url = new URL(request.url);
 
-  if (url.origin !== self.location.origin) return;
+  if (
+    request.method !== "GET" ||
+    url.origin !== self.location.origin
+  ) {
+    return;
+  }
+
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) =>
+              cache.put(request, copy)
+            );
+          }
+
+          return response;
+        })
+        .catch(async () => {
+          return (
+            await caches.match(request)
+          ) || (
+            await caches.match("/Girishorts/index.html")
+          ) || new Response(
+            "GiriShorts sedang offline.",
+            {
+              status: 503,
+              headers: {
+                "Content-Type": "text/plain; charset=utf-8"
+              }
+            }
+          );
+        })
+    );
+
+    return;
+  }
 
   event.respondWith(
-    fetch(request)
-      .then((response) => {
-        if (response && response.ok) {
-          const copy = response.clone();
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
 
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, copy);
-          });
+      return fetch(request).then((response) => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) =>
+            cache.put(request, copy)
+          );
         }
 
         return response;
-      })
-      .catch(async () => {
-        const cached = await caches.match(request);
-
-        if (cached) return cached;
-
-        return new Response(
-          "Kamu sedang offline. Hubungkan internet lalu coba lagi.",
-          {
-            status: 503,
-            headers: { "Content-Type": "text/plain; charset=utf-8" }
-          }
-        );
-      })
+      });
+    })
   );
 });

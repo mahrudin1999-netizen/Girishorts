@@ -1507,33 +1507,6 @@
     }
   }
 
-</script>
-
-<!-- GiriShorts 5.0: Panel Profil -->
-<section id="profilePanel" class="panel" style="display:none;">
-  <h2>👤 Profil Saya</h2>
-
-  <label for="profileUsername">Nama pengguna</label>
-  <input
-    id="profileUsername"
-    type="text"
-    maxlength="30"
-    placeholder="Masukkan nama pengguna"
-  />
-
-  <label for="profileBio">Bio</label>
-  <textarea
-    id="profileBio"
-    maxlength="160"
-    placeholder="Ceritakan sedikit tentang dirimu"
-  ></textarea>
-
-  <button id="saveProfileBtn" class="btn" type="button">
-    Simpan Profil
-  </button>
-
-  <p id="profileMessage" class="small-note"></p>
-
 async function loadMyProfile() {
   const panel = document.getElementById("profilePanel");
   const usernameInput = document.getElementById("profileUsername");
@@ -1631,6 +1604,32 @@ document
   .getElementById("saveProfileBtn")
   .addEventListener("click", saveMyProfile);
 
+</script>
+
+<!-- GiriShorts 5.0: Panel Profil -->
+<section id="profilePanel" class="panel" style="display:none;">
+  <h2>👤 Profil Saya</h2>
+
+  <label for="profileUsername">Nama pengguna</label>
+  <input
+    id="profileUsername"
+    type="text"
+    maxlength="30"
+    placeholder="Masukkan nama pengguna"
+  />
+
+  <label for="profileBio">Bio</label>
+  <textarea
+    id="profileBio"
+    maxlength="160"
+    placeholder="Ceritakan sedikit tentang dirimu"
+  ></textarea>
+
+  <button id="saveProfileBtn" class="btn" type="button">
+    Simpan Profil
+  </button>
+
+  <p id="profileMessage" class="small-note"></p>
 </section>
 
 </body>

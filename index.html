@@ -1,645 +1,1043 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090909">
-  <meta name="description" content="GiriShorts - Platform video pendek">
-  <title>GiriShorts - Video Pendek</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080808">
+  <title>GiriShorts</title>
+  <meta name="description" content="GiriShorts, tempat berbagi video pendek.">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
-      --bg: #090909;
+      --bg: #080808;
       --panel: #151515;
       --panel2: #202020;
-      --red: #ff303b;
-      --text: #fff;
-      --muted: #aaa;
+      --red: #ff2638;
+      --text: #ffffff;
+      --muted: #a8a8a8;
       --border: #303030;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       padding-bottom: 85px;
     }
 
-    button, input { font: inherit; }
+    button, input, textarea {
+      font: inherit;
+    }
 
     button {
       cursor: pointer;
-      border: 0;
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-weight: bold;
     }
 
-    button:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-
-    .primary {
-      background: var(--red);
-      color: white;
-    }
-
-    .secondary {
-      background: var(--panel2);
-      color: white;
-      border: 1px solid var(--border);
-    }
-
-    header {
+    .topbar {
       position: sticky;
       top: 0;
-      z-index: 5;
-      background: rgba(9,9,9,.96);
-      border-bottom: 1px solid var(--border);
-      padding: 15px;
-    }
-
-    .header-inner {
-      max-width: 720px;
-      margin: auto;
+      z-index: 20;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
+      padding: 15px 16px;
+      background: rgba(8, 8, 8, 0.96);
+      border-bottom: 1px solid var(--border);
     }
 
-    .logo {
-      font-size: 25px;
+    .brand {
+      font-size: 23px;
       font-weight: 900;
       letter-spacing: -1px;
     }
 
-    .logo span { color: var(--red); }
+    .brand span {
+      color: var(--red);
+    }
+
+    .brand-sub {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 3px;
+    }
 
     .status {
+      max-width: 48%;
       color: var(--muted);
       font-size: 12px;
-      overflow-wrap: anywhere;
       text-align: right;
+      overflow-wrap: anywhere;
     }
 
     main {
-      max-width: 720px;
-      margin: auto;
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
       padding: 16px;
     }
 
-    .hero {
-      background: linear-gradient(135deg, #321014, #151515 65%);
-      border: 1px solid #542025;
-      padding: 22px;
-      border-radius: 18px;
-      margin-bottom: 18px;
+    .page-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 4px 0 8px;
     }
 
-    .hero h1 {
-      font-size: 30px;
-      margin: 0 0 8px;
-    }
-
-    .hero p, .muted {
+    .page-desc {
       color: var(--muted);
+      font-size: 13px;
       line-height: 1.5;
+      margin: 0 0 18px;
     }
 
-    .section { margin: 20px 0; }
+    .notice {
+      display: none;
+      padding: 12px;
+      margin: 12px 0;
+      border-radius: 10px;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
 
-    .section h2 { font-size: 20px; }
+    .notice.show {
+      display: block;
+    }
+
+    .notice.error {
+      border-color: #a52a35;
+      color: #ffb6bd;
+    }
+
+    .notice.success {
+      border-color: #287d50;
+      color: #a8f0c5;
+    }
 
     .panel {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 15px;
       padding: 16px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
 
     .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
       display: block;
+      font-size: 13px;
+      margin-bottom: 7px;
+      color: #e5e5e5;
+    }
+
+    .field input,
+    .field textarea {
       width: 100%;
-      margin: 10px 0;
-      padding: 13px;
-      color: white;
-      background: #0c0c0c;
-      border: 1px solid #3b3b3b;
-      border-radius: 10px;
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    .notice {
       padding: 12px;
-      background: #202020;
+      border-radius: 9px;
+      border: 1px solid #393939;
+      background: #0d0d0d;
+      color: white;
+      outline: none;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      border-color: var(--red);
+    }
+
+    .field textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .btn {
+      border: 0;
       border-radius: 10px;
-      color: #ddd;
-      line-height: 1.5;
-      overflow-wrap: anywhere;
-      margin: 12px 0;
+      padding: 12px 15px;
+      font-weight: 700;
+      color: white;
+      background: var(--red);
     }
 
-    .notice.error {
-      color: #ff9ca2;
-      border: 1px solid #64272b;
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
     }
 
-    .notice.success {
-      color: #9cf0b3;
-      border: 1px solid #245c36;
+    .btn-secondary {
+      background: var(--panel2);
+      border: 1px solid #3a3a3a;
+    }
+
+    .btn-danger {
+      background: #381319;
+      border: 1px solid #7e2631;
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 30;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: #101010;
+      border-top: 1px solid var(--border);
+      padding: 8px 5px calc(8px + env(safe-area-inset-bottom));
+    }
+
+    .nav-btn {
+      border: 0;
+      background: transparent;
+      color: #a8a8a8;
+      padding: 7px 2px;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .nav-btn .nav-icon {
+      font-size: 20px;
+    }
+
+    .nav-btn.active {
+      color: var(--red);
+      font-weight: 800;
+    }
+
+    .tab-page {
+      display: none;
+    }
+
+    .tab-page.active {
+      display: block;
     }
 
     .video-card {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 14px;
       overflow: hidden;
-      margin: 18px 0;
+      margin-bottom: 18px;
     }
 
-    .video-card video {
+    .video-player {
       width: 100%;
       display: block;
-      max-height: 75vh;
       background: #000;
+      max-height: 72vh;
+      aspect-ratio: 9 / 16;
+      object-fit: contain;
     }
 
-    .video-info { padding: 14px; }
+    .video-info {
+      padding: 13px;
+    }
 
     .video-title {
-      font-weight: bold;
-      font-size: 17px;
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.4;
       overflow-wrap: anywhere;
+      margin-bottom: 7px;
     }
 
     .video-meta {
       color: var(--muted);
       font-size: 12px;
-      margin-top: 8px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      overflow-wrap: anywhere;
     }
 
-    .empty {
+    .video-stats {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      color: #ddd;
+      font-size: 13px;
+    }
+
+    .like-btn {
+      border: 1px solid #424242;
+      background: #242424;
+      color: white;
+      border-radius: 20px;
+      padding: 8px 13px;
+      font-weight: 700;
+    }
+
+    .like-btn.liked {
+      background: #40151c;
+      color: #ff6472;
+      border-color: #a72c3a;
+    }
+
+    .delete-btn {
+      border: 1px solid #78303a;
+      background: #301116;
+      color: #ffb3bc;
+      border-radius: 9px;
+      padding: 9px 12px;
+    }
+
+    .empty-state {
       text-align: center;
-      padding: 35px 15px;
+      padding: 30px 15px;
+      background: var(--panel);
+      border: 1px dashed #414141;
+      border-radius: 14px;
       color: var(--muted);
-      border: 1px dashed #444;
-      border-radius: 15px;
       line-height: 1.6;
     }
 
-    .tab { display: none; }
-    .tab.active { display: block; }
-
-    nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-      background: #111;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: center;
-      padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+    .progress-wrap {
+      display: none;
+      margin-top: 12px;
+      height: 7px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #333;
     }
 
-    .nav-inner {
-      width: 100%;
-      max-width: 720px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 5px;
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--red);
+      transition: width 0.2s;
     }
 
-    .nav-btn {
-      background: transparent;
-      color: #aaa;
-      padding: 10px 2px;
+    .small-note {
+      color: var(--muted);
       font-size: 12px;
+      line-height: 1.5;
+      margin-top: 10px;
     }
 
-    .nav-btn.active {
-      background: #351316;
-      color: white;
-    }
-
-    .nav-btn .emoji {
-      display: block;
-      font-size: 19px;
-      margin-bottom: 5px;
-    }
-
-    .small { font-size: 12px; }
-
-    footer {
-      text-align: center;
-      color: #777;
-      font-size: 12px;
-      padding: 20px;
+    @media (min-width: 600px) {
+      main {
+        padding: 22px;
+      }
     }
   </style>
 </head>
-
 <body>
-<header>
-  <div class="header-inner">
-    <div class="logo">GIRI<span>SHORTS</span></div>
-    <div class="status" id="topStatus">Video pendek untuk semua</div>
-  </div>
-</header>
 
-<main>
-  <section class="tab active" id="homeTab">
-    <div class="hero">
-      <h1>Video kamu, dunia yang menonton. 🔥</h1>
-      <p>Temukan video pendek, bagikan karyamu, dan jadilah bagian dari GiriShorts.</p>
-      <button class="primary" onclick="showTab('uploadTab')">
-        ＋ Unggah Video
-      </button>
+  <header class="topbar">
+    <div>
+      <div class="brand">GIRI<span>SHORTS</span></div>
+      <div class="brand-sub">Video pendek, cerita tanpa batas.</div>
     </div>
+    <div class="status" id="loginStatus">Memeriksa akun...</div>
+  </header>
 
-    <div class="section">
-      <h2>🎬 Video Terbaru</h2>
-      <div id="feed">
-        <div class="empty">Memuat video...</div>
-      </div>
-      <button class="secondary" id="refreshBtn" onclick="loadFeed()">
-        Muat ulang video
-      </button>
-    </div>
-  </section>
+  <main>
+    <div id="globalNotice" class="notice" role="status"></div>
 
-  <section class="tab" id="uploadTab">
-    <h2>📤 Unggah Video</h2>
+    <!-- BAGIAN BERANDA -->
+    <section id="homeTab" class="tab-page active">
+      <h1 class="page-title">Beranda 🔥</h1>
+      <p class="page-desc">
+        Tonton video terbaru dari komunitas GiriShorts.
+      </p>
 
-    <div class="panel" id="authRequired">
-      <p>Masuk ke akunmu untuk mulai mengunggah video.</p>
-      <button class="primary" onclick="showTab('accountTab')">
-        Masuk / Daftar
-      </button>
-    </div>
-
-    <div class="panel" id="uploadPanel" hidden>
-      <form id="uploadForm">
-        <label for="videoTitle">Judul video</label>
-        <input class="field" id="videoTitle" maxlength="120"
-          placeholder="Tulis judul video..." required>
-
-        <label for="videoFile">Pilih video dari HP</label>
-        <input class="field" id="videoFile" type="file"
-          accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
-          required>
-
-        <p class="muted small">
-          Maksimal 50 MB. Format yang disarankan: MP4.
-          Gunakan video yang kamu miliki atau berhak kamu unggah.
-        </p>
-
-        <button class="primary" id="uploadBtn" type="submit">
-          Unggah Sekarang
+      <div class="button-row" style="margin-bottom:16px">
+        <button class="btn btn-secondary" id="refreshFeedBtn" type="button">
+          ↻ Muat ulang video
         </button>
-      </form>
+      </div>
 
-      <div id="uploadMessage" aria-live="polite"></div>
-    </div>
-  </section>
+      <div id="videoFeed">
+        <div class="empty-state">Memuat video...</div>
+      </div>
+    </section>
 
-  <section class="tab" id="myVideosTab">
-    <h2>🎞️ Video Saya</h2>
-    <p class="muted">Video yang kamu unggah menggunakan akun ini.</p>
-    <div id="myVideos">
-      <div class="empty">Masuk untuk melihat video milikmu.</div>
-    </div>
-  </section>
+    <!-- BAGIAN UNGGAH -->
+    <section id="uploadTab" class="tab-page">
+      <h1 class="page-title">Unggah Video ⬆️</h1>
+      <p class="page-desc">
+        Bagikan video kamu ke komunitas GiriShorts.
+      </p>
 
-  <section class="tab" id="accountTab">
-    <h2>👤 Akun GiriShorts</h2>
+      <div class="panel">
+        <form id="uploadForm">
+          <div class="field">
+            <label for="videoTitle">Judul video</label>
+            <input
+              id="videoTitle"
+              type="text"
+              maxlength="120"
+              placeholder="Tulis judul video..."
+              required
+            >
+          </div>
 
-    <div class="panel" id="authPanel">
-      <p class="muted">Daftar akun baru atau masuk ke akun yang sudah ada.</p>
+          <div class="field">
+            <label for="videoFile">Pilih video</label>
+            <input
+              id="videoFile"
+              type="file"
+              accept="video/mp4,video/webm,video/quicktime"
+              required
+            >
+          </div>
 
-      <form id="authForm">
-        <label for="email">Email</label>
-        <input class="field" id="email" type="email"
-          autocomplete="email" placeholder="nama@email.com" required>
+          <p class="small-note">
+            Format MP4, WebM, atau MOV. Ukuran maksimal 50 MB per video.
+          </p>
 
-        <label for="password">Kata sandi</label>
-        <input class="field" id="password" type="password"
-          autocomplete="current-password" minlength="6"
-          placeholder="Minimal 6 karakter" required>
+          <button class="btn btn-full" id="uploadBtn" type="submit">
+            Unggah sekarang
+          </button>
 
-        <div class="actions">
-          <button class="primary" type="submit" id="loginBtn">
+          <div class="progress-wrap" id="uploadProgressWrap">
+            <div class="progress-bar" id="uploadProgressBar"></div>
+          </div>
+          <div class="small-note" id="uploadStatus"></div>
+        </form>
+      </div>
+    </section>
+
+    <!-- BAGIAN VIDEO SAYA -->
+    <section id="myVideosTab" class="tab-page">
+      <h1 class="page-title">Video Saya 🎬</h1>
+      <p class="page-desc">
+        Video yang kamu unggah menggunakan akun ini.
+      </p>
+
+      <div id="myVideoList">
+        <div class="empty-state">Login untuk melihat video kamu.</div>
+      </div>
+    </section>
+
+    <!-- BAGIAN AKUN -->
+    <section id="accountTab" class="tab-page">
+      <h1 class="page-title">Akun Saya 👤</h1>
+      <p class="page-desc">
+        Masuk atau buat akun untuk mengunggah dan menyukai video.
+      </p>
+
+      <div class="panel" id="authPanel">
+        <div class="field">
+          <label for="authEmail">Email</label>
+          <input
+            id="authEmail"
+            type="email"
+            autocomplete="email"
+            placeholder="nama@email.com"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="authPassword">Kata sandi</label>
+          <input
+            id="authPassword"
+            type="password"
+            autocomplete="current-password"
+            minlength="6"
+            placeholder="Minimal 6 karakter"
+            required
+          >
+        </div>
+
+        <div class="button-row">
+          <button class="btn" id="loginBtn" type="button">
             Masuk
           </button>
-          <button class="secondary" type="button" id="signupBtn">
-            Daftar Akun
+          <button class="btn btn-secondary" id="signupBtn" type="button">
+            Buat akun
           </button>
         </div>
-      </form>
 
-      <div id="authMessage" aria-live="polite"></div>
-    </div>
+        <div class="small-note" id="authStatus"></div>
+      </div>
 
-    <div class="panel" id="loggedPanel" hidden>
-      <p class="muted">Kamu masuk sebagai:</p>
-      <p id="userEmail" style="overflow-wrap:anywhere"></p>
-      <div class="actions">
-        <button class="primary" onclick="showTab('uploadTab')">
-          Unggah Video
-        </button>
-        <button class="secondary" id="logoutBtn">
-          Keluar Akun
+      <div class="panel" id="loggedInPanel" style="display:none">
+        <div style="font-weight:800;margin-bottom:8px">Kamu sudah masuk ✅</div>
+        <div class="video-meta" id="accountEmail"></div>
+        <button class="btn btn-danger" id="logoutBtn" type="button">
+          Keluar dari akun
         </button>
       </div>
-    </div>
+    </section>
+  </main>
 
-    <div class="notice">
-      <strong>Privasi:</strong> Jangan bagikan kata sandi atau kunci rahasia
-      Supabase kepada siapa pun. Video di bucket publik dapat ditonton oleh
-      siapa saja yang memiliki akses ke tautannya.
-    </div>
-  </section>
-</main>
-
-<footer>GiriShorts © 2026 · Berbagi video dengan bijak</footer>
-
-<nav>
-  <div class="nav-inner">
-    <button class="nav-btn active" data-tab="homeTab"
-      onclick="showTab('homeTab')">
-      <span class="emoji">⌂</span>Beranda
+  <nav class="bottom-nav" aria-label="Navigasi utama">
+    <button class="nav-btn active" data-tab="homeTab" type="button">
+      <span class="nav-icon">🏠</span>
+      <span>Beranda</span>
     </button>
-    <button class="nav-btn" data-tab="uploadTab"
-      onclick="showTab('uploadTab')">
-      <span class="emoji">＋</span>Unggah
+    <button class="nav-btn" data-tab="uploadTab" type="button">
+      <span class="nav-icon">⬆️</span>
+      <span>Unggah</span>
     </button>
-    <button class="nav-btn" data-tab="myVideosTab"
-      onclick="showTab('myVideosTab')">
-      <span class="emoji">▣</span>Video Saya
+    <button class="nav-btn" data-tab="myVideosTab" type="button">
+      <span class="nav-icon">🎬</span>
+      <span>Video Saya</span>
     </button>
-    <button class="nav-btn" data-tab="accountTab"
-      onclick="showTab('accountTab')">
-      <span class="emoji">●</span>Akun
+    <button class="nav-btn" data-tab="accountTab" type="button">
+      <span class="nav-icon">👤</span>
+      <span>Akun</span>
     </button>
-  </div>
-</nav>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-(() => {
-  "use strict";
-
-  // Gunakan Project URL dan Publishable Key milikmu.
-  // Jangan pernah memasukkan sb_secret_ atau service_role di sini.
+  </nav>
+  <script>
+  // KONFIGURASI SUPABASE
   const SUPABASE_URL = "https://ozypepeusicvnlgqqcld.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_8CDQECDwjuziyGRhlucdDw_qCAYogOa";
-
-  const BUCKET = "videos";
-  const MAX_SIZE = 50 * 1024 * 1024;
 
   const db = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
   );
 
+  const BUCKET = "videos";
+  const MAX_VIDEO_SIZE = 50 * 1024 * 1024;
+
   let currentUser = null;
-  let feedLoading = false;
+  let videosCache = [];
+  let likesCache = new Map();
+  let viewsCache = new Map();
+  let likedCache = new Set();
+  let busyLikes = new Set();
+  let viewedThisSession = new Set();
 
-  const $ = id => document.getElementById(id);
+  const $ = (id) => document.getElementById(id);
 
-  function message(id, text, type = "") {
-    const el = $(id);
-    el.textContent = text;
-    el.className = "notice " + type;
-    el.hidden = !text;
+  function showNotice(message, type = "") {
+    const el = $("globalNotice");
+    el.textContent = message;
+    el.className = "notice show" + (type ? " " + type : "");
   }
 
-  function readableError(error) {
-    const raw = error?.message || "Terjadi kesalahan.";
-    if (/Invalid login credentials/i.test(raw)) {
-      return "Email atau kata sandi salah.";
-    }
-    if (/Email not confirmed/i.test(raw)) {
-      return "Konfirmasi email kamu terlebih dahulu.";
-    }
-    if (/row-level security|permission denied|not allowed/i.test(raw)) {
-      return "Akses ditolak. Periksa kebijakan RLS dan Storage Supabase.";
-    }
-    if (/relation .* does not exist|Could not find the table/i.test(raw)) {
-      return "Tabel videos belum tersedia. Jalankan SQL pengaturan tabel di Supabase.";
-    }
-    if (/bucket not found/i.test(raw)) {
-      return "Bucket Storage bernama videos belum dibuat.";
-    }
-    return raw;
+  function hideNotice() {
+    $("globalNotice").className = "notice";
+    $("globalNotice").textContent = "";
   }
 
-  window.showTab = function(tabId) {
-    document.querySelectorAll(".tab").forEach(el => {
-      el.classList.toggle("active", el.id === tabId);
+  function setAuthStatus(message) {
+    $("authStatus").textContent = message;
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
+  }
+
+  function showTab(tabId) {
+    const validTabs = [
+      "homeTab",
+      "uploadTab",
+      "myVideosTab",
+      "accountTab"
+    ];
+
+    if (!validTabs.includes(tabId)) return;
+
+    document.querySelectorAll(".tab-page").forEach((page) => {
+      page.classList.toggle("active", page.id === tabId);
     });
 
-    document.querySelectorAll(".nav-btn").forEach(el => {
-      el.classList.toggle("active", el.dataset.tab === tabId);
+    document.querySelectorAll(".nav-btn").forEach((button) => {
+      button.classList.toggle("active", button.dataset.tab === tabId);
     });
 
-    if (tabId === "myVideosTab") loadMyVideos();
     if (tabId === "homeTab") loadFeed();
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  async function refreshAuth() {
-    const { data, error } = await db.auth.getSession();
-    if (error) console.error(error);
-
-    currentUser = data?.session?.user || null;
-
-    $("authPanel").hidden = !!currentUser;
-    $("loggedPanel").hidden = !currentUser;
-    $("uploadPanel").hidden = !currentUser;
-    $("authRequired").hidden = !!currentUser;
-
-    $("topStatus").textContent = currentUser
-      ? "Akun aktif"
-      : "Video pendek untuk semua";
-
-    $("userEmail").textContent = currentUser?.email || "";
-
-    if (currentUser) {
-      message(
-        "authMessage",
-        "Kamu sudah masuk. Selamat berkarya!",
-        "success"
-      );
-    } else {
-      $("authMessage").textContent = "";
-    }
+    if (tabId === "myVideosTab") loadMyVideos();
   }
 
-  async function signIn() {
-    const email = $("email").value.trim();
-    const password = $("password").value;
+  window.showTab = showTab;
+
+  document.querySelectorAll(".nav-btn").forEach((button) => {
+    button.addEventListener("click", () => showTab(button.dataset.tab));
+  });
+
+  function updateAccountUI() {
+    const loggedIn = Boolean(currentUser);
+
+    $("loginStatus").textContent = loggedIn
+      ? currentUser.email
+      : "Belum masuk";
+
+    $("authPanel").style.display = loggedIn ? "none" : "block";
+    $("loggedInPanel").style.display = loggedIn ? "block" : "none";
+
+    $("accountEmail").textContent = loggedIn
+      ? currentUser.email
+      : "";
+
+    $("uploadBtn").disabled = !loggedIn;
+  }
+
+  async function refreshSession() {
+    const { data, error } = await db.auth.getSession();
+
+    if (error) {
+      showNotice("Gagal memeriksa sesi akun: " + error.message, "error");
+      return;
+    }
+
+    currentUser = data.session?.user ?? null;
+    updateAccountUI();
+  }
+
+  async function login() {
+    hideNotice();
+
+    const email = $("authEmail").value.trim();
+    const password = $("authPassword").value;
 
     if (!email || !password) {
-      message("authMessage", "Masukkan email dan kata sandi.", "error");
+      setAuthStatus("Isi email dan kata sandi terlebih dahulu.");
       return;
     }
 
     $("loginBtn").disabled = true;
-    message("authMessage", "Sedang masuk...");
+    $("signupBtn").disabled = true;
+    setAuthStatus("Sedang masuk...");
 
     try {
-      const { error } = await db.auth.signInWithPassword({
-        email, password
+      const { data, error } = await db.auth.signInWithPassword({
+        email,
+        password
       });
+
       if (error) throw error;
 
-      await refreshAuth();
+      currentUser = data.user;
+      updateAccountUI();
+      setAuthStatus("Berhasil masuk!");
+      showNotice("Login berhasil. Selamat datang kembali!", "success");
+
+      await loadFeed();
       showTab("homeTab");
     } catch (error) {
-      message("authMessage", readableError(error), "error");
+      setAuthStatus("Login gagal: " + error.message);
     } finally {
       $("loginBtn").disabled = false;
-    }
-  }
-
-  async function signUp() {
-    const email = $("email").value.trim();
-    const password = $("password").value;
-
-    if (!email || password.length < 6) {
-      message(
-        "authMessage",
-        "Masukkan email dan kata sandi minimal 6 karakter.",
-        "error"
-      );
-      return;
-    }
-
-    $("signupBtn").disabled = true;
-    message("authMessage", "Sedang membuat akun...");
-
-    try {
-      const { data, error } = await db.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin +
-            window.location.pathname
-        }
-      });
-
-      if (error) throw error;
-
-      if (data.session) {
-        await refreshAuth();
-        message("authMessage", "Akun berhasil dibuat!", "success");
-      } else {
-        message(
-          "authMessage",
-          "Pendaftaran diterima. Periksa email untuk konfirmasi akun, jika diminta oleh Supabase.",
-          "success"
-        );
-      }
-    } catch (error) {
-      message("authMessage", readableError(error), "error");
-    } finally {
       $("signupBtn").disabled = false;
     }
   }
 
-  async function signOut() {
-    const { error } = await db.auth.signOut();
-    if (error) {
-      message("authMessage", readableError(error), "error");
+  async function signup() {
+    hideNotice();
+
+    const email = $("authEmail").value.trim();
+    const password = $("authPassword").value;
+
+    if (!email || !password) {
+      setAuthStatus("Isi email dan kata sandi terlebih dahulu.");
       return;
     }
 
-    await refreshAuth();
+    if (password.length < 6) {
+      setAuthStatus("Kata sandi minimal 6 karakter.");
+      return;
+    }
+
+    $("loginBtn").disabled = true;
+    $("signupBtn").disabled = true;
+    setAuthStatus("Sedang membuat akun...");
+
+    try {
+      const { data, error } = await db.auth.signUp({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      if (data.session && data.user) {
+        currentUser = data.user;
+        updateAccountUI();
+        setAuthStatus("Pendaftaran berhasil!");
+        showNotice("Akun berhasil dibuat.", "success");
+        await loadFeed();
+        showTab("homeTab");
+      } else {
+        setAuthStatus(
+          "Pendaftaran berhasil. Periksa email untuk konfirmasi, " +
+          "lalu masuk setelah akun dikonfirmasi."
+        );
+      }
+    } catch (error) {
+      setAuthStatus("Pendaftaran gagal: " + error.message);
+    } finally {
+      $("loginBtn").disabled = false;
+      $("signupBtn").disabled = false;
+    }
+  }
+
+  async function logout() {
+    const { error } = await db.auth.signOut();
+
+    if (error) {
+      showNotice("Gagal keluar: " + error.message, "error");
+      return;
+    }
+
+    currentUser = null;
+    likedCache = new Set();
+    updateAccountUI();
+    showNotice("Kamu sudah keluar dari akun.", "success");
+    await loadFeed();
+    await loadMyVideos();
     showTab("homeTab");
   }
 
-  function storageUrl(path) {
-    const { data } = db.storage.from(BUCKET).getPublicUrl(path);
-    return data.publicUrl;
-  }
+  $("loginBtn").addEventListener("click", login);
+  $("signupBtn").addEventListener("click", signup);
+  $("logoutBtn").addEventListener("click", logout);
+
+  db.auth.onAuthStateChange((_event, session) => {
+    currentUser = session?.user ?? null;
+    updateAccountUI();
+
+    // Jalankan setelah callback autentikasi selesai.
+    setTimeout(() => {
+      loadFeed();
+      loadMyVideos();
+    }, 0);
+  });
 
   function formatDate(value) {
     if (!value) return "";
+
     const date = new Date(value);
+
     if (Number.isNaN(date.getTime())) return "";
+
     return date.toLocaleString("id-ID", {
       dateStyle: "medium",
       timeStyle: "short"
     });
   }
 
-  function createVideoCard(item, ownVideo = false) {
+  function getVideoUrl(path) {
+    const { data } = db.storage.from(BUCKET).getPublicUrl(path);
+    return data.publicUrl;
+  }
+
+  async function uploadVideo(event) {
+    event.preventDefault();
+    hideNotice();
+
+    if (!currentUser) {
+      showNotice("Silakan masuk sebelum mengunggah video.", "error");
+      showTab("accountTab");
+      return;
+    }
+
+    const title = $("videoTitle").value.trim();
+    const file = $("videoFile").files[0];
+
+    if (!title || !file) {
+      showNotice("Judul dan file video wajib diisi.", "error");
+      return;
+    }
+
+    if (file.size > MAX_VIDEO_SIZE) {
+      showNotice("Ukuran video maksimal 50 MB.", "error");
+      return;
+    }
+
+    const allowedTypes = [
+      "video/mp4",
+      "video/webm",
+      "video/quicktime"
+    ];
+
+    if (file.type && !allowedTypes.includes(file.type)) {
+      showNotice("Gunakan video MP4, WebM, atau MOV.", "error");
+      return;
+    }
+
+    const extensionFromName = file.name.includes(".")
+      ? file.name.split(".").pop().toLowerCase()
+      : "";
+
+    const extensionByType = {
+      "video/mp4": "mp4",
+      "video/webm": "webm",
+      "video/quicktime": "mov"
+    };
+
+    const extension = extensionByType[file.type] ||
+      (["mp4", "webm", "mov"].includes(extensionFromName)
+        ? extensionFromName
+        : "");
+
+    if (!extension) {
+      showNotice("Format video tidak dikenali.", "error");
+      return;
+    }
+
+    const path = currentUser.id + "/" +
+      crypto.randomUUID() + "." + extension;
+
+    $("uploadBtn").disabled = true;
+    $("uploadStatus").textContent = "Mengunggah video...";
+    $("uploadProgressWrap").style.display = "block";
+    $("uploadProgressBar").style.width = "20%";
+
+    try {
+      const { error: uploadError } = await db.storage
+        .from(BUCKET)
+        .upload(path, file, {
+          contentType: file.type || "video/" + extension,
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      $("uploadProgressBar").style.width = "75%";
+
+      const { error: insertError } = await db
+        .from("videos")
+        .insert({
+          user_id: currentUser.id,
+          title,
+          video_path: path
+        });
+
+      if (insertError) {
+        await db.storage.from(BUCKET).remove([path]);
+        throw insertError;
+      }
+
+      $("uploadProgressBar").style.width = "100%";
+      $("uploadStatus").textContent = "Video berhasil diunggah!";
+      $("uploadForm").reset();
+
+      showNotice("Video berhasil diunggah ke GiriShorts!", "success");
+
+      await loadFeed();
+      await loadMyVideos();
+      showTab("homeTab");
+    } catch (error) {
+      $("uploadStatus").textContent = "Unggah gagal.";
+      showNotice("Gagal mengunggah video: " + error.message, "error");
+    } finally {
+      $("uploadBtn").disabled = !currentUser;
+
+      setTimeout(() => {
+        $("uploadProgressWrap").style.display = "none";
+        $("uploadProgressBar").style.width = "0%";
+      }, 1200);
+    }
+  }
+
+  $("uploadForm").addEventListener("submit", uploadVideo);
+</script>
+<script>
+  // AMBIL DATA SUKA, TAYANGAN, DAN STATUS SUKA
+  async function loadVideoStats(videoIds) {
+    likesCache = new Map();
+    viewsCache = new Map();
+    likedCache = new Set();
+
+    if (!videoIds.length) return;
+
+    videoIds.forEach((id) => {
+      likesCache.set(id, 0);
+      viewsCache.set(id, 0);
+    });
+
+    const [likesResult, viewsResult] = await Promise.all([
+      db.from("video_likes")
+        .select("video_id,user_id")
+        .in("video_id", videoIds),
+
+      db.from("video_views")
+        .select("video_id")
+        .in("video_id", videoIds)
+    ]);
+
+    if (!likesResult.error && likesResult.data) {
+      likesResult.data.forEach((row) => {
+        likesCache.set(
+          row.video_id,
+          (likesCache.get(row.video_id) || 0) + 1
+        );
+
+        if (currentUser && row.user_id === currentUser.id) {
+          likedCache.add(row.video_id);
+        }
+      });
+    } else if (likesResult.error) {
+      console.error("Gagal mengambil data suka:", likesResult.error.message);
+    }
+
+    if (!viewsResult.error && viewsResult.data) {
+      viewsResult.data.forEach((row) => {
+        viewsCache.set(
+          row.video_id,
+          (viewsCache.get(row.video_id) || 0) + 1
+        );
+      });
+    } else if (viewsResult.error) {
+      console.error("Gagal mengambil data tayangan:", viewsResult.error.message);
+    }
+  }
+
+  // MEMBUAT KARTU VIDEO
+  function createVideoCard(video, isOwn = false) {
+    const likeCount = likesCache.get(video.id) || 0;
+    const viewCount = viewsCache.get(video.id) || 0;
+    const isLiked = likedCache.has(video.id);
+
     const card = document.createElement("article");
     card.className = "video-card";
+    card.dataset.videoId = video.id;
 
-    const video = document.createElement("video");
-    video.controls = true;
-    video.playsInline = true;
-    video.preload = "metadata";
-    video.src = storageUrl(item.video_path);
-    video.setAttribute("aria-label", item.title || "Video GiriShorts");
+    const player = document.createElement("video");
+    player.className = "video-player";
+    player.controls = true;
+    player.preload = "metadata";
+    player.playsInline = true;
+    player.src = getVideoUrl(video.video_path);
+    player.setAttribute("aria-label", video.title || "Video GiriShorts");
 
     const info = document.createElement("div");
     info.className = "video-info";
 
     const title = document.createElement("div");
     title.className = "video-title";
-    title.textContent = item.title || "Video tanpa judul";
+    title.textContent = video.title || "Video tanpa judul";
 
     const meta = document.createElement("div");
     meta.className = "video-meta";
-    meta.textContent = "Diunggah " + formatDate(item.created_at);
+    meta.textContent = "Diunggah " + formatDate(video.created_at);
 
-    info.append(title, meta);
+    const stats = document.createElement("div");
+    stats.className = "video-stats";
 
-    if (ownVideo && currentUser && item.user_id === currentUser.id) {
-      const remove = document.createElement("button");
-      remove.className = "secondary";
-      remove.style.marginTop = "12px";
-      remove.textContent = "Hapus video";
+    const likeButton = document.createElement("button");
+    likeButton.type = "button";
+    likeButton.className = "like-btn" + (isLiked ? " liked" : "");
+    likeButton.dataset.action = "like";
+    likeButton.textContent = (isLiked ? "❤️" : "🤍") +
+      " Suka " + likeCount;
+    likeButton.setAttribute(
+      "aria-pressed",
+      isLiked ? "true" : "false"
+    );
 
-      remove.addEventListener("click", () => deleteVideo(item, remove));
-      info.appendChild(remove);
+    const views = document.createElement("span");
+    views.dataset.viewCount = video.id;
+    views.textContent = "👁️ " + viewCount + " tayangan";
+
+    stats.append(likeButton, views);
+
+    info.append(title, meta, stats);
+
+    if (isOwn) {
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.className = "delete-btn";
+      deleteButton.dataset.action = "delete";
+      deleteButton.textContent = "🗑️ Hapus video";
+      info.appendChild(deleteButton);
     }
 
-    card.append(video, info);
+    card.append(player, info);
+
+    // Catat satu tayangan ketika video mulai diputar.
+    player.addEventListener("play", async () => {
+      if (viewedThisSession.has(video.id)) return;
+
+      viewedThisSession.add(video.id);
+
+      const { error } = await db
+        .from("video_views")
+        .insert({ video_id: video.id });
+
+      if (error) {
+        viewedThisSession.delete(video.id);
+        console.error("Gagal mencatat tayangan:", error.message);
+        return;
+      }
+
+      const newCount = (viewsCache.get(video.id) || 0) + 1;
+      viewsCache.set(video.id, newCount);
+
+      document.querySelectorAll(
+        '[data-view-count="' + video.id + '"]'
+      ).forEach((element) => {
+        element.textContent = "👁️ " + newCount + " tayangan";
+      });
+    });
+
+    likeButton.addEventListener("click", () => toggleLike(video.id));
+
+    const deleteButton = card.querySelector('[data-action="delete"]');
+
+    if (deleteButton) {
+      deleteButton.addEventListener("click", () => deleteVideo(video));
+    }
+
     return card;
   }
 
+  // TAMPILKAN KARTU VIDEO
+  function renderVideoList(container, videos, isOwn = false) {
+    container.replaceChildren();
+
+    if (!videos.length) {
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = isOwn
+        ? "Kamu belum mengunggah video."
+        : "Belum ada video. Jadilah yang pertama mengunggah!";
+      container.appendChild(empty);
+      return;
+    }
+
+    videos.forEach((video) => {
+      container.appendChild(createVideoCard(video, isOwn));
+    });
+  }
+
+  // MEMUAT BERANDA
   async function loadFeed() {
-    if (feedLoading) return;
-    feedLoading = true;
+    const container = $("videoFeed");
 
-    const feed = $("feed");
-    feed.replaceChildren();
-
-    const loading = document.createElement("div");
-    loading.className = "empty";
-    loading.textContent = "Memuat video terbaru...";
-    feed.appendChild(loading);
+    container.innerHTML =
+      '<div class="empty-state">Memuat video...</div>';
 
     try {
       const { data, error } = await db
@@ -650,46 +1048,33 @@
 
       if (error) throw error;
 
-      feed.replaceChildren();
+      videosCache = data || [];
 
-      if (!data || data.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent =
-          "Belum ada video. Jadilah orang pertama yang mengunggah video!";
-        feed.appendChild(empty);
-        return;
-      }
+      await loadVideoStats(videosCache.map((video) => video.id));
 
-      data.forEach(item => feed.appendChild(createVideoCard(item)));
+      renderVideoList(container, videosCache, false);
     } catch (error) {
-      feed.replaceChildren();
-      const empty = document.createElement("div");
-      empty.className = "notice error";
-      empty.textContent =
-        "Gagal memuat video: " + readableError(error);
-      feed.appendChild(empty);
-    } finally {
-      feedLoading = false;
+      container.replaceChildren();
+
+      const message = document.createElement("div");
+      message.className = "empty-state";
+      message.textContent = "Gagal memuat video: " + error.message;
+      container.appendChild(message);
     }
   }
 
+  // MEMUAT VIDEO MILIK PENGGUNA
   async function loadMyVideos() {
-    const container = $("myVideos");
-    container.replaceChildren();
+    const container = $("myVideoList");
 
     if (!currentUser) {
-      const empty = document.createElement("div");
-      empty.className = "empty";
-      empty.textContent = "Masuk ke akun untuk melihat video milikmu.";
-      container.appendChild(empty);
+      container.innerHTML =
+        '<div class="empty-state">Masuk ke akun untuk melihat video kamu.</div>';
       return;
     }
 
-    const loading = document.createElement("div");
-    loading.className = "empty";
-    loading.textContent = "Memuat video milikmu...";
-    container.appendChild(loading);
+    container.innerHTML =
+      '<div class="empty-state">Memuat video kamu...</div>';
 
     try {
       const { data, error } = await db
@@ -700,174 +1085,149 @@
 
       if (error) throw error;
 
-      container.replaceChildren();
+      const myVideos = data || [];
 
-      if (!data || data.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent =
-          "Kamu belum mengunggah video. Yuk, mulai berkarya!";
-        container.appendChild(empty);
-        return;
-      }
+      // Ambil statistik semua video di daftar ini.
+      await loadVideoStats(myVideos.map((video) => video.id));
 
-      data.forEach(item =>
-        container.appendChild(createVideoCard(item, true))
-      );
+      renderVideoList(container, myVideos, true);
     } catch (error) {
       container.replaceChildren();
-      const notice = document.createElement("div");
-      notice.className = "notice error";
-      notice.textContent = readableError(error);
-      container.appendChild(notice);
+
+      const message = document.createElement("div");
+      message.className = "empty-state";
+      message.textContent = "Gagal memuat video: " + error.message;
+      container.appendChild(message);
     }
   }
 
-  async function deleteVideo(item, button) {
-    if (!currentUser || item.user_id !== currentUser.id) {
-      alert("Kamu hanya bisa menghapus video milikmu.");
+  // SUKA DAN BATAL SUKA
+  async function toggleLike(videoId) {
+    if (!currentUser) {
+      showNotice("Masuk ke akun terlebih dahulu untuk menyukai video.", "error");
+      showTab("accountTab");
       return;
     }
 
-    if (!confirm("Yakin ingin menghapus video ini?")) return;
+    if (busyLikes.has(videoId)) return;
 
-    button.disabled = true;
+    busyLikes.add(videoId);
+
+    const wasLiked = likedCache.has(videoId);
 
     try {
-      const { error: storageError } = await db.storage
+      let error;
+
+      if (wasLiked) {
+        ({ error } = await db
+          .from("video_likes")
+          .delete()
+          .eq("video_id", videoId)
+          .eq("user_id", currentUser.id));
+      } else {
+        ({ error } = await db
+          .from("video_likes")
+          .insert({
+            video_id: videoId,
+            user_id: currentUser.id
+          }));
+      }
+
+      if (error) throw error;
+
+      if (wasLiked) {
+        likedCache.delete(videoId);
+        likesCache.set(
+          videoId,
+          Math.max(0, (likesCache.get(videoId) || 0) - 1)
+        );
+      } else {
+        likedCache.add(videoId);
+        likesCache.set(
+          videoId,
+          (likesCache.get(videoId) || 0) + 1
+        );
+      }
+
+      // Perbarui tombol pada beranda dan halaman Video Saya.
+      document.querySelectorAll(".video-card").forEach((card) => {
+        if (card.dataset.videoId !== videoId) return;
+
+        const button = card.querySelector('[data-action="like"]');
+        if (!button) return;
+
+        const liked = likedCache.has(videoId);
+        const count = likesCache.get(videoId) || 0;
+
+        button.classList.toggle("liked", liked);
+        button.textContent = (liked ? "❤️" : "🤍") + " Suka " + count;
+        button.setAttribute("aria-pressed", liked ? "true" : "false");
+      });
+    } catch (error) {
+      showNotice("Gagal memperbarui suka: " + error.message, "error");
+    } finally {
+      busyLikes.delete(videoId);
+    }
+  }
+
+  // HAPUS VIDEO MILIK SENDIRI
+  async function deleteVideo(video) {
+    if (!currentUser || video.user_id !== currentUser.id) {
+      showNotice("Kamu hanya bisa menghapus video milik sendiri.", "error");
+      return;
+    }
+
+    const confirmed = confirm(
+      'Yakin ingin menghapus video "' + video.title + '"?'
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const { error: storageError } = await db
+        .storage
         .from(BUCKET)
-        .remove([item.video_path]);
+        .remove([video.video_path]);
 
       if (storageError) throw storageError;
 
       const { error: rowError } = await db
         .from("videos")
         .delete()
-        .eq("id", item.id)
+        .eq("id", video.id)
         .eq("user_id", currentUser.id);
 
-      if (rowError) throw rowError;
-
-      await loadMyVideos();
-      await loadFeed();
-    } catch (error) {
-      alert("Gagal menghapus video: " + readableError(error));
-      button.disabled = false;
-    }
-  }
-
-  async function uploadVideo(event) {
-    event.preventDefault();
-
-    if (!currentUser) {
-      message("uploadMessage", "Masuk terlebih dahulu.", "error");
-      return;
-    }
-
-    const file = $("videoFile").files[0];
-    const title = $("videoTitle").value.trim();
-
-    if (!file) {
-      message("uploadMessage", "Pilih file video terlebih dahulu.", "error");
-      return;
-    }
-
-    if (file.size > MAX_SIZE) {
-      message("uploadMessage", "Ukuran video maksimal 50 MB.", "error");
-      return;
-    }
-
-    const allowedTypes = [
-      "video/mp4",
-      "video/webm",
-      "video/quicktime"
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-      message(
-        "uploadMessage",
-        "Format belum didukung. Gunakan MP4, WebM, atau MOV.",
-        "error"
-      );
-      return;
-    }
-
-    const extensions = {
-      "video/mp4": "mp4",
-      "video/webm": "webm",
-      "video/quicktime": "mov"
-    };
-
-    const ext = extensions[file.type];
-    const path = currentUser.id + "/" +
-      crypto.randomUUID() + "." + ext;
-
-    $("uploadBtn").disabled = true;
-    message("uploadMessage", "Mengunggah video. Mohon tunggu...");
-
-    let uploaded = false;
-
-    try {
-      const { error: uploadError } = await db.storage
-        .from(BUCKET)
-        .upload(path, file, {
-          contentType: file.type,
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-      uploaded = true;
-
-      const { error: insertError } = await db
-        .from("videos")
-        .insert({
-          user_id: currentUser.id,
-          title: title || "Video tanpa judul",
-          video_path: path
-        });
-
-      if (insertError) throw insertError;
-
-      $("uploadForm").reset();
-      message("uploadMessage", "Video berhasil diunggah!", "success");
-
-      await loadFeed();
-      await loadMyVideos();
-      showTab("homeTab");
-    } catch (error) {
-      // Jika penyimpanan berhasil tetapi pencatatan gagal,
-      // coba bersihkan file yang tidak memiliki catatan.
-      if (uploaded) {
-        await db.storage.from(BUCKET).remove([path]);
+      if (rowError) {
+        showNotice(
+          "File video sudah dihapus, tetapi data video gagal dihapus: " +
+          rowError.message,
+          "error"
+        );
+        return;
       }
 
-      message(
-        "uploadMessage",
-        "Unggah gagal: " + readableError(error),
-        "error"
-      );
-    } finally {
-      $("uploadBtn").disabled = false;
+      showNotice("Video berhasil dihapus.", "success");
+
+      await loadFeed();
+      await loadMyVideos();
+    } catch (error) {
+      showNotice("Gagal menghapus video: " + error.message, "error");
     }
   }
 
-  $("authForm").addEventListener("submit", event => {
-    event.preventDefault();
-    signIn();
-  });
+  // TOMBOL MUAT ULANG
+  $("refreshFeedBtn").addEventListener("click", loadFeed);
 
-  $("signupBtn").addEventListener("click", signUp);
-  $("logoutBtn").addEventListener("click", signOut);
-  $("uploadForm").addEventListener("submit", uploadVideo);
+  // MULAI APLIKASI
+  async function startApp() {
+    await refreshSession();
+    updateAccountUI();
+    await loadFeed();
+    await loadMyVideos();
+  }
 
-  db.auth.onAuthStateChange((_event, session) => {
-    currentUser = session?.user || null;
-    refreshAuth();
-  });
-
-  refreshAuth();
-  loadFeed();
-})();
+  startApp();
 </script>
+
 </body>
 </html>

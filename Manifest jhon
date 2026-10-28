@@ -1,0 +1,14 @@
+
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "GiriShorts",
+  "orientation": "any",
+  "scope": "/Girishorts/",
+  "short_name": "GiriShorts",
+  "start_url": "/Girishorts/",
+  "theme_color": "#0b0b0f",
+  "id": "/Girishorts/",
+  "description": "GiriShorts adalah platform video pendek untuk menonton, berbagi, dan menemukan konten kreatif. Jelajahi video menarik, berinteraksi dengan kreator, dan nikmati komunitas video dalam satu aplikasi."
+}

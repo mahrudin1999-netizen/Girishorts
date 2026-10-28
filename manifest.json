@@ -9,6 +9,7 @@
   "video"
 ],
   "id": "/Girishorts/",
+  "prefer_related_applications": false,
   "start_url": "/Girishorts/",
   "scope": "/Girishorts/",
   "display": "standalone",

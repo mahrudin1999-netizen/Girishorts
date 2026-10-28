@@ -1,708 +1,1211 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <title>GiriShorts</title>
-<meta name="description" content="GiriShorts adalah platform video pendek untuk menonton, berbagi, dan menemukan konten kreatif.">
-<link rel="manifest" href="/Girishorts/manifest.json">
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0b0b0f">
-  <meta name="description" content="GiriShorts, platform video pendek untuk berbagi dan menemukan kreativitas.">
-  <meta name="mobile-web-app-capable" content="yes">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101010">
+  <meta name="description" content="GiriShorts, ruang kreator untuk membuat dan berbagi ide konten.">
   <title>GiriShorts</title>
   <link rel="manifest" href="/Girishorts/manifest.json">
 
   <style>
     :root {
-      --bg: #0b0b0f;
-      --panel: #191922;
+      --bg: #101010;
+      --panel: #1b1b1b;
+      --panel2: #242424;
       --text: #ffffff;
-      --muted: #aaaaba;
-      --pink: #ff3158;
-      --purple: #8b5cf6;
+      --muted: #a5a5a5;
+      --accent: #ff3158;
+      --border: #333333;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       margin: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: system-ui, Arial, sans-serif;
-      padding-bottom: 78px;
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
     }
 
-    button, input, textarea { font: inherit; }
-    button { cursor: pointer; color: white; }
+    button, input, textarea {
+      font: inherit;
+    }
 
-    header {
+    button {
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 760px;
+      min-height: 100vh;
+      margin: 0 auto;
+      padding-bottom: 86px;
+    }
+
+    .topbar {
       position: sticky;
       top: 0;
       z-index: 10;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 15px;
-      background: rgba(11,11,15,.95);
-      border-bottom: 1px solid #292934;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 15px 18px;
+      background: rgba(16, 16, 16, 0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
     }
 
     .brand {
+      margin: 0;
       font-size: 23px;
       font-weight: 900;
       letter-spacing: -1px;
     }
 
-    .brand span { color: var(--pink); }
-
-    .header-btn {
-      background: var(--panel);
-      border: 1px solid #333341;
-      border-radius: 12px;
-      padding: 9px 12px;
+    .brand span {
+      color: var(--accent);
     }
 
-    .tabs {
+    .top-actions {
       display: flex;
-      justify-content: center;
-      gap: 25px;
-      padding: 14px;
-      position: sticky;
-      top: 58px;
-      background: rgba(11,11,15,.95);
-      z-index: 5;
+      gap: 8px;
     }
 
-    .tab {
-      background: none;
-      border: none;
-      color: var(--muted);
-      padding: 5px;
-    }
-
-    .tab.active {
+    .icon-button {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--panel);
       color: white;
-      font-weight: 800;
-      border-bottom: 3px solid var(--pink);
+      font-size: 18px;
+    }
+
+    main {
+      padding: 18px;
     }
 
     .page {
       display: none;
-      padding: 14px;
-      max-width: 600px;
-      margin: auto;
+      animation: appear 0.2s ease;
     }
 
-    .page.active { display: block; }
+    .page.active {
+      display: block;
+    }
 
-    .video-card {
-      height: min(68dvh, 650px);
-      min-height: 410px;
-      position: relative;
-      overflow: hidden;
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h2 {
+      margin: 4px 0 8px;
+      font-size: 25px;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+    }
+
+    p {
+      line-height: 1.55;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .hero {
+      padding: 23px;
+      border: 1px solid #47212a;
       border-radius: 22px;
-      margin-bottom: 18px;
       background:
-        radial-gradient(circle at 70% 25%, #9d426d, transparent 30%),
-        radial-gradient(circle at 20% 80%, #513d8e, transparent 35%),
-        linear-gradient(145deg, #292238, #101016);
+        radial-gradient(circle at 90% 10%, #612333 0, transparent 42%),
+        linear-gradient(135deg, #272020, #171717 70%);
     }
 
-    .video-art {
-      position: absolute;
-      inset: 0;
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 20px;
+      background: #392029;
+      color: #ff8ba1;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .hero h2 {
+      max-width: 440px;
+      font-size: clamp(27px, 7vw, 39px);
+      line-height: 1.13;
+    }
+
+    .hero p {
+      color: #d0c6c8;
+    }
+
+    .primary-button,
+    .secondary-button,
+    .danger-button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: bold;
+    }
+
+    .primary-button {
+      background: var(--accent);
+      color: white;
+    }
+
+    .secondary-button {
+      background: var(--panel2);
+      color: white;
+      border: 1px solid var(--border);
+    }
+
+    .danger-button {
+      background: #49202a;
+      color: #ff9bab;
+    }
+
+    .section-heading {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
+      gap: 12px;
+      margin: 25px 0 13px;
+    }
+
+    .section-heading h3 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .text-button {
+      padding: 6px;
+      background: transparent;
+      border: 0;
+      color: #ff8198;
+      font-weight: bold;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .stat {
+      padding: 15px 10px;
+      border-radius: 15px;
+      background: var(--panel);
+      border: 1px solid var(--border);
       text-align: center;
-      padding: 25px;
     }
 
-    .video-art .emoji { font-size: 75px; }
-
-    .video-art h2 {
-      font-size: clamp(25px, 7vw, 38px);
-      line-height: 1.1;
-      margin: 14px 0;
+    .stat strong {
+      display: block;
+      font-size: 21px;
+      margin-bottom: 5px;
     }
 
-    .video-art p {
-      font-size: 11px;
-      letter-spacing: 3px;
-      color: #e0d9ed;
+    .stat span {
+      font-size: 12px;
+      color: var(--muted);
     }
 
-    .shade {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(transparent 40%, rgba(0,0,0,.85));
-      pointer-events: none;
+    .post-list {
+      display: grid;
+      gap: 13px;
     }
 
-    .play {
-      position: absolute;
-      top: 43%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #0007;
-      border: 1px solid #ffffff44;
-      border-radius: 50%;
-      width: 55px;
-      height: 55px;
-      font-size: 22px;
+    .post {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: var(--panel);
+      overflow-wrap: anywhere;
     }
 
-    .video-info {
-      position: absolute;
-      left: 15px;
-      right: 75px;
-      bottom: 20px;
-    }
-
-    .creator {
+    .post-top {
       display: flex;
       align-items: center;
-      gap: 9px;
-      font-weight: 800;
-      margin-bottom: 10px;
+      gap: 10px;
+      margin-bottom: 12px;
     }
 
     .avatar {
-      width: 37px;
-      height: 37px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--pink), var(--purple));
-      border: 2px solid white;
-    }
-
-    .follow {
-      background: var(--pink);
-      border: 0;
-      border-radius: 8px;
-      padding: 6px 9px;
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .caption { font-size: 13px; line-height: 1.5; }
-
-    .actions {
-      position: absolute;
-      right: 10px;
-      bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 17px;
-      align-items: center;
-    }
-
-    .action {
-      border: 0;
-      background: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-    }
-
-    .bubble {
       display: grid;
       place-items: center;
       width: 42px;
       height: 42px;
-      background: #22222dcc;
-      border: 1px solid #ffffff22;
+      flex: 0 0 42px;
       border-radius: 50%;
-      font-size: 21px;
+      background: linear-gradient(135deg, #ff3158, #7b2045);
+      font-weight: 900;
     }
 
-    .liked .bubble { color: var(--pink); }
+    .post-author {
+      font-weight: bold;
+    }
 
-    h1 { font-size: 25px; margin-bottom: 6px; }
-
-    .muted {
+    .post-time {
+      margin-top: 3px;
       color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
+      font-size: 12px;
     }
 
-    .search-row {
+    .post-content {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .post-action {
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #222;
+      color: #eeeeee;
+      font-size: 13px;
+    }
+
+    .post-action.liked {
+      color: #ff6e8b;
+      border-color: #8a3448;
+    }
+
+    .search-box {
       display: flex;
       gap: 8px;
       margin: 18px 0;
     }
 
-    input, textarea, select {
+    .search-box input,
+    .field,
+    .composer {
       width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
       background: var(--panel);
-      border: 1px solid #383845;
       color: white;
-      border-radius: 12px;
-      padding: 12px;
     }
 
-    .primary {
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 15px;
-      background: linear-gradient(135deg, var(--pink), #db2777);
-      font-weight: 800;
+    .composer {
+      min-height: 180px;
+      resize: vertical;
+      line-height: 1.6;
     }
 
-    .categories {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 10px;
-      margin-top: 18px;
+    .field-label {
+      display: block;
+      margin: 18px 0 8px;
+      font-weight: bold;
     }
 
-    .category {
-      min-height: 140px;
-      padding: 15px;
+    .create-tools {
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border-radius: 17px;
-      background: linear-gradient(145deg,#3b2855,#191922);
-      border: 1px solid #ffffff12;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 13px 0;
     }
 
-    .category:nth-child(even) {
-      background: linear-gradient(145deg,#582637,#191922);
-    }
-
-    .category .emoji { font-size: 35px; }
-    .category strong { font-size: 17px; }
-
-    .upload-box {
-      margin-top: 18px;
-      padding: 22px 15px;
-      border: 1px dashed #555568;
-      border-radius: 18px;
+    .profile-card {
+      padding: 24px 18px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--panel);
       text-align: center;
     }
 
-    .upload-box .emoji { font-size: 45px; }
-
-    .upload-box button { margin-top: 12px; }
-
-    video {
-      width: 100%;
-      max-height: 400px;
-      margin-top: 15px;
-      border-radius: 14px;
-      background: black;
-    }
-
-    .profile { text-align: center; padding-top: 25px; }
-
     .profile-avatar {
-      width: 85px;
-      height: 85px;
-      margin: auto;
+      width: 82px;
+      height: 82px;
+      margin: 0 auto 14px;
       display: grid;
       place-items: center;
-      font-size: 37px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff3158, #7b2045);
+      font-size: 32px;
       font-weight: 900;
-      border-radius: 28px;
-      background: linear-gradient(135deg,var(--pink),var(--purple));
     }
 
-    .stats {
+    .profile-name {
+      margin: 0;
+      font-size: 23px;
+    }
+
+    .profile-bio {
+      color: var(--muted);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .empty-state {
+      padding: 28px 15px;
+      border: 1px dashed #454545;
+      border-radius: 16px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .settings-card {
+      margin-top: 18px;
+      padding: 17px;
+      border-radius: 16px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+    }
+
+    .settings-row {
       display: flex;
-      justify-content: center;
-      gap: 35px;
-      margin: 24px 0;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
     }
 
-    .stats strong { display: block; font-size: 19px; }
-    .stats span { color: var(--muted); font-size: 12px; }
-
-    .notice {
-      padding: 12px;
-      border-radius: 12px;
-      background: #8b5cf61b;
-      border: 1px solid #8b5cf644;
-      font-size: 12px;
-      line-height: 1.5;
-      margin-top: 17px;
+    .settings-row:last-child {
+      border-bottom: 0;
     }
 
     .bottom-nav {
       position: fixed;
       z-index: 20;
       bottom: 0;
-      left: 0;
-      right: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 760px;
       display: grid;
-      grid-template-columns: repeat(5,1fr);
-      padding: 9px 5px calc(9px + env(safe-area-inset-bottom, 0px));
-      background: #111118f5;
-      border-top: 1px solid #333340;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      padding: 9px 5px calc(9px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--border);
+      background: rgba(20, 20, 20, 0.97);
+      backdrop-filter: blur(12px);
     }
 
-    .nav-item {
-      border: 0;
-      background: none;
-      color: #9292a3;
+    .nav-button {
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 4px;
-      font-size: 10px;
+      min-width: 0;
+      padding: 5px 2px;
+      border: 0;
+      background: transparent;
+      color: #a5a5a5;
+      font-size: 11px;
     }
 
-    .nav-item .symbol { font-size: 22px; }
-    .nav-item.active { color: white; }
-    .nav-item.active .symbol { color: var(--pink); }
+    .nav-icon {
+      font-size: 21px;
+      line-height: 1.2;
+    }
 
-    #toast {
+    .nav-button.active {
+      color: #ff607c;
+      font-weight: bold;
+    }
+
+    .toast {
       position: fixed;
-      z-index: 40;
-      bottom: 90px;
+      z-index: 50;
       left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      color: #111;
+      bottom: 95px;
+      transform: translate(-50%, 12px);
+      width: max-content;
+      max-width: calc(100% - 32px);
+      padding: 12px 16px;
+      border: 1px solid #444;
       border-radius: 12px;
-      padding: 11px 15px;
+      background: #292929;
+      color: white;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .footer-note {
+      margin-top: 24px;
+      color: #777;
       font-size: 12px;
-      font-weight: 750;
-      display: none;
-      max-width: 90%;
       text-align: center;
     }
 
-    #toast.show { display: block; }
+    @media (min-width: 600px) {
+      main {
+        padding: 24px;
+      }
+    }
 
-    @media (min-width: 700px) {
-      .bottom-nav {
-        position: sticky;
-        max-width: 600px;
-        margin: 20px auto;
-        border: 1px solid #333340;
-        border-radius: 16px;
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation: none !important;
+        transition: none !important;
       }
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <div class="brand">Giri<span>Shorts</span></div>
-    <button class="header-btn" id="searchButton" aria-label="Cari">⌕ Cari</button>
-  </header>
+  <div class="app">
+    <header class="topbar">
+      <h1 class="brand">Giri<span>Shorts</span></h1>
+      <div class="top-actions">
+        <button class="icon-button" id="searchTop" aria-label="Cari" title="Cari">⌕</button>
+        <button class="icon-button" id="installButton" aria-label="Pasang aplikasi" title="Pasang aplikasi" hidden>⇩</button>
+      </div>
+    </header>
 
-  <div class="tabs" id="feedTabs">
-    <button class="tab" data-feed="following">Mengikuti</button>
-    <button class="tab active" data-feed="foryou">Untuk Kamu</button>
-    <button class="tab" data-feed="popular">Populer</button>
+    <main>
+      <!-- BERANDA -->
+      <section class="page active" id="page-home">
+        <div class="hero">
+          <span class="eyebrow">RUANG KREATOR</span>
+          <h2>Ide sederhana bisa menjadi karya luar biasa.</h2>
+          <p>Tempat menyimpan ide, menulis kata-kata, dan membangun kebiasaan berkarya.</p>
+          <button class="primary-button" data-go="create">＋ Mulai Berkarya</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <strong id="homePostCount">0</strong>
+            <span>Karya dibuat</span>
+          </div>
+          <div class="stat">
+            <strong id="homeLikeCount">0</strong>
+            <span>Suka</span>
+          </div>
+          <div class="stat">
+            <strong>∞</strong>
+            <span>Ide baru</span>
+          </div>
+        </div>
+
+        <div class="section-heading">
+          <h3>Inspirasi hari ini</h3>
+          <button class="text-button" id="newQuoteButton">Acak ↻</button>
+        </div>
+        <div class="post" id="quoteCard">
+          <p class="post-content" id="dailyQuote">Jangan sibuk membuktikan diri kepada semua orang. Bangun sesuatu yang membuat hidupmu lebih berarti.</p>
+        </div>
+
+        <div class="section-heading">
+          <h3>Karya terbaru</h3>
+          <button class="text-button" data-go="explore">Lihat semua</button>
+        </div>
+        <div class="post-list" id="homePosts"></div>
+      </section>
+
+      <!-- JELAJAHI -->
+      <section class="page" id="page-explore">
+        <h2>Jelajahi</h2>
+        <p class="muted">Temukan karya yang tersimpan di aplikasi ini.</p>
+
+        <div class="search-box">
+          <input id="searchInput" type="search" placeholder="Cari kata atau judul..." aria-label="Cari karya">
+          <button class="primary-button" id="clearSearch">Reset</button>
+        </div>
+
+        <div class="section-heading">
+          <h3>Semua karya</h3>
+          <span class="muted" id="exploreCount">0 karya</span>
+        </div>
+        <div class="post-list" id="explorePosts"></div>
+      </section>
+
+      <!-- BUAT -->
+      <section class="page" id="page-create">
+        <h2>Buat karya</h2>
+        <p class="muted">Tulis kata-kata, ide video, caption, atau catatan kreatifmu.</p>
+
+        <form id="createForm">
+          <label class="field-label" for="postTitle">Judul karya</label>
+          <input class="field" id="postTitle" maxlength="100" placeholder="Contoh: Kata-kata hari ini">
+
+          <label class="field-label" for="postCategory">Kategori</label>
+          <select class="field" id="postCategory">
+            <option value="Motivasi">Motivasi</option>
+            <option value="Kata-kata">Kata-kata</option>
+            <option value="Ide video">Ide video</option>
+            <option value="Caption">Caption</option>
+            <option value="Catatan">Catatan</option>
+          </select>
+
+          <label class="field-label" for="postContent">Isi karya *</label>
+          <textarea class="composer" id="postContent" maxlength="5000" required placeholder="Mulai menulis di sini..."></textarea>
+          <div class="muted" style="text-align:right;font-size:12px;margin-top:6px">
+            <span id="charCount">0</span>/5000
+          </div>
+
+          <div class="create-tools">
+            <button type="button" class="secondary-button" id="insertHashtags">＋ Hashtag</button>
+            <button type="button" class="secondary-button" id="clearDraft">Hapus tulisan</button>
+          </div>
+
+          <button class="primary-button" type="submit" style="width:100%;margin-top:8px">Simpan karya</button>
+        </form>
+
+        <p class="footer-note">Karya disimpan di perangkat ini melalui penyimpanan lokal browser.</p>
+      </section>
+
+      <!-- NOTIFIKASI -->
+      <section class="page" id="page-notifications">
+        <h2>Aktivitas</h2>
+        <p class="muted">Informasi tentang aktivitas di aplikasi ini.</p>
+        <div class="post">
+          <div class="post-top">
+            <div class="avatar">G</div>
+            <div>
+              <div class="post-author">Selamat datang di GiriShorts!</div>
+              <div class="post-time">Pesan aplikasi</div>
+            </div>
+          </div>
+          <p>Mulai dengan membuat karya pertamamu. Karya yang kamu simpan akan muncul di Beranda dan Jelajahi pada perangkat ini.</p>
+        </div>
+        <div class="post">
+          <div class="post-top">
+            <div class="avatar">✦</div>
+            <div>
+              <div class="post-author">Tips kreator</div>
+              <div class="post-time">Inspirasi</div>
+            </div>
+          </div>
+          <p>Buat satu karya kecil setiap hari. Konsistensi membantu ide berkembang menjadi kebiasaan.</p>
+        </div>
+      </section>
+
+      <!-- PROFIL -->
+      <section class="page" id="page-profile">
+        <div class="profile-card">
+          <div class="profile-avatar" id="profileAvatar">G</div>
+          <h2 class="profile-name" id="profileNameDisplay">Kreator GiriShorts</h2>
+          <p class="profile-bio" id="profileBioDisplay">Terus berkarya, satu ide setiap hari.</p>
+          <button class="secondary-button" id="editProfileButton">Edit profil</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <strong id="profilePostCount">0</strong>
+            <span>Karya</span>
+          </div>
+          <div class="stat">
+            <strong id="profileLikeCount">0</strong>
+            <span>Suka</span>
+          </div>
+          <div class="stat">
+            <strong id="profileCategoryCount">0</strong>
+            <span>Kategori</span>
+          </div>
+        </div>
+
+        <div id="profileEditor" class="settings-card" hidden>
+          <h3>Edit profil</h3>
+          <label class="field-label" for="profileNameInput">Nama</label>
+          <input class="field" id="profileNameInput" maxlength="40" placeholder="Nama kreator">
+          <label class="field-label" for="profileBioInput">Bio</label>
+          <textarea class="field" id="profileBioInput" maxlength="180" rows="3" placeholder="Ceritakan tentang dirimu"></textarea>
+          <div class="create-tools">
+            <button class="primary-button" id="saveProfileButton" type="button">Simpan profil</button>
+            <button class="secondary-button" id="cancelProfileButton" type="button">Batal</button>
+          </div>
+        </div>
+
+        <div class="section-heading">
+          <h3>Karya saya</h3>
+        </div>
+        <div class="post-list" id="profilePosts"></div>
+
+        <div class="settings-card">
+          <h3>Pengaturan aplikasi</h3>
+          <div class="settings-row">
+            <div>
+              <strong>Pasang aplikasi</strong>
+              <div class="muted" style="font-size:12px;margin-top:4px">Jika browser mendukung instalasi</div>
+            </div>
+            <button class="secondary-button" id="installFromProfile">Pasang</button>
+          </div>
+          <div class="settings-row">
+            <div>
+              <strong>Ekspor karya</strong>
+              <div class="muted" style="font-size:12px;margin-top:4px">Simpan salinan sebagai file JSON</div>
+            </div>
+            <button class="secondary-button" id="exportButton">Ekspor</button>
+          </div>
+          <div class="settings-row">
+            <div>
+              <strong>Hapus semua karya</strong>
+              <div class="muted" style="font-size:12px;margin-top:4px">Tindakan ini tidak dapat dibatalkan</div>
+            </div>
+            <button class="danger-button" id="deleteAllButton">Hapus</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <button class="nav-button active" data-page="home">
+        <span class="nav-icon">⌂</span>
+        <span>Beranda</span>
+      </button>
+      <button class="nav-button" data-page="explore">
+        <span class="nav-icon">⌕</span>
+        <span>Jelajahi</span>
+      </button>
+      <button class="nav-button" data-page="create">
+        <span class="nav-icon">⊕</span>
+        <span>Buat</span>
+      </button>
+      <button class="nav-button" data-page="notifications">
+        <span class="nav-icon">♧</span>
+        <span>Aktivitas</span>
+      </button>
+      <button class="nav-button" data-page="profile">
+        <span class="nav-icon">♙</span>
+        <span>Profil</span>
+      </button>
+    </nav>
   </div>
 
-  <main>
-    <section class="page active" id="homePage">
-      <article class="video-card">
-        <div class="video-art">
-          <div class="emoji">🌄</div>
-          <p>GIRINATAN MOTIVASI</p>
-          <h2>Jangan menyerah sebelum waktunya.</h2>
-        </div>
-        <div class="shade"></div>
-        <button class="play" aria-label="Putar video">▶</button>
-        <div class="video-info">
-          <div class="creator">
-            <span class="avatar">G</span>
-            <span>@girinatan</span>
-            <button class="follow">Ikuti +</button>
-          </div>
-          <div class="caption">Langkah kecil hari ini bisa menjadi awal perubahan besar. 🔥 #GiriShorts</div>
-        </div>
-        <div class="actions">
-          <button class="action like"><span class="bubble">♥</span><span>1,2K</span></button>
-          <button class="action comment"><span class="bubble">▢</span><span>Komentar</span></button>
-          <button class="action share"><span class="bubble">↗</span><span>Bagikan</span></button>
-        </div>
-      </article>
-
-      <article class="video-card">
-        <div class="video-art" style="background:radial-gradient(circle at 70% 20%,#a65b4e,transparent 30%),linear-gradient(145deg,#432438,#101016)">
-          <div class="emoji">🌙</div>
-          <p>KATA-KATA KEHIDUPAN</p>
-          <h2>Tidak semua yang dekat, benar-benar peduli.</h2>
-        </div>
-        <div class="shade"></div>
-        <button class="play" aria-label="Putar video">▶</button>
-        <div class="video-info">
-          <div class="creator">
-            <span class="avatar">N</span>
-            <span>@netizen_jawa</span>
-            <button class="follow">Ikuti +</button>
-          </div>
-          <div class="caption">Lihat sikapnya saat kamu sedang tidak punya apa-apa. 🥀</div>
-        </div>
-        <div class="actions">
-          <button class="action like"><span class="bubble">♥</span><span>856</span></button>
-          <button class="action comment"><span class="bubble">▢</span><span>Komentar</span></button>
-          <button class="action share"><span class="bubble">↗</span><span>Bagikan</span></button>
-        </div>
-      </article>
-    </section>
-
-    <section class="page" id="discoverPage">
-      <h1>Jelajahi ✨</h1>
-      <p class="muted">Cari topik dan temukan hal baru.</p>
-      <form class="search-row" id="searchForm">
-        <input id="searchInput" placeholder="Cari topik..." aria-label="Cari topik">
-        <button class="primary">Cari</button>
-      </form>
-      <div class="categories" id="categories">
-        <div class="category" data-keywords="motivasi semangat"><span class="emoji">🔥</span><strong>Motivasi</strong></div>
-        <div class="category" data-keywords="kata kata renungan"><span class="emoji">🌙</span><strong>Kata-kata</strong></div>
-        <div class="category" data-keywords="gaming game"><span class="emoji">🎮</span><strong>Gaming</strong></div>
-        <div class="category" data-keywords="komedi lucu"><span class="emoji">😂</span><strong>Komedi</strong></div>
-        <div class="category" data-keywords="musik lagu"><span class="emoji">🎧</span><strong>Musik</strong></div>
-        <div class="category" data-keywords="kreator komunitas"><span class="emoji">🌟</span><strong>Kreator</strong></div>
-      </div>
-      <p class="muted" id="searchResult"></p>
-    </section>
-
-    <section class="page" id="uploadPage">
-      <h1>Buat video ＋</h1>
-      <p class="muted">Pilih video dari galeri HP untuk melihat pratinjau.</p>
-      <div class="upload-box">
-        <div class="emoji">🎬</div>
-        <h3>Pilih video kamu</h3>
-        <p class="muted">Pilih video dari perangkat Android kamu.</p>
-        <input type="file" id="videoFile" accept="video/*" hidden>
-        <button class="primary" id="chooseVideo">Pilih dari galeri</button>
-        <video id="videoPreview" controls playsinline hidden></video>
-        <p style="text-align:left;margin-top:20px">
-          <label for="captionInput">Caption video</label>
-          <textarea id="captionInput" rows="3" placeholder="Tulis caption..."></textarea>
-        </p>
-        <button class="primary" id="publishButton">Siapkan postingan</button>
-      </div>
-      <div class="notice">
-        Versi ini hanya menampilkan pratinjau video di HP. Video belum diunggah ke internet. Upload publik membutuhkan backend, database, dan penyimpanan video.
-      </div>
-    </section>
-
-    <section class="page" id="inboxPage">
-      <h1>Aktivitas ♡</h1>
-      <p class="muted">Notifikasi komunitas akan tampil di sini setelah fitur akun dan server aktif.</p>
-      <div class="notice">Belum ada aktivitas. Halaman ini masih berupa tampilan dasar.</div>
-    </section>
-
-    <section class="page" id="profilePage">
-      <div class="profile">
-        <div class="profile-avatar">G</div>
-        <h1>GiriShorts</h1>
-        <p class="muted">@girinatan · Kreator</p>
-        <p class="muted">Berbagi cerita, kreativitas, dan inspirasi dalam video pendek.</p>
-        <div class="stats">
-          <div><strong>0</strong><span>Mengikuti</span></div>
-          <div><strong>0</strong><span>Pengikut</span></div>
-          <div><strong id="videoCount">0</strong><span>Video</span></div>
-        </div>
-        <button class="primary" id="editProfile">Edit profil</button>
-        <div class="notice">Login dan data profil belum terhubung ke database.</div>
-      </div>
-    </section>
-  </main>
-
-  <nav class="bottom-nav" aria-label="Navigasi">
-    <button class="nav-item active" data-page="home"><span class="symbol">⌂</span>Beranda</button>
-    <button class="nav-item" data-page="discover"><span class="symbol">⌕</span>Jelajahi</button>
-    <button class="nav-item" data-page="upload"><span class="symbol">⊕</span>Buat</button>
-    <button class="nav-item" data-page="inbox"><span class="symbol">♡</span>Aktivitas</button>
-    <button class="nav-item" data-page="profile"><span class="symbol">◉</span>Profil</button>
-  </nav>
-
-  <div id="toast" role="status" aria-live="polite"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const toast = document.getElementById('toast');
-    let toastTimer;
+    (() => {
+      "use strict";
 
-    function notify(message) {
-      toast.textContent = message;
-      toast.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove('show'), 2300);
-    }
+      const STORAGE_KEYS = {
+        posts: "girishorts_posts_v2",
+        profile: "girishorts_profile_v2",
+        oldPosts: "girishorts_posts"
+      };
 
-    const pages = {
-      home: document.getElementById('homePage'),
-      discover: document.getElementById('discoverPage'),
-      upload: document.getElementById('uploadPage'),
-      inbox: document.getElementById('inboxPage'),
-      profile: document.getElementById('profilePage')
-    };
+      const quotes = [
+        "Jangan sibuk membuktikan diri kepada semua orang. Bangun sesuatu yang membuat hidupmu lebih berarti.",
+        "Tidak semua perjalanan harus ramai. Ada keberhasilan yang tumbuh dalam diam.",
+        "Konsistenlah saat belum ada yang melihat. Hasil akan berbicara pada waktunya.",
+        "Jangan ukur langkahmu dengan perjalanan orang lain. Setiap orang punya waktunya sendiri.",
+        "Kata-kata bisa menarik perhatian, tetapi tindakan yang membangun kepercayaan.",
+        "Berhenti menunggu sempurna. Mulailah, perbaiki, lalu tumbuh.",
+        "Bukan siapa yang paling cepat, melainkan siapa yang terus melangkah."
+      ];
 
-    function openPage(name) {
-      Object.entries(pages).forEach(([key, page]) => {
-        page.classList.toggle('active', key === name);
-      });
+      const $ = (selector) => document.querySelector(selector);
+      const $$ = (selector) => [...document.querySelectorAll(selector)];
 
-      document.querySelectorAll('.nav-item').forEach(button => {
-        button.classList.toggle('active', button.dataset.page === name);
-      });
+      let posts = loadPosts();
+      let profile = loadProfile();
+      let toastTimer = null;
+      let installPrompt = null;
 
-      document.getElementById('feedTabs').style.display =
-        name === 'home' ? 'flex' : 'none';
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    document.querySelectorAll('.nav-item').forEach(button => {
-      button.addEventListener('click', () => openPage(button.dataset.page));
-    });
-
-    document.getElementById('searchButton').addEventListener('click', () => {
-      openPage('discover');
-      setTimeout(() => document.getElementById('searchInput').focus(), 100);
-    });
-
-    document.querySelectorAll('.tab').forEach(button => {
-      button.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-        button.classList.add('active');
-        if (button.dataset.feed !== 'foryou') {
-          notify('Feed ini akan aktif setelah database terhubung.');
-        }
-      });
-    });
-
-    document.querySelectorAll('.like').forEach(button => {
-      button.addEventListener('click', () => {
-        button.classList.toggle('liked');
-        notify(button.classList.contains('liked') ? 'Video disukai ❤️' : 'Suka dibatalkan');
-      });
-    });
-
-    document.querySelectorAll('.comment').forEach(button => {
-      button.addEventListener('click', () => {
-        notify('Komentar online perlu dihubungkan ke database.');
-      });
-    });
-
-    document.querySelectorAll('.share').forEach(button => {
-      button.addEventListener('click', async () => {
+      function safeRead(key, fallback) {
         try {
-          if (navigator.share) {
-            await navigator.share({
-              title: 'GiriShorts',
-              text: 'Kunjungi GiriShorts',
-              url: location.href
-            });
-          } else {
-            notify('Salin alamat website dari browser untuk berbagi.');
-          }
+          const value = localStorage.getItem(key);
+          return value === null ? fallback : JSON.parse(value);
         } catch (error) {
-          // Pengguna mungkin membatalkan menu berbagi.
+          console.error("Gagal membaca penyimpanan:", error);
+          return fallback;
         }
-      });
-    });
-
-    document.querySelectorAll('.follow').forEach(button => {
-      button.addEventListener('click', () => {
-        const following = button.dataset.following === 'true';
-        button.dataset.following = String(!following);
-        button.textContent = following ? 'Ikuti +' : 'Diikuti ✓';
-        notify(following ? 'Berhenti mengikuti akun demo.' : 'Mengikuti akun demo.');
-      });
-    });
-
-    document.getElementById('searchForm').addEventListener('submit', event => {
-      event.preventDefault();
-      const query = document.getElementById('searchInput').value.trim().toLowerCase();
-      let count = 0;
-
-      document.querySelectorAll('.category').forEach(category => {
-        const text = (category.textContent + ' ' + category.dataset.keywords).toLowerCase();
-        const match = !query || text.includes(query);
-        category.hidden = !match;
-        if (match) count++;
-      });
-
-      document.getElementById('searchResult').textContent =
-        count ? count + ' kategori ditemukan.' : 'Tidak ada kategori yang cocok.';
-    });
-
-    let videoUrl = null;
-    const videoFile = document.getElementById('videoFile');
-    const videoPreview = document.getElementById('videoPreview');
-
-    document.getElementById('chooseVideo').addEventListener('click', () => videoFile.click());
-
-    videoFile.addEventListener('change', () => {
-      const file = videoFile.files[0];
-      if (!file) return;
-
-      if (!file.type.startsWith('video/')) {
-        notify('Silakan pilih file video.');
-        return;
       }
 
-      if (videoUrl) URL.revokeObjectURL(videoUrl);
-      videoUrl = URL.createObjectURL(file);
-      videoPreview.src = videoUrl;
-      videoPreview.hidden = false;
-      notify('Video siap dipratinjau di HP.');
-    });
+      function loadPosts() {
+        const value = safeRead(STORAGE_KEYS.posts, null);
+        if (Array.isArray(value)) return value;
 
-    document.getElementById('publishButton').addEventListener('click', () => {
-      if (!videoFile.files.length) {
-        notify('Pilih video terlebih dahulu.');
-        return;
+        // Coba gunakan karya dari versi lama jika formatnya sesuai.
+        const oldValue = safeRead(STORAGE_KEYS.oldPosts, []);
+        return Array.isArray(oldValue) ? oldValue : [];
       }
-      notify('Pratinjau siap. Upload online belum diaktifkan.');
-    });
 
-    document.getElementById('editProfile').addEventListener('click', () => {
-      notify('Edit profil memerlukan fitur akun dan database.');
-    });
+      function loadProfile() {
+        const value = safeRead(STORAGE_KEYS.profile, {});
+        return {
+          name: typeof value.name === "string" ? value.name : "Kreator GiriShorts",
+          bio: typeof value.bio === "string" ? value.bio : "Terus berkarya, satu ide setiap hari."
+        };
+      }
 
-    // Tombol pemasangan PWA tersedia jika browser mendukungnya.
-    let installEvent = null;
-    window.addEventListener('beforeinstallprompt', event => {
-      event.preventDefault();
-      installEvent = event;
-    });
+      function savePosts() {
+        try {
+          localStorage.setItem(STORAGE_KEYS.posts, JSON.stringify(posts));
+          return true;
+        } catch (error) {
+          console.error("Gagal menyimpan karya:", error);
+          showToast("Penyimpanan gagal. Periksa ruang penyimpanan perangkat.");
+          return false;
+        }
+      }
 
-    // Service worker akan aktif setelah file sw.js dibuat.
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Girishorts/sw.js').
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    try {
-      const registration =
-        await navigator.serviceWorker.register(
-          '/Girishorts/sw.js',
-          { scope: '/Girishorts/' }
-        );
+      function saveProfileData() {
+        try {
+          localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(profile));
+          return true;
+        } catch (error) {
+          console.error("Gagal menyimpan profil:", error);
+          showToast("Profil gagal disimpan.");
+          return false;
+        }
+      }
 
-      console.log(
-        'Service Worker berhasil didaftarkan:',
-        registration.scope
-      );
-    } catch (error) {
-      console.error(
-        'Pendaftaran Service Worker gagal:',
-        error
-      );
-    }
-  });
-}
+      function showToast(message) {
+        const toast = $("#toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+      }
 
+      function makeId() {
+        return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+      }
+
+      function escapeText(value) {
+        return String(value ?? "");
+      }
+
+      function switchPage(pageName) {
+        const validPages = ["home", "explore", "create", "notifications", "profile"];
+        if (!validPages.includes(pageName)) return;
+
+        $$(".page").forEach(page => page.classList.remove("active"));
+        const target = $("#page-" + pageName);
+        if (target) target.classList.add("active");
+
+        $$(".nav-button").forEach(button => {
+          const active = button.dataset.page === pageName;
+          button.classList.toggle("active", active);
+          if (active) button.setAttribute("aria-current", "page");
+          else button.removeAttribute("aria-current");
+        });
+
+        if (pageName === "profile") renderProfile();
+        if (pageName === "home") renderHome();
+        if (pageName === "explore") renderExplore();
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function createPostElement(post) {
+        const article = document.createElement("article");
+        article.className = "post";
+
+        const top = document.createElement("div");
+        top.className = "post-top";
+
+        const avatar = document.createElement("div");
+        avatar.className = "avatar";
+        avatar.textContent = (profile.name.trim()[0] || "G").toUpperCase();
+
+        const authorBlock = document.createElement("div");
+        const author = document.createElement("div");
+        author.className = "post-author";
+        author.textContent = profile.name;
+
+        const time = document.createElement("div");
+        time.className = "post-time";
+        time.textContent = `${post.category || "Karya"} · ${formatDate(post.createdAt)}`;
+
+        authorBlock.append(author, time);
+        top.append(avatar, authorBlock);
+        article.append(top);
+
+        if (post.title) {
+          const title = document.createElement("h3");
+          title.textContent = post.title;
+          article.append(title);
+        }
+
+        const content = document.createElement("p");
+        content.className = "post-content";
+        content.textContent = post.content || "";
+        article.append(content);
+
+        const actions = document.createElement("div");
+        actions.className = "post-actions";
+
+        const likeButton = document.createElement("button");
+        likeButton.className = "post-action" + (post.liked ? " liked" : "");
+        likeButton.textContent = post.liked ? `♥ Disukai (${post.likes || 1})` : `♡ Suka (${post.likes || 0})`;
+        likeButton.addEventListener("click", () => {
+          const index = posts.findIndex(item => item.id === post.id);
+          if (index < 0) return;
+
+          const item = posts[index];
+          item.liked = !item.liked;
+          item.likes = Math.max(0, Number(item.likes) || 0) + (item.liked ? 1 : -1);
+
+          if (savePosts()) {
+            renderAll();
+            showToast(item.liked ? "Karya ditandai suka." : "Suka dibatalkan.");
+          }
+        });
+
+        const copyButton = document.createElement("button");
+        copyButton.className = "post-action";
+        copyButton.textContent = "▣ Salin";
+        copyButton.addEventListener("click", () => {
+          const text = [post.title, post.content].filter(Boolean).join("\n\n");
+          copyText(text);
+        });
+
+        actions.append(likeButton, copyButton);
+
+        if (post.id) {
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "post-action";
+          deleteButton.textContent = "Hapus";
+          deleteButton.addEventListener("click", () => {
+            if (!confirm("Hapus karya ini?")) return;
+            posts = posts.filter(item => item.id !== post.id);
+            if (savePosts()) {
+              renderAll();
+              showToast("Karya dihapus.");
+            }
+          });
+          actions.append(deleteButton);
+        }
+
+        article.append(actions);
+        return article;
+      }
+
+      function formatDate(value) {
+        const date = value ? new Date(value) : new Date();
+        if (Number.isNaN(date.getTime())) return "Karya tersimpan";
+        return date.toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "short",
+          year: "numeric"
+        });
+      }
+
+      async function copyText(text) {
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.append(textarea);
+            textarea.select();
+            const copied = document.execCommand("copy");
+            textarea.remove();
+            if (!copied) throw new Error("Penyalinan tidak didukung");
+          }
+          showToast("Teks berhasil disalin.");
+        } catch (error) {
+          showToast("Tidak bisa menyalin otomatis. Coba pilih teksnya.");
+        }
+      }
+
+      function renderPostList(container, list, emptyMessage) {
+        container.replaceChildren();
+        if (!list.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty-state";
+          empty.textContent = emptyMessage;
+          container.append(empty);
+          return;
+        }
+
+        list.forEach(post => container.append(createPostElement(post)));
+      }
+
+      function renderHome() {
+        $("#homePostCount").textContent = posts.length;
+        $("#homeLikeCount").textContent = posts.reduce((sum, post) => sum + (Number(post.likes) || 0), 0);
+        renderPostList($("#homePosts"), posts.slice().reverse().slice(0, 5), "Belum ada karya. Tekan “Mulai Berkarya” untuk membuat karya pertamamu.");
+      }
+
+      function renderExplore() {
+        const query = $("#searchInput").value.trim().toLowerCase();
+        const filtered = posts.slice().reverse().filter(post => {
+          const text = `${post.title || ""} ${post.content || ""} ${post.category || ""}`.toLowerCase();
+          return text.includes(query);
+        });
+
+        $("#exploreCount").textContent = `${filtered.length} karya`;
+        renderPostList($("#explorePosts"), filtered, query ? "Karya yang cocok tidak ditemukan." : "Belum ada karya untuk dijelajahi. Buat karya pertamamu!");
+      }
+
+      function renderProfile() {
+        $("#profileNameDisplay").textContent = profile.name;
+        $("#profileBioDisplay").textContent = profile.bio;
+        $("#profileAvatar").textContent = (profile.name.trim()[0] || "G").toUpperCase();
+        $("#profilePostCount").textContent = posts.length;
+        $("#profileLikeCount").textContent = posts.reduce((sum, post) => sum + (Number(post.likes) || 0), 0);
+        $("#profileCategoryCount").textContent = new Set(posts.map(post => post.category || "Karya")).size;
+        renderPostList($("#profilePosts"), posts.slice().reverse(), "Kamu belum menyimpan karya.");
+      }
+
+      function renderAll() {
+        renderHome();
+        renderExplore();
+        renderProfile();
+      }
+
+      // Navigasi utama.
+      $$(".nav-button").forEach(button => {
+        button.addEventListener("click", () => switchPage(button.dataset.page));
       });
-    }
+
+      // Tombol yang menuju halaman tertentu.
+      $$("[data-go]").forEach(button => {
+        button.addEventListener("click", () => switchPage(button.dataset.go));
+      });
+
+      $("#searchTop").addEventListener("click", () => {
+        switchPage("explore");
+        $("#searchInput").focus();
+      });
+
+      $("#searchInput").addEventListener("input", renderExplore);
+
+      $("#clearSearch").addEventListener("click", () => {
+        $("#searchInput").value = "";
+        renderExplore();
+      });
+
+      // Buat dan simpan karya.
+      $("#postContent").addEventListener("input", () => {
+        $("#charCount").textContent = $("#postContent").value.length;
+      });
+
+      $("#createForm").addEventListener("submit", event => {
+        event.preventDefault();
+
+        const title = $("#postTitle").value.trim();
+        const content = $("#postContent").value.trim();
+        const category = $("#postCategory").value;
+
+        if (!content) {
+          showToast("Isi karya terlebih dahulu.");
+          $("#postContent").focus();
+          return;
+        }
+
+        const post = {
+          id: makeId(),
+          title,
+          content,
+          category,
+          createdAt: new Date().toISOString(),
+          likes: 0,
+          liked: false
+        };
+
+        posts.push(post);
+
+        if (!savePosts()) {
+          posts.pop();
+          return;
+        }
+
+        $("#createForm").reset();
+        $("#charCount").textContent = "0";
+        renderAll();
+        switchPage("home");
+        showToast("Karya berhasil disimpan!");
+      });
+
+      $("#clearDraft").addEventListener("click", () => {
+        if (!$("#postContent").value && !$("#postTitle").value) {
+          showToast("Tulisan sudah kosong.");
+          return;
+        }
+        if (!confirm("Hapus tulisan yang sedang kamu buat?")) return;
+        $("#postTitle").value = "";
+        $("#postContent").value = "";
+        $("#charCount").textContent = "0";
+        showToast("Tulisan dihapus.");
+      });
+
+      $("#insertHashtags").addEventListener("click", () => {
+        const textarea = $("#postContent");
+        const tags = "\n\n#GiriShorts #Kreator #KataKata #Motivasi #KontenKreatif";
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        textarea.setRangeText(tags, start, end, "end");
+        textarea.dispatchEvent(new Event("input"));
+        textarea.focus();
+      });
+
+      // Inspirasi harian.
+      $("#newQuoteButton").addEventListener("click", () => {
+        const current = $("#dailyQuote").textContent;
+        const options = quotes.filter(quote => quote !== current);
+        $("#dailyQuote").textContent = options[Math.floor(Math.random() * options.length)];
+      });
+
+      // Edit profil.
+      $("#editProfileButton").addEventListener("click", () => {
+        $("#profileNameInput").value = profile.name;
+        $("#profileBioInput").value = profile.bio;
+        $("#profileEditor").hidden = false;
+        $("#profileEditor").scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+
+      $("#saveProfileButton").addEventListener("click", () => {
+        const oldProfile = { ...profile };
+        profile = {
+          name: $("#profileNameInput").value.trim() || "Kreator GiriShorts",
+          bio: $("#profileBioInput").value.trim() || "Terus berkarya, satu ide setiap hari."
+        };
+
+        if (!saveProfileData()) {
+          profile = oldProfile;
+          return;
+        }
+
+        $("#profileEditor").hidden = true;
+        renderAll();
+        showToast("Profil berhasil diperbarui.");
+      });
+
+      $("#cancelProfileButton").addEventListener("click", () => {
+        $("#profileEditor").hidden = true;
+      });
+
+      // Ekspor karya sebagai JSON.
+      $("#exportButton").addEventListener("click", () => {
+        const data = {
+          app: "GiriShorts",
+          exportedAt: new Date().toISOString(),
+          profile,
+          posts
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: "application/json"
+        });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "girishorts-backup.json";
+        document.body.append(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast("File ekspor dibuat.");
+      });
+
+      // Hapus seluruh karya dengan konfirmasi.
+      $("#deleteAllButton").addEventListener("click", () => {
+        if (!posts.length) {
+          showToast("Belum ada karya yang perlu dihapus.");
+          return;
+        }
+
+        if (!confirm("Yakin menghapus SEMUA karya? Tindakan ini tidak bisa dibatalkan. Jika perlu, ekspor dulu karya kamu.")) return;
+
+        const previous = posts;
+        posts = [];
+
+        if (!savePosts()) {
+          posts = previous;
+          return;
+        }
+
+        renderAll();
+        showToast("Semua karya telah dihapus.");
+      });
+
+      // PWA: simpan permintaan instalasi jika browser menyediakannya.
+      window.addEventListener("beforeinstallprompt", event => {
+        event.preventDefault();
+        installPrompt = event;
+        $("#installButton").hidden = false;
+      });
+
+      async function installApp() {
+        if (installPrompt) {
+          installPrompt.prompt();
+          try {
+            await installPrompt.userChoice;
+          } catch (error) {
+            console.log("Pilihan instalasi tidak tersedia:", error);
+          }
+          installPrompt = null;
+          $("#installButton").hidden = true;
+        } else {
+          showToast("Jika sudah terpasang, buka dari layar utama. Jika belum, gunakan menu browser untuk menambahkan ke layar utama.");
+        }
+      }
+
+      $("#installButton").addEventListener("click", installApp);
+      $("#installFromProfile").addEventListener("click", installApp);
+
+      window.addEventListener("appinstalled", () => {
+        $("#installButton").hidden = true;
+        showToast("GiriShorts berhasil dipasang.");
+      });
+
+      // Daftarkan Service Worker dengan jalur GitHub Pages yang benar.
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", async () => {
+          try {
+            const registration = await navigator.serviceWorker.register(
+              "/Girishorts/sw.js",
+              { scope: "/Girishorts/" }
+            );
+            console.log("Service Worker terdaftar:", registration.scope);
+          } catch (error) {
+            console.error("Pendaftaran Service Worker gagal:", error);
+          }
+        });
+      }
+
+      // Tampilkan konten saat aplikasi pertama kali dibuka.
+      renderAll();
+    })();
   </script>
 </body>
 </html>

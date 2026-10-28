@@ -46,6 +46,33 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+      "shortcuts": [
+  {
+    "name": "Beranda",
+    "short_name": "Beranda",
+    "description": "Buka halaman utama GiriShorts",
+    "url": "/Girishorts/",
+    "icons": [
+      {
+        "src": "/Girishorts/icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      }
+    ]
+  },
+  {
+    "name": "Jelajahi Video",
+    "short_name": "Jelajahi",
+    "description": "Buka halaman untuk menjelajahi video",
+    "url": "/Girishorts/?page=explore"
+  },
+  {
+    "name": "Profil",
+    "short_name": "Profil",
+    "description": "Buka halaman profil pengguna",
+    "url": "/Girishorts/?page=profile"
+  }
+],
     }
   ]
 }

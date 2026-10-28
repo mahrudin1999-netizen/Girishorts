@@ -1314,228 +1314,305 @@ startApp();
   // FITUR KOMENTAR GIRISHORTS
   
   // FITUR KOMENTAR DAN BALASAN GIRISHORTS 4.0
-  async function loadComments(videoId, container) {
-    container.replaceChildren();
 
-    const heading = document.createElement("div");
-    heading.textContent = "💬 Komentar";
-    heading.style.fontWeight = "800";
-    heading.style.marginBottom = "12px";
-    container.appendChild(heading);
+async function loadComments(videoId, container) {
+  container.replaceChildren();
 
-    const list = document.createElement("div");
-    list.textContent = "Memuat komentar...";
-    container.appendChild(list);
+  const heading = document.createElement("div");
+  heading.textContent = "💬 Komentar";
+  heading.style.fontWeight = "800";
+  heading.style.marginBottom = "12px";
+  container.appendChild(heading);
 
-    try {
-      const { data, error } = await db
-        .from("video_comments")
-        .select("id, user_id, content, created_at, parent_comment_id")
-        .eq("video_id", videoId)
-        .order("created_at", { ascending: true })
-        .limit(500);
+  const list = document.createElement("div");
+  list.textContent = "Memuat komentar...";
+  container.appendChild(list);
 
-      if (error) throw error;
+  const defaultAvatar =
+    "https://placehold.co/80x80/202020/ffffff?text=User";
 
-      const comments = data || [];
-      list.replaceChildren();
+  try {
+    // 1. Ambil komentar dan balasan
+    const { data, error } = await db
+      .from("video_comments")
+      .select("id, user_id, content, created_at, parent_comment_id")
+      .eq("video_id", videoId)
+      .order("created_at", { ascending: true })
+      .limit(500);
 
-      const topLevel = comments.filter(
-        (comment) => !comment.parent_comment_id
-      );
+    if (error) throw error;
 
-      if (!topLevel.length) {
-        const empty = document.createElement("p");
-        empty.className = "small-note";
-        empty.textContent = "Belum ada komentar. Jadilah yang pertama!";
-        list.appendChild(empty);
-      }
+    const comments = data || [];
+    const userIds = [
+      ...new Set(comments.map((c) => c.user_id).filter(Boolean))
+    ];
 
-      function renderComment(comment, parentElement, depth = 0) {
-        const item = document.createElement("div");
-        item.style.borderTop = "1px solid #303030";
-        item.style.padding = "12px 0";
-        item.style.marginLeft = depth ? "16px" : "0";
+    // 2. Ambil nama dan foto profil para komentator
+    const profilesMap = new Map();
 
-        const author = document.createElement("div");
-        author.style.fontSize = "12px";
-        author.style.color = "#ff6472";
-        author.style.marginBottom = "6px";
-        author.textContent =
-          currentUser && comment.user_id === currentUser.id
-            ? "Kamu"
-            : "Pengguna GiriShorts";
+    if (userIds.length > 0) {
+      const { data: profiles, error: profileError } = await db
+        .from("profiles")
+        .select("id, username, avatar_url")
+        .in("id", userIds);
 
-        const content = document.createElement("div");
-        content.style.whiteSpace = "pre-wrap";
-        content.style.overflowWrap = "anywhere";
-        content.textContent = comment.content;
-
-        const date = document.createElement("div");
-        date.className = "small-note";
-        date.textContent = formatDate(comment.created_at);
-
-        item.append(author, content, date);
-
-        if (currentUser) {
-          const replyButton = document.createElement("button");
-          replyButton.type = "button";
-          replyButton.className = "btn btn-secondary";
-          replyButton.style.marginTop = "8px";
-          replyButton.textContent = "↩️ Balas";
-
-          replyButton.addEventListener("click", () => {
-            const existingForm = item.querySelector(".reply-form");
-
-            if (existingForm) {
-              existingForm.remove();
-              return;
-            }
-
-            const form = document.createElement("form");
-            form.className = "reply-form";
-            form.style.marginTop = "10px";
-
-            const input = document.createElement("textarea");
-            input.maxLength = 1000;
-            input.required = true;
-            input.placeholder = "Tulis balasan...";
-            input.style.width = "100%";
-            input.style.minHeight = "65px";
-            input.style.padding = "10px";
-            input.style.marginBottom = "8px";
-            input.style.borderRadius = "8px";
-            input.style.background = "#0d0d0d";
-            input.style.color = "white";
-            input.style.border = "1px solid #393939";
-
-            const submit = document.createElement("button");
-            submit.type = "submit";
-            submit.className = "btn";
-            submit.textContent = "Kirim balasan";
-
-            const status = document.createElement("div");
-            status.className = "small-note";
-
-            form.append(input, submit, status);
-
-            form.addEventListener("submit", async (event) => {
-              event.preventDefault();
-
-              const text = input.value.trim();
-              if (!text || !currentUser) return;
-
-              submit.disabled = true;
-              status.textContent = "Mengirim balasan...";
-
-              try {
-                const { error: insertError } = await db
-                  .from("video_comments")
-                  .insert({
-                    video_id: videoId,
-                    user_id: currentUser.id,
-                    content: text,
-                    parent_comment_id: comment.id
-                  });
-
-                if (insertError) throw insertError;
-
-                await loadComments(videoId, container);
-              } catch (err) {
-                status.textContent =
-                  "Gagal mengirim balasan: " + err.message;
-                submit.disabled = false;
-              }
-            });
-
-            item.appendChild(form);
-            input.focus();
-          });
-
-          item.appendChild(replyButton);
-        }
-
-        if (currentUser && comment.user_id === currentUser.id) {
-          const deleteButton = document.createElement("button");
-          deleteButton.type = "button";
-          deleteButton.className = "delete-btn";
-          deleteButton.style.marginTop = "8px";
-          deleteButton.style.marginLeft = "8px";
-          deleteButton.textContent = "Hapus";
-
-          deleteButton.addEventListener("click", async () => {
-            if (!confirm("Hapus komentar atau balasan ini?")) return;
-
-            deleteButton.disabled = true;
-
-            const { error: deleteError } = await db
-              .from("video_comments")
-              .delete()
-              .eq("id", comment.id)
-              .eq("user_id", currentUser.id);
-
-            if (deleteError) {
-              showNotice(
-                "Gagal menghapus: " + deleteError.message,
-                "error"
-              );
-              deleteButton.disabled = false;
-              return;
-            }
-
-            await loadComments(videoId, container);
-          });
-
-          item.appendChild(deleteButton);
-        }
-
-        parentElement.appendChild(item);
-
-        const replies = comments.filter(
-          (child) => child.parent_comment_id === comment.id
+      if (profileError) {
+        console.error(
+          "Gagal mengambil profil komentator:",
+          profileError.message
         );
-
-        replies.forEach((reply) => {
-          renderComment(reply, item, depth + 1);
+      } else {
+        (profiles || []).forEach((profile) => {
+          profilesMap.set(profile.id, profile);
         });
       }
+    }
 
-      topLevel.forEach((comment) => {
-        renderComment(comment, list);
-      });
+    list.replaceChildren();
 
+    const topLevel = comments.filter(
+      (comment) => !comment.parent_comment_id
+    );
+
+    if (!topLevel.length) {
+      const empty = document.createElement("p");
+      empty.className = "small-note";
+      empty.textContent =
+        "Belum ada komentar. Jadilah yang pertama!";
+      list.appendChild(empty);
+    }
+
+    // 3. Tampilkan komentar dan balasan
+    function renderComment(comment, parentElement, depth = 0) {
+      const item = document.createElement("div");
+      item.style.borderTop = "1px solid #303030";
+      item.style.padding = "12px 0";
+      item.style.marginLeft = depth ? "16px" : "0";
+
+      const profile = profilesMap.get(comment.user_id);
+      const username = profile?.username ||
+        (currentUser && comment.user_id === currentUser.id
+          ? "Kamu"
+          : "Pengguna GiriShorts");
+
+      // Baris foto dan nama
+      const authorRow = document.createElement("div");
+      authorRow.style.display = "flex";
+      authorRow.style.alignItems = "center";
+      authorRow.style.gap = "10px";
+      authorRow.style.marginBottom = "8px";
+
+      const avatar = document.createElement("img");
+      avatar.src = profile?.avatar_url || defaultAvatar;
+      avatar.alt = "Foto " + username;
+      avatar.loading = "lazy";
+      avatar.style.width = "38px";
+      avatar.style.height = "38px";
+      avatar.style.borderRadius = "50%";
+      avatar.style.objectFit = "cover";
+      avatar.style.border = "1px solid #444";
+      avatar.style.flexShrink = "0";
+
+      avatar.onerror = function () {
+        this.onerror = null;
+        this.src = defaultAvatar;
+      };
+
+      const authorInfo = document.createElement("div");
+      authorInfo.style.minWidth = "0";
+
+      const author = document.createElement("div");
+      author.style.fontSize = "13px";
+      author.style.fontWeight = "800";
+      author.style.color = "#ff6472";
+      author.style.overflowWrap = "anywhere";
+      author.textContent = username.startsWith("@")
+        ? username
+        : "@" + username;
+
+      const date = document.createElement("div");
+      date.className = "small-note";
+      date.style.marginTop = "2px";
+      date.textContent = formatDate(comment.created_at);
+
+      authorInfo.append(author, date);
+      authorRow.append(avatar, authorInfo);
+      item.appendChild(authorRow);
+
+      // Isi komentar
+      const content = document.createElement("div");
+      content.style.whiteSpace = "pre-wrap";
+      content.style.overflowWrap = "anywhere";
+      content.textContent = comment.content;
+      item.appendChild(content);
+
+      // Tombol balas
       if (currentUser) {
-        const form = document.createElement("form");
-        form.style.marginTop = "16px";
+        const replyButton = document.createElement("button");
+        replyButton.type = "button";
+        replyButton.className = "btn btn-secondary";
+        replyButton.style.marginTop = "8px";
+        replyButton.textContent = "↩️ Balas";
 
-        const input = document.createElement("textarea");
-        input.maxLength = 1000;
-        input.required = true;
-        input.placeholder = "Tulis komentar baru...";
-        input.style.width = "100%";
-        input.style.minHeight = "70px";
-        input.style.padding = "10px";
-        input.style.marginBottom = "8px";
-        input.style.borderRadius = "8px";
-        input.style.background = "#0d0d0d";
-        input.style.color = "white";
-        input.style.border = "1px solid #393939";
+        replyButton.addEventListener("click", () => {
+          const existingForm = item.querySelector(".reply-form");
 
-        const submit = document.createElement("button");
-        submit.type = "submit";
-        submit.className = "btn";
-        submit.textContent = "Kirim komentar";
+          if (existingForm) {
+            existingForm.remove();
+            return;
+          }
 
-        form.append(input, submit);
+          const form = document.createElement("form");
+          form.className = "reply-form";
+          form.style.marginTop = "10px";
 
-        form.addEventListener("submit", async (event) => {
-          event.preventDefault();
+          const input = document.createElement("textarea");
+          input.maxLength = 1000;
+          input.required = true;
+          input.placeholder = "Tulis balasan...";
+          input.style.width = "100%";
+          input.style.minHeight = "65px";
+          input.style.padding = "10px";
+          input.style.borderRadius = "8px";
+          input.style.background = "#0d0d0d";
+          input.style.color = "white";
+          input.style.border = "1px solid #393939";
 
-          const text = input.value.trim();
-          if (!text || !currentUser) return;
+          const submit = document.createElement("button");
+          submit.type = "submit";
+          submit.className = "btn";
+          submit.textContent = "Kirim balasan";
 
-          submit.disabled = true;
+          const status = document.createElement("div");
+          status.className = "small-note";
 
+          form.append(input, submit, status);
+
+          form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const text = input.value.trim();
+            if (!text || !currentUser) return;
+
+            submit.disabled = true;
+            status.textContent = "Mengirim balasan...";
+
+            try {
+              const { error: insertError } = await db
+                .from("video_comments")
+                .insert({
+                  video_id: videoId,
+                  user_id: currentUser.id,
+                  content: text,
+                  parent_comment_id: comment.id
+                });
+
+              if (insertError) throw insertError;
+
+              await loadComments(videoId, container);
+            } catch (err) {
+              status.textContent =
+                "Gagal mengirim balasan: " + err.message;
+              submit.disabled = false;
+            }
+          });
+
+          item.appendChild(form);
+          input.focus();
+        });
+
+        item.appendChild(replyButton);
+      }
+
+      // Tombol hapus hanya untuk pemilik komentar
+      if (currentUser && comment.user_id === currentUser.id) {
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "delete-btn";
+        deleteButton.style.marginTop = "8px";
+        deleteButton.style.marginLeft = "8px";
+        deleteButton.textContent = "🗑️ Hapus";
+
+        deleteButton.addEventListener("click", async () => {
+          if (!confirm("Hapus komentar atau balasan ini?")) return;
+
+          deleteButton.disabled = true;
+
+          const { error: deleteError } = await db
+            .from("video_comments")
+            .delete()
+            .eq("id", comment.id)
+            .eq("user_id", currentUser.id);
+
+          if (deleteError) {
+            showNotice(
+              "Gagal menghapus komentar: " + deleteError.message,
+              "error"
+            );
+            deleteButton.disabled = false;
+            return;
+          }
+
+          await loadComments(videoId, container);
+        });
+
+        item.appendChild(deleteButton);
+      }
+
+      parentElement.appendChild(item);
+
+      // Tampilkan balasan di bawah komentar induk
+      const replies = comments.filter(
+        (child) => child.parent_comment_id === comment.id
+      );
+
+      replies.forEach((reply) => {
+        renderComment(reply, item, depth + 1);
+      });
+    }
+
+    topLevel.forEach((comment) => {
+      renderComment(comment, list);
+    });
+
+    // 4. Form komentar baru
+    if (currentUser) {
+      const form = document.createElement("form");
+      form.style.marginTop = "16px";
+
+      const input = document.createElement("textarea");
+      input.maxLength = 1000;
+      input.required = true;
+      input.placeholder = "Tulis komentar baru...";
+      input.style.width = "100%";
+      input.style.minHeight = "70px";
+      input.style.padding = "10px";
+      input.style.marginBottom = "8px";
+      input.style.borderRadius = "8px";
+      input.style.background = "#0d0d0d";
+      input.style.color = "white";
+      input.style.border = "1px solid #393939";
+
+      const submit = document.createElement("button");
+      submit.type = "submit";
+      submit.className = "btn";
+      submit.textContent = "Kirim komentar";
+
+      const status = document.createElement("div");
+      status.className = "small-note";
+
+      form.append(input, submit, status);
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const text = input.value.trim();
+        if (!text || !currentUser) return;
+
+        submit.disabled = true;
+        status.textContent = "Mengirim komentar...";
+
+        try {
           const { error: insertError } = await db
             .from("video_comments")
             .insert({
@@ -1545,29 +1622,30 @@ startApp();
               parent_comment_id: null
             });
 
-          if (insertError) {
-            showNotice(
-              "Gagal mengirim komentar: " + insertError.message,
-              "error"
-            );
-            submit.disabled = false;
-            return;
-          }
+          if (insertError) throw insertError;
 
           await loadComments(videoId, container);
-        });
+        } catch (err) {
+          status.textContent =
+            "Gagal mengirim komentar: " + err.message;
+          submit.disabled = false;
+        }
+      });
 
-        list.appendChild(form);
-      } else {
-        const loginNote = document.createElement("p");
-        loginNote.className = "small-note";
-        loginNote.textContent = "Masuk untuk berkomentar atau membalas.";
-        list.appendChild(loginNote);
-      }
-    } catch (error) {
-      list.textContent = "Gagal memuat komentar: " + error.message;
+      list.appendChild(form);
+    } else {
+      const loginNote = document.createElement("p");
+      loginNote.className = "small-note";
+      loginNote.textContent =
+        "Masuk untuk berkomentar atau membalas.";
+      list.appendChild(loginNote);
     }
+  } catch (error) {
+    list.textContent =
+      "Gagal memuat komentar: " + error.message;
   }
+}
+
 
 async function loadMyProfile() {
   const panel = document.getElementById("profilePanel");

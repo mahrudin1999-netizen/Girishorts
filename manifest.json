@@ -9,17 +9,18 @@
   "background_color": "#0b0b0f",
   "theme_color": "#0b0b0f",
   "lang": "id",
-   
+  
 "screenshots": [
   {
-    "src": "/Girishorts/screenshots/home.png",
+    "src": "/Girishorts/home.png",
     "sizes": "1080x1920",
     "type": "image/png",
     "form_factor": "narrow",
     "label": "Halaman utama GiriShorts"
   }
 ],
- "icons": [
+ 
+  "icons": [
     {
       "src": "/Girishorts/icon-192.png",
       "sizes": "192x192",

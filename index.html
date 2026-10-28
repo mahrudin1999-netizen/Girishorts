@@ -439,6 +439,33 @@
     </section>
 
     <!-- BAGIAN AKUN -->
+    
+<!-- GiriShorts 5.0: Panel Profil -->
+<section id="profilePanel" class="panel" style="display:none;">
+  <h2>👤 Profil Saya</h2>
+
+  <label for="profileUsername">Nama pengguna</label>
+  <input
+    id="profileUsername"
+    type="text"
+    maxlength="30"
+    placeholder="Masukkan nama pengguna"
+  />
+
+  <label for="profileBio">Bio</label>
+  <textarea
+    id="profileBio"
+    maxlength="160"
+    placeholder="Ceritakan sedikit tentang dirimu"
+  ></textarea>
+
+  <button id="saveProfileBtn" class="btn" type="button">
+    Simpan Profil
+  </button>
+
+  <p id="profileMessage" class="small-note"></p>
+</section>
+
     <section id="accountTab" class="tab-page">
       <h1 class="page-title">Akun Saya 👤</h1>
       <p class="page-desc">
@@ -1516,7 +1543,7 @@ async function loadMyProfile() {
   if (!panel || !usernameInput || !bioInput || !message) return;
 
   const { data: { user }, error: userError } =
-    await supabase.auth.getUser();
+    await await db.auth.getUser();
 
   if (userError || !user) {
     panel.style.display = "none";
@@ -1526,8 +1553,7 @@ async function loadMyProfile() {
   panel.style.display = "block";
   message.textContent = "Memuat profil...";
 
-  const { data, error } = await supabase
-    .from("profiles")
+  const { data, error } = await db.from("profiles")
     .select("username, bio")
     .eq("id", user.id)
     .maybeSingle();
@@ -1549,7 +1575,7 @@ async function saveMyProfile() {
   const button = document.getElementById("saveProfileBtn");
 
   const { data: { user }, error: userError } =
-    await supabase.auth.getUser();
+    await db.auth.getUser();
 
   if (userError || !user) {
     message.textContent = "Silakan masuk terlebih dahulu.";
@@ -1574,8 +1600,7 @@ async function saveMyProfile() {
   message.textContent = "Menyimpan profil...";
 
   try {
-    const { error } = await supabase
-      .from("profiles")
+    const { error } = await db.from("profiles")
       .upsert(
         {
           id: user.id,
@@ -1606,30 +1631,5 @@ document
 
 </script>
 
-<!-- GiriShorts 5.0: Panel Profil -->
-<section id="profilePanel" class="panel" style="display:none;">
-  <h2>👤 Profil Saya</h2>
-
-  <label for="profileUsername">Nama pengguna</label>
-  <input
-    id="profileUsername"
-    type="text"
-    maxlength="30"
-    placeholder="Masukkan nama pengguna"
-  />
-
-  <label for="profileBio">Bio</label>
-  <textarea
-    id="profileBio"
-    maxlength="160"
-    placeholder="Ceritakan sedikit tentang dirimu"
-  ></textarea>
-
-  <button id="saveProfileBtn" class="btn" type="button">
-    Simpan Profil
-  </button>
-
-  <p id="profileMessage" class="small-note"></p>
-</section>
 </body>
 </html>

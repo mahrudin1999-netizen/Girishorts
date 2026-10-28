@@ -1,4 +1,4 @@
-"description": "GiriShorts adalah platform video pendek untuk menonton, berbagi, dan menemukan konten kreatif. Jelajahi video menarik, berinteraksi dengan kreator, dan nikmati komunitas video dalam satu aplikasi."{
+{
   "project_info": {
     "project_number": "281359318733",
     "project_id": "girishorts",

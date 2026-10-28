@@ -1249,6 +1249,177 @@
   }
 
   startApp();
+  // FITUR KOMENTAR GIRISHORTS
+  async function loadComments(videoId, container) {
+    container.replaceChildren();
+
+    const heading = document.createElement("div");
+    heading.textContent = "💬 Komentar";
+    heading.style.fontWeight = "800";
+    heading.style.marginBottom = "12px";
+    container.appendChild(heading);
+
+    if (currentUser) {
+      const form = document.createElement("form");
+      form.style.marginBottom = "16px";
+
+      const input = document.createElement("textarea");
+      input.maxLength = 1000;
+      input.required = true;
+      input.placeholder = "Tulis komentar kamu...";
+      input.setAttribute("aria-label", "Tulis komentar");
+      input.style.width = "100%";
+      input.style.minHeight = "75px";
+      input.style.padding = "10px";
+      input.style.marginBottom = "8px";
+      input.style.borderRadius = "8px";
+      input.style.background = "#0d0d0d";
+      input.style.color = "white";
+      input.style.border = "1px solid #393939";
+
+      const submit = document.createElement("button");
+      submit.type = "submit";
+      submit.className = "btn";
+      submit.textContent = "Kirim komentar";
+
+      const status = document.createElement("div");
+      status.className = "small-note";
+
+      form.append(input, submit, status);
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!currentUser) {
+          status.textContent = "Silakan masuk terlebih dahulu.";
+          return;
+        }
+
+        const content = input.value.trim();
+
+        if (!content) {
+          status.textContent = "Komentar tidak boleh kosong.";
+          return;
+        }
+
+        submit.disabled = true;
+        status.textContent = "Mengirim komentar...";
+
+        try {
+          const { error } = await db
+            .from("video_comments")
+            .insert({
+              video_id: videoId,
+              user_id: currentUser.id,
+              content
+            });
+
+          if (error) throw error;
+
+          await loadComments(videoId, container);
+        } catch (error) {
+          status.textContent = "Gagal mengirim: " + error.message;
+          submit.disabled = false;
+        }
+      });
+
+      container.appendChild(form);
+    } else {
+      const loginNote = document.createElement("p");
+      loginNote.className = "small-note";
+      loginNote.textContent =
+        "Masuk ke akun untuk menulis komentar.";
+      container.appendChild(loginNote);
+    }
+
+    const list = document.createElement("div");
+    list.textContent = "Memuat komentar...";
+    container.appendChild(list);
+
+    try {
+      const { data, error } = await db
+        .from("video_comments")
+        .select("id, user_id, content, created_at")
+        .eq("video_id", videoId)
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (error) throw error;
+
+      list.replaceChildren();
+
+      if (!data || data.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "small-note";
+        empty.textContent = "Belum ada komentar. Jadilah yang pertama!";
+        list.appendChild(empty);
+        return;
+      }
+
+      data.forEach((comment) => {
+        const item = document.createElement("div");
+        item.style.borderTop = "1px solid #303030";
+        item.style.padding = "12px 0";
+
+        const author = document.createElement("div");
+        author.style.fontSize = "12px";
+        author.style.color = "#ff6472";
+        author.style.marginBottom = "6px";
+        author.textContent =
+          currentUser && comment.user_id === currentUser.id
+            ? "Kamu"
+            : "Pengguna GiriShorts";
+
+        const content = document.createElement("div");
+        content.style.whiteSpace = "pre-wrap";
+        content.style.overflowWrap = "anywhere";
+        content.textContent = comment.content;
+
+        const date = document.createElement("div");
+        date.className = "small-note";
+        date.textContent = formatDate(comment.created_at);
+
+        item.append(author, content, date);
+
+        if (currentUser && comment.user_id === currentUser.id) {
+          const deleteCommentButton = document.createElement("button");
+          deleteCommentButton.type = "button";
+          deleteCommentButton.className = "delete-btn";
+          deleteCommentButton.style.marginTop = "8px";
+          deleteCommentButton.textContent = "Hapus komentar";
+
+          deleteCommentButton.addEventListener("click", async () => {
+            if (!confirm("Hapus komentar ini?")) return;
+
+            deleteCommentButton.disabled = true;
+
+            const { error: deleteError } = await db
+              .from("video_comments")
+              .delete()
+              .eq("id", comment.id)
+              .eq("user_id", currentUser.id);
+
+            if (deleteError) {
+              showNotice(
+                "Gagal menghapus komentar: " + deleteError.message,
+                "error"
+              );
+              deleteCommentButton.disabled = false;
+              return;
+            }
+
+            await loadComments(videoId, container);
+          });
+
+          item.appendChild(deleteCommentButton);
+        }
+
+        list.appendChild(item);
+      });
+    } catch (error) {
+      list.textContent = "Gagal memuat komentar: " + error.message;
+    }
+  }
 </script>
 
 </body>

@@ -489,6 +489,36 @@
 <!-- GiriShorts 5.0: Panel Profil -->
 <section id="profilePanel" class="panel" style="display:none;">
   <h2>👤 Profil Saya</h2>
+<div style="text-align:center; margin:16px 0;">
+  <img
+    id="avatarPreview"
+    src="https://placehold.co/120x120/202020/ffffff?text=Foto"
+    alt="Foto profil"
+    width="120"
+    height="120"
+    style="width:120px;height:120px;object-fit:cover;border-radius:50%;border:3px solid #ff2638;display:block;margin:0 auto 12px;"
+  >
+
+  <label for="avatarFile" style="display:block;margin-bottom:10px;">
+    Pilih foto profil
+  </label>
+
+  <input
+    id="avatarFile"
+    type="file"
+    accept="image/jpeg,image/png,image/webp"
+    style="max-width:100%;"
+  >
+
+  <button
+    id="uploadAvatarBtn"
+    class="btn btn-secondary"
+    type="button"
+    style="margin-top:12px;"
+  >
+    📸 Unggah Foto
+  </button>
+</div>
 
   <label for="profileUsername">Nama pengguna</label>
   <input
@@ -1560,7 +1590,7 @@ async function loadMyProfile() {
   message.textContent = "Memuat profil...";
 
   const { data, error } = await db.from("profiles")
-    .select("username, bio")
+    .select("username, bio, avatar_url")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -1571,6 +1601,12 @@ async function loadMyProfile() {
 
   usernameInput.value = data?.username || "";
   bioInput.value = data?.bio || "";
+  const avatarPreview = document.getElementById("avatarPreview");
+
+if (avatarPreview) {
+  avatarPreview.src = data?.avatar_url ||
+    "https://placehold.co/120x120/202020/ffffff?text=Foto";
+}
   message.textContent = "Profil siap diedit.";
 }
 

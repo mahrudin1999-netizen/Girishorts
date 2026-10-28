@@ -1,14 +1,34 @@
 
 {
-  "background_color": "#ffffff",
-  "dir": "ltr",
-  "display": "standalone",
-  "name": "GiriShorts",
-  "orientation": "any",
-  "scope": "/Girishorts/",
-  "short_name": "GiriShorts",
-  "start_url": "/Girishorts/",
-  "theme_color": "#0b0b0f",
   "id": "/Girishorts/",
-  "description": "GiriShorts adalah platform video pendek untuk menonton, berbagi, dan menemukan konten kreatif. Jelajahi video menarik, berinteraksi dengan kreator, dan nikmati komunitas video dalam satu aplikasi."
+  "name": "GiriShorts",
+  "short_name": "GiriShorts",
+  "description": "GiriShorts adalah platform video pendek untuk menonton, berbagi, dan menemukan konten kreatif.",
+  "lang": "id",
+  "dir": "ltr",
+  "start_url": "/Girishorts/",
+  "scope": "/Girishorts/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0b0f",
+  "theme_color": "#0b0b0f",
+  "categories": [
+    "social",
+    "entertainment",
+    "video"
+  ],
+  "icons": [
+    {
+      "src": "/Girishorts/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/Girishorts/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }

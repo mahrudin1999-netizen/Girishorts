@@ -976,6 +976,31 @@
   }
 
   // MEMBUAT KARTU VIDEO
+  
+let creatorProfilesCache = new Map();
+
+async function loadCreatorProfiles(userIds) {
+  const ids = [...new Set(userIds.filter(Boolean))];
+
+  creatorProfilesCache = new Map();
+
+  if (ids.length === 0) return;
+
+  const { data, error } = await db
+    .from("profiles")
+    .select("id, username, avatar_url")
+    .in("id", ids);
+
+  if (error) {
+    console.error("Gagal memuat profil kreator:", error.message);
+    return;
+  }
+
+  (data || []).forEach((profile) => {
+    creatorProfilesCache.set(profile.id, profile);
+  });
+}
+
   function createVideoCard(video, isOwn = false) {
     const likeCount = likesCache.get(video.id) || 0;
     const viewCount = viewsCache.get(video.id) || 0;
@@ -995,6 +1020,45 @@
 
     const info = document.createElement("div");
     info.className = "video-info";
+
+    // Identitas kreator video
+    const creator = creatorProfilesCache.get(video.user_id);
+    const creatorName = creator?.username || "Kreator GiriShorts";
+    const defaultAvatar =
+      "https://placehold.co/80x80/202020/ffffff?text=User";
+
+    const creatorRow = document.createElement("div");
+    creatorRow.style.display = "flex";
+    creatorRow.style.alignItems = "center";
+    creatorRow.style.gap = "10px";
+    creatorRow.style.marginBottom = "12px";
+
+    const creatorAvatar = document.createElement("img");
+    creatorAvatar.src = creator?.avatar_url || defaultAvatar;
+    creatorAvatar.alt = "Foto " + creatorName;
+    creatorAvatar.loading = "lazy";
+    creatorAvatar.style.width = "42px";
+    creatorAvatar.style.height = "42px";
+    creatorAvatar.style.borderRadius = "50%";
+    creatorAvatar.style.objectFit = "cover";
+    creatorAvatar.style.border = "2px solid #ff2638";
+    creatorAvatar.style.flexShrink = "0";
+
+    creatorAvatar.onerror = function () {
+      this.onerror = null;
+      this.src = defaultAvatar;
+    };
+
+    const creatorLabel = document.createElement("div");
+    creatorLabel.style.fontWeight = "800";
+    creatorLabel.style.fontSize = "14px";
+    creatorLabel.style.overflowWrap = "anywhere";
+    creatorLabel.textContent = creatorName.startsWith("@")
+      ? creatorName
+      : "@" + creatorName;
+
+    creatorRow.append(creatorAvatar, creatorLabel);
+    info.appendChild(creatorRow);
 
     const title = document.createElement("div");
     title.className = "video-title";
@@ -1131,9 +1195,17 @@
 
       if (error) throw error;
 
-      videosCache = data || [];
+videosCache = data || [];
 
-      await loadVideoStats(videosCache.map((video) => video.id));
+await loadCreatorProfiles(
+  videosCache.map((video) => video.user_id)
+);
+
+await loadVideoStats(
+  videosCache.map((video) => video.id)
+);
+
+      
 
       renderVideoList(container, videosCache, false);
     } catch (error) {
@@ -1168,10 +1240,18 @@
 
       if (error) throw error;
 
-      const myVideos = data || [];
+      
+const myVideos = data || [];
 
-      // Ambil statistik semua video di daftar ini.
-      await loadVideoStats(myVideos.map((video) => video.id));
+await loadCreatorProfiles(
+  myVideos.map((video) => video.user_id)
+);
+
+// Ambil statistik semua video di daftar ini.
+await loadVideoStats(
+  myVideos.map((video) => video.id)
+);
+
 
       renderVideoList(container, myVideos, true);
     } catch (error) {

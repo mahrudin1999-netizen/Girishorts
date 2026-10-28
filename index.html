@@ -963,7 +963,29 @@
 
     stats.append(likeButton, views);
 
-    info.append(title, meta, stats);
+        info.append(title, meta, stats);
+
+    const commentButton = document.createElement("button");
+    commentButton.type = "button";
+    commentButton.className = "btn btn-secondary";
+    commentButton.textContent = "💬 Komentar";
+    commentButton.style.marginBottom = "12px";
+
+    const commentsPanel = document.createElement("div");
+    commentsPanel.className = "panel";
+    commentsPanel.style.display = "none";
+    commentsPanel.style.marginTop = "12px";
+
+    commentButton.addEventListener("click", async () => {
+      const opening = commentsPanel.style.display === "none";
+      commentsPanel.style.display = opening ? "block" : "none";
+
+      if (opening) {
+        await loadComments(video.id, commentsPanel);
+      }
+    });
+
+    info.append(commentButton, commentsPanel);
 
     if (isOwn) {
       const deleteButton = document.createElement("button");

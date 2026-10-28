@@ -1,51 +1,55 @@
-
 {
-  "name": "GiriShorts",
-  "short_name": "GiriShorts",
-  "description": "Platform video pendek GiriShorts untuk berbagi dan menemukan konten kreatif.",
-  "categories": [
-  "social",
-  "entertainment",
-  "video"
+"id": "/Girishorts/",
+"name": "GiriShorts",
+"short_name": "GiriShorts",
+"description": "Platform video pendek GiriShorts untuk berbagi dan menemukan konten kreatif.",
+"categories": [
+"social",
+"entertainment",
+"video"
 ],
-  "id": "/Girishorts/",
-  "prefer_related_applications": false,
-  "start_url": "/Girishorts/",
-  "scope": "/Girishorts/",
-  "display": "standalone",
-  "display_override": [
-  "standalone",
-  "minimal-ui"
-],
+"prefer_related_applications": false,
+"start_url": "/Girishorts/",
+"scope": "/Girishorts/",
 "display": "standalone",
-  "display": "standalone",
+"display_override": [
+"standalone",
+"minimal-ui"
+],
 "orientation": "portrait",
 "background_color": "#0b0b0f",
 "theme_color": "#0b0b0f",
-  "background_color": "#0b0b0f",
-  "theme_color": "#0b0b0f",
-  "lang": "id",
-  "screenshots": [
-  {
-    "src": "/Girishorts/home.png",
-    "sizes": "1080x1920",
-    "type": "image/jpeg",
-    "form_factor": "narrow",
-    "label": "Halaman utama GiriShorts"
-  }
+"lang": "id",
+"dir": "ltr",
+"shortcuts": [
+{
+"name": "Beranda GiriShorts",
+"short_name": "Beranda",
+"description": "Buka halaman utama GiriShorts",
+"url": "/Girishorts/"
+}
 ],
-  "icons": [
-    {
-      "src": "/Girishorts/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/Girishorts/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-     }
-  ]
+"screenshots": [
+{
+"src": "/Girishorts/home.png",
+"sizes": "1080x1920",
+"type": "image/jpeg",
+"form_factor": "narrow",
+"label": "Halaman utama GiriShorts"
+}
+],
+"icons": [
+{
+"src": "/Girishorts/icon-192.png",
+"sizes": "192x192",
+"type": "image/png",
+"purpose": "any"
+},
+{
+"src": "/Girishorts/icon-512.png",
+"sizes": "512x512",
+"type": "image/png",
+"purpose": "any"
+}
+]
 }

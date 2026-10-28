@@ -438,8 +438,7 @@
       </div>
     </section>
 
-    <!-- BAGIAN AKUN -->
-      <p id="profileMessage" class="small-note"></p>
+    
 </section>
 
     <section id="accountTab" class="tab-page">
@@ -1670,6 +1669,95 @@ async function saveMyProfile() {
 document
   .getElementById("saveProfileBtn")
   .addEventListener("click", saveMyProfile);
+
+async function uploadMyAvatar() {
+  const fileInput = document.getElementById("avatarFile");
+  const preview = document.getElementById("avatarPreview");
+  const button = document.getElementById("uploadAvatarBtn");
+  const message = document.getElementById("profileMessage");
+
+  const file = fileInput.files[0];
+
+  if (!file) {
+    message.textContent = "Pilih foto terlebih dahulu.";
+    return;
+  }
+
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    message.textContent = "Gunakan foto JPG, PNG, atau WebP.";
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    message.textContent = "Ukuran foto maksimal 2 MB.";
+    return;
+  }
+
+  button.disabled = true;
+  message.textContent = "Sedang mengunggah foto...";
+
+  try {
+    const { data: { user }, error: userError } =
+      await db.auth.getUser();
+
+    if (userError) throw userError;
+    if (!user) throw new Error("Silakan masuk terlebih dahulu.");
+
+    const extension = {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp"
+    }[file.type];
+
+    const randomName = crypto.randomUUID
+      ? crypto.randomUUID()
+      : Date.now() + "-" + Math.random().toString(36).slice(2);
+
+    const path = user.id + "/" + randomName + "." + extension;
+
+    const { error: uploadError } = await db.storage
+      .from("avatars")
+      .upload(path, file, {
+        contentType: file.type,
+        upsert: false
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data: publicData } = db.storage
+      .from("avatars")
+      .getPublicUrl(path);
+
+    const avatarUrl = publicData.publicUrl;
+
+    const { error: saveError } = await db
+      .from("profiles")
+      .upsert({
+        id: user.id,
+        username: document.getElementById("profileUsername").value.trim() || null,
+        bio: document.getElementById("profileBio").value.trim(),
+        avatar_url: avatarUrl,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: "id"
+      });
+
+    if (saveError) throw saveError;
+
+    preview.src = avatarUrl;
+    fileInput.value = "";
+    message.textContent = "Foto profil berhasil disimpan! ✅";
+
+  } catch (error) {
+    message.textContent = "Gagal mengunggah foto: " + error.message;
+  } finally {
+    button.disabled = false;
+  }
+}
+
+document
+  .getElementById("uploadAvatarBtn")
+  .addEventListener("click", uploadMyAvatar);
 
 </script>
 

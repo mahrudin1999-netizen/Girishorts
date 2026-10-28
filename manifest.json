@@ -3,6 +3,11 @@
   "name": "GiriShorts",
   "short_name": "GiriShorts",
   "description": "Platform video pendek GiriShorts untuk berbagi dan menemukan konten kreatif.",
+  "categories": [
+  "social",
+  "entertainment",
+  "video"
+],
   "id": "/Girishorts/",
   "start_url": "/Girishorts/",
   "scope": "/Girishorts/",

@@ -1533,6 +1533,104 @@
   </button>
 
   <p id="profileMessage" class="small-note"></p>
+
+async function loadMyProfile() {
+  const panel = document.getElementById("profilePanel");
+  const usernameInput = document.getElementById("profileUsername");
+  const bioInput = document.getElementById("profileBio");
+  const message = document.getElementById("profileMessage");
+
+  if (!panel || !usernameInput || !bioInput || !message) return;
+
+  const { data: { user }, error: userError } =
+    await supabase.auth.getUser();
+
+  if (userError || !user) {
+    panel.style.display = "none";
+    return;
+  }
+
+  panel.style.display = "block";
+  message.textContent = "Memuat profil...";
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("username, bio")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    message.textContent = "Gagal memuat profil: " + error.message;
+    return;
+  }
+
+  usernameInput.value = data?.username || "";
+  bioInput.value = data?.bio || "";
+  message.textContent = "Profil siap diedit.";
+}
+
+async function saveMyProfile() {
+  const usernameInput = document.getElementById("profileUsername");
+  const bioInput = document.getElementById("profileBio");
+  const message = document.getElementById("profileMessage");
+  const button = document.getElementById("saveProfileBtn");
+
+  const { data: { user }, error: userError } =
+    await supabase.auth.getUser();
+
+  if (userError || !user) {
+    message.textContent = "Silakan masuk terlebih dahulu.";
+    return;
+  }
+
+  const username = usernameInput.value.trim();
+  const bio = bioInput.value.trim();
+
+  if (!username) {
+    message.textContent = "Nama pengguna wajib diisi.";
+    return;
+  }
+
+  if (!/^[a-zA-Z0-9_]{3,30}$/.test(username)) {
+    message.textContent =
+      "Nama pengguna harus 3-30 karakter: huruf, angka, atau garis bawah.";
+    return;
+  }
+
+  button.disabled = true;
+  message.textContent = "Menyimpan profil...";
+
+  try {
+    const { error } = await supabase
+      .from("profiles")
+      .upsert(
+        {
+          id: user.id,
+          username,
+          bio,
+          updated_at: new Date().toISOString()
+        },
+        { onConflict: "id" }
+      );
+
+    if (error) throw error;
+
+    message.textContent = "Profil berhasil disimpan! ✅";
+  } catch (error) {
+    if (error.code === "23505") {
+      message.textContent = "Nama pengguna sudah digunakan.";
+    } else {
+      message.textContent = "Gagal menyimpan: " + error.message;
+    }
+  } finally {
+    button.disabled = false;
+  }
+}
+
+document
+  .getElementById("saveProfileBtn")
+  .addEventListener("click", saveMyProfile);
+
 </section>
 
 </body>

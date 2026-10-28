@@ -439,31 +439,7 @@
     </section>
 
     <!-- BAGIAN AKUN -->
-    
-<!-- GiriShorts 5.0: Panel Profil -->
-<section id="profilePanel" class="panel" style="display:none;">
-  <h2>👤 Profil Saya</h2>
-
-  <label for="profileUsername">Nama pengguna</label>
-  <input
-    id="profileUsername"
-    type="text"
-    maxlength="30"
-    placeholder="Masukkan nama pengguna"
-  />
-
-  <label for="profileBio">Bio</label>
-  <textarea
-    id="profileBio"
-    maxlength="160"
-    placeholder="Ceritakan sedikit tentang dirimu"
-  ></textarea>
-
-  <button id="saveProfileBtn" class="btn" type="button">
-    Simpan Profil
-  </button>
-
-  <p id="profileMessage" class="small-note"></p>
+      <p id="profileMessage" class="small-note"></p>
 </section>
 
     <section id="accountTab" class="tab-page">
@@ -509,6 +485,33 @@
       </div>
 
       <div class="panel" id="loggedInPanel" style="display:none">
+        
+<!-- GiriShorts 5.0: Panel Profil -->
+<section id="profilePanel" class="panel" style="display:none;">
+  <h2>👤 Profil Saya</h2>
+
+  <label for="profileUsername">Nama pengguna</label>
+  <input
+    id="profileUsername"
+    type="text"
+    maxlength="30"
+    placeholder="Masukkan nama pengguna"
+  />
+
+  <label for="profileBio">Bio</label>
+  <textarea
+    id="profileBio"
+    maxlength="160"
+    placeholder="Ceritakan sedikit tentang dirimu"
+  ></textarea>
+
+  <button id="saveProfileBtn" class="btn" type="button">
+    Simpan Profil
+  </button>
+
+  <p id="profileMessage" class="small-note"></p>
+</section>
+
         <div style="font-weight:800;margin-bottom:8px">Kamu sudah masuk ✅</div>
         <div class="video-meta" id="accountEmail"></div>
         <button class="btn btn-danger" id="logoutBtn" type="button">
@@ -667,6 +670,7 @@
 
       currentUser = data.user;
       updateAccountUI();
+      await loadMyProfile();
       setAuthStatus("Berhasil masuk!");
       showNotice("Login berhasil. Selamat datang kembali!", "success");
 
@@ -711,6 +715,7 @@
       if (data.session && data.user) {
         currentUser = data.user;
         updateAccountUI();
+        await loadMyProfile();
         setAuthStatus("Pendaftaran berhasil!");
         showNotice("Akun berhasil dibuat.", "success");
         await loadFeed();
@@ -1269,13 +1274,14 @@
 
   // MULAI APLIKASI
   async function startApp() {
-    await refreshSession();
-    updateAccountUI();
-    await loadFeed();
-    await loadMyVideos();
-  }
+  await refreshSession();
+  updateAccountUI();
+  await loadMyProfile();
+  await loadFeed();
+  await loadMyVideos();
+}
 
-  startApp();
+startApp();
   // FITUR KOMENTAR GIRISHORTS
   
   // FITUR KOMENTAR DAN BALASAN GIRISHORTS 4.0
@@ -1543,7 +1549,7 @@ async function loadMyProfile() {
   if (!panel || !usernameInput || !bioInput || !message) return;
 
   const { data: { user }, error: userError } =
-    await await db.auth.getUser();
+   await db.auth.getUser();
 
   if (userError || !user) {
     panel.style.display = "none";

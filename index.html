@@ -1028,6 +1028,53 @@ async function openCreatorProfile(userId) {
 
     const name = profile?.username || "Kreator GiriShorts";
 
+const followButton = document.createElement("button");
+followButton.id = "publicCreatorFollowButton";
+followButton.type = "button";
+followButton.style.cssText =
+  "margin-top:10px;padding:9px 16px;border:0;border-radius:20px;" +
+  "background:#ff2638;color:white;font-weight:bold;cursor:pointer;";
+
+const followingKey = "girishorts_following";
+
+function getCreatorFollowing() {
+  try {
+    return JSON.parse(localStorage.getItem(followingKey) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function updateCreatorFollowButton() {
+  const following = getCreatorFollowing();
+  const isFollowing = following.includes(userId);
+
+  followButton.textContent = isFollowing ? "✓ Mengikuti" : "+ Ikuti";
+}
+
+followButton.onclick = function () {
+  const following = getCreatorFollowing();
+  const isFollowing = following.includes(userId);
+
+  const updated = isFollowing
+    ? following.filter(id => id !== userId)
+    : [...following, userId];
+
+  localStorage.setItem(followingKey, JSON.stringify(updated));
+  updateCreatorFollowButton();
+};
+
+updateCreatorFollowButton();
+
+const creatorHeader = document.querySelector(
+  "#creatorProfileModal > div > div"
+);
+
+if (creatorHeader) {
+  const existing = document.getElementById("publicCreatorFollowButton");
+  if (!existing) creatorHeader.appendChild(followButton);
+}
+
     document.getElementById("publicCreatorName").textContent =
       name.startsWith("@") ? name : "@" + name;
 

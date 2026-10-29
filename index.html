@@ -2613,5 +2613,23 @@ function closeCreatorNotifications() {
   </div>
 </div>
 
+<!-- Panel Notifikasi GiriShorts -->
+<div id="creatorNotificationsPanel"
+     style="display:none;position:fixed;inset:0;z-index:10000;
+            background:#111;color:white;overflow-y:auto;padding:18px;">
+  <div style="max-width:600px;margin:auto;">
+    <button type="button" onclick="closeCreatorNotifications()">
+      ← Kembali
+    </button>
+
+    <h2>🔔 Notifikasi GiriShorts</h2>
+    <p id="creatorNotificationsMessage">Belum ada notifikasi.</p>
+
+    <div id="creatorNotificationsList"
+         style="display:grid;gap:12px;padding-bottom:30px;">
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

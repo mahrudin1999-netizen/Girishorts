@@ -775,8 +775,16 @@ loadCreatorNotificationBadge();
     }
   }
 
-  async function logout() {
-    const { error } = await db.auth.signOut();
+  
+async function logout() {
+  const button = document.getElementById("logoutBtn");
+
+  if (button) button.disabled = true;
+
+  try {
+    const { error } = await db.auth.signOut({
+      scope: "local"
+    });
 
     if (error) {
       showNotice("Gagal keluar: " + error.message, "error");
@@ -784,23 +792,25 @@ loadCreatorNotificationBadge();
     }
 
     currentUser = null;
-    likedCache = new Set();
+    likedCache.clear();
+
     updateAccountUI();
+    await loadCreatorNotificationBadge();
+
+    showTab("homeTab");
     showNotice("Kamu sudah keluar dari akun.", "success");
+
     await loadFeed();
     await loadMyVideos();
-    showTab("homeTab");
+
+  } catch (error) {
+    console.error("Logout error:", error);
+    showNotice("Gagal keluar akun: " + error.message, "error");
+  } finally {
+    if (button) button.disabled = false;
   }
-
-  $("loginBtn").addEventListener("click", login);
-  $("signupBtn").addEventListener("click", signup);
-  $("logoutBtn").addEventListener("click", logout);
-
-  db.auth.onAuthStateChange((_event, session) => {
-    currentUser = session?.user ?? null;
-    updateAccountUI();
-
-    // Jalankan setelah callback autentikasi selesai.
+}
+// Jalankan setelah callback autentikasi selesai.
     setTimeout(() => {
       loadFeed();
       loadMyVideos();

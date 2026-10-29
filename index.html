@@ -2385,18 +2385,29 @@ async function saveMyProfile() {
   message.textContent = "Menyimpan profil...";
 
   try {
-    const { error } = await db.from("profiles")
-      .upsert(
-        {
-          id: user.id,
-          username,
-          bio,
-          updated_at: new Date().toISOString()
-        },
-        { onConflict: "id" }
-      );
+    
+const { data: existingProfile, error: profileError } =
+  await db.from("profiles")
+    .select("avatar_url")
+    .eq("id", user.id)
+    .maybeSingle();
 
-    if (error) throw error;
+if (profileError) throw profileError;
+
+const { error } = await db.from("profiles")
+  .upsert(
+    {
+      id: user.id,
+      username,
+      bio,
+      avatar_url: existingProfile?.avatar_url || null,
+      updated_at: new Date().toISOString()
+    },
+    { onConflict: "id" }
+  );
+
+if (error) throw error;
+
 
     message.textContent = "Profil berhasil disimpan! ✅";
   } catch (error) {

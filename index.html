@@ -1001,6 +1001,93 @@ async function loadCreatorProfiles(userIds) {
   });
 }
 
+async function openCreatorProfile(userId) {
+  if (!userId) return;
+
+  const modal = document.getElementById("creatorProfileModal");
+  const videoList = document.getElementById("publicCreatorVideos");
+  const message = document.getElementById("publicCreatorMessage");
+
+  modal.style.display = "block";
+  videoList.replaceChildren();
+
+  document.getElementById("publicCreatorName").textContent = "Memuat profil...";
+  document.getElementById("publicCreatorBio").textContent = "";
+  document.getElementById("publicCreatorVideoCount").textContent = "";
+  message.textContent = "Memuat video kreator...";
+
+  try {
+    // Ambil profil kreator
+    const { data: profile, error: profileError } = await db
+      .from("profiles")
+      .select("id, username, avatar_url, bio")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (profileError) throw profileError;
+
+    const name = profile?.username || "Kreator GiriShorts";
+
+    document.getElementById("publicCreatorName").textContent =
+      name.startsWith("@") ? name : "@" + name;
+
+    document.getElementById("publicCreatorBio").textContent =
+      profile?.bio || "Kreator ini belum menambahkan bio.";
+
+    const avatar = document.getElementById("publicCreatorAvatar");
+    avatar.src = profile?.avatar_url || "";
+    avatar.onerror = function () {
+      this.onerror = null;
+      this.style.background = "#333";
+      this.removeAttribute("src");
+    };
+
+    // Pastikan kartu video memakai profil kreator yang benar
+    if (profile) creatorProfilesCache.set(userId, profile);
+
+    // Ambil video milik kreator ini
+    const { data: videos, error: videoError } = await db
+      .from("videos")
+      .select("id, user_id, title, video_path, created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (videoError) throw videoError;
+
+    const creatorVideos = videos || [];
+
+    document.getElementById("publicCreatorVideoCount").textContent =
+      creatorVideos.length + " video";
+
+    if (creatorVideos.length === 0) {
+      message.textContent = "Kreator ini belum memiliki video.";
+      return;
+    }
+
+    message.textContent = "";
+
+    // Muat statistik tanpa mengubah data video
+    await loadVideoStats(creatorVideos.map(video => video.id));
+
+    creatorVideos.forEach(video => {
+      const card = createVideoCard(
+        video,
+        video.user_id === currentUser?.id
+      );
+
+      videoList.appendChild(card);
+    });
+  } catch (error) {
+    console.error("Gagal membuka profil kreator:", error);
+    message.textContent =
+      "Profil belum bisa dimuat. Periksa koneksi dan izin akses Supabase.";
+  }
+}
+
+function closeCreatorProfile() {
+  document.getElementById("creatorProfileModal").style.display = "none";
+}
+
   function createVideoCard(video, isOwn = false) {
     const likeCount = likesCache.get(video.id) || 0;
     const viewCount = viewsCache.get(video.id) || 0;
@@ -1056,6 +1143,18 @@ async function loadCreatorProfiles(userIds) {
     creatorLabel.textContent = creatorName.startsWith("@")
       ? creatorName
       : "@" + creatorName;
+
+creatorAvatar.style.cursor = "pointer";
+creatorAvatar.title = "Lihat profil kreator";
+creatorAvatar.addEventListener("click", () => {
+  openCreatorProfile(video.user_id);
+});
+
+creatorLabel.style.cursor = "pointer";
+creatorLabel.title = "Lihat profil kreator";
+creatorLabel.addEventListener("click", () => {
+  openCreatorProfile(video.user_id);
+});
 
     creatorRow.append(creatorAvatar, creatorLabel);
     info.appendChild(creatorRow);
@@ -1918,6 +2017,40 @@ document
   .addEventListener("click", uploadMyAvatar);
 
 </script>
+
+<!-- Jendela profil publik kreator -->
+<div id="creatorProfileModal"
+     style="display:none;position:fixed;inset:0;z-index:9999;
+            background:#111;color:white;overflow-y:auto;padding:18px;">
+
+  <div style="max-width:600px;margin:auto;">
+    <button type="button"
+            onclick="closeCreatorProfile()"
+            style="padding:10px 16px;border-radius:10px;margin-bottom:18px;">
+      ← Kembali
+    </button>
+
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+      <img id="publicCreatorAvatar"
+           alt="Foto profil kreator"
+           style="width:76px;height:76px;border-radius:50%;object-fit:cover;background:#333;">
+
+      <div>
+        <h2 id="publicCreatorName" style="margin:0 0 6px;">Kreator</h2>
+        <p id="publicCreatorBio" style="margin:0;color:#bbb;">Profil kreator</p>
+        <p id="publicCreatorVideoCount" style="margin:6px 0 0;color:#bbb;">
+          0 video
+        </p>
+      </div>
+    </div>
+
+    <hr style="border-color:#333;margin-bottom:18px;">
+    <h3>Video kreator 🎬</h3>
+    <p id="publicCreatorMessage" style="color:#bbb;"></p>
+    <div id="publicCreatorVideos"
+         style="display:grid;gap:16px;padding-bottom:30px;"></div>
+  </div>
+</div>
 
 </body>
 </html>

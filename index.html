@@ -1553,6 +1553,12 @@ async function toggleCreatorFollow(creatorId, button) {
 
     await updateCreatorFollowButton(creatorId, button);
 
+try {
+  await loadCreatorFollowCounts(creatorId);
+} catch (countError) {
+  console.error("Gagal memperbarui jumlah pengikut:", countError);
+}
+
 // Perbarui daftar kreator yang diikuti jika tersedia
 if (
   typeof showFollowingCreators === "function" &&

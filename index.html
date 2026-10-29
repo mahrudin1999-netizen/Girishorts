@@ -1824,9 +1824,18 @@ creatorLabel.addEventListener("click", () => {
     views.dataset.viewCount = video.id;
     views.textContent = "👁️ " + viewCount + " tayangan";
 
-    stats.append(likeButton, views);
+    
+stats.append(views);
+info.append(title, meta, stats);
 
-        info.append(title, meta, stats);
+// Wadah tombol interaksi di sisi kanan video.
+const shortActions = document.createElement("div");
+shortActions.className = "short-actions";
+
+// Gunakan kembali tombol suka yang sudah terhubung.
+shortActions.appendChild(likeButton);
+
+card.appendChild(shortActions);
 
     const commentButton = document.createElement("button");
     commentButton.type = "button";

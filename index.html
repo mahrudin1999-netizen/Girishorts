@@ -724,7 +724,6 @@
       $("signupBtn").disabled = false;
     }
   }
-loadCreatorNotificationBadge();
   async function signup() {
     hideNotice();
 
@@ -775,7 +774,6 @@ loadCreatorNotificationBadge();
     }
   }
 
-  
 async function logout() {
   const button = document.getElementById("logoutBtn");
 
@@ -810,12 +808,25 @@ async function logout() {
     if (button) button.disabled = false;
   }
 }
-// Jalankan setelah callback autentikasi selesai.
-    setTimeout(() => {
-      loadFeed();
-      loadMyVideos();
-    }, 0);
+
+// Hubungkan tombol ke fungsinya.
+$("loginBtn").addEventListener("click", login);
+$("signupBtn").addEventListener("click", signup);
+$("logoutBtn").addEventListener("click", logout);
+
+function formatDate(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toLocaleString("id-ID", {
+    dateStyle: "medium",
+    timeStyle: "short"
   });
+}
+
 
   function formatDate(value) {
     if (!value) return "";

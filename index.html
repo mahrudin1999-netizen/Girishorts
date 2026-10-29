@@ -1083,6 +1083,101 @@ async function loadCreatorProfiles(userIds) {
   });
 }
 
+async function getLoggedInUser() {
+  const { data, error } = await db.auth.getUser();
+
+  if (error) throw error;
+  return data.user;
+}
+
+async function isFollowingCreator(creatorId) {
+  const user = await getLoggedInUser();
+
+  if (!user || user.id === creatorId) {
+    return false;
+  }
+
+  const { data, error } = await db
+    .from("creator_follows")
+    .select("follower_id")
+    .eq("follower_id", user.id)
+    .eq("following_id", creatorId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return !!data;
+}
+
+async function toggleCreatorFollow(creatorId, button) {
+  try {
+    const user = await getLoggedInUser();
+
+    if (!user) {
+      alert("Silakan login terlebih dahulu untuk mengikuti kreator.");
+      return;
+    }
+
+    if (user.id === creatorId) {
+      alert("Kamu tidak bisa mengikuti akun sendiri.");
+      return;
+    }
+
+    button.disabled = true;
+
+    const following = await isFollowingCreator(creatorId);
+
+    if (following) {
+      const { error } = await db
+        .from("creator_follows")
+        .delete()
+        .eq("follower_id", user.id)
+        .eq("following_id", creatorId);
+
+      if (error) throw error;
+    } else {
+      const { error } = await db
+        .from("creator_follows")
+        .insert({
+          follower_id: user.id,
+          following_id: creatorId
+        });
+
+      if (error) throw error;
+    }
+
+    await updateCreatorFollowButton(creatorId, button);
+  } catch (error) {
+    console.error("Gagal memperbarui Follow:", error);
+    alert("Follow gagal diperbarui. Periksa login dan pengaturan Supabase.");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function updateCreatorFollowButton(creatorId, button) {
+  try {
+    const user = await getLoggedInUser();
+
+    if (!user) {
+      button.textContent = "+ Ikuti";
+      button.disabled = false;
+      return;
+    }
+
+    if (user.id === creatorId) {
+      button.textContent = "Profil Saya";
+      button.disabled = true;
+      return;
+    }
+
+    const following = await isFollowingCreator(creatorId);
+    button.textContent = following ? "✓ Mengikuti" : "+ Ikuti";
+  } catch (error) {
+    console.error("Gagal memeriksa status Follow:", error);
+    button.textContent = "Coba lagi";
+  }
+}
+
 async function openCreatorProfile(userId) {
   if (!userId) return;
 
@@ -1134,17 +1229,12 @@ function updateCreatorFollowButton() {
   followButton.textContent = isFollowing ? "✓ Mengikuti" : "+ Ikuti";
 }
 
-followButton.onclick = function () {
-  const following = getCreatorFollowing();
-  const isFollowing = following.includes(userId);
-
-  const updated = isFollowing
-    ? following.filter(id => id !== userId)
-    : [...following, userId];
-
-  localStorage.setItem(followingKey, JSON.stringify(updated));
-  updateCreatorFollowButton();
+followButton.onclick = () => {
+  toggleCreatorFollow(userId, followButton);
 };
+
+await updateCreatorFollowButton(userId, followButton);
+
 
 updateCreatorFollowButton();
 

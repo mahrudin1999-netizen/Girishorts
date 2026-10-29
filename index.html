@@ -1441,49 +1441,50 @@ await loadCreatorFollowCounts(userId);
 
     const name = profile?.username || "Kreator GiriShorts";
 
-const followButton = document.createElement("button");
-followButton.id = "publicCreatorFollowButton";
-followButton.type = "button";
-followButton.style.cssText =
-  "margin-top:10px;padding:9px 16px;border:0;border-radius:20px;" +
-  "background:#ff2638;color:white;font-weight:bold;cursor:pointer;";
-
-const followingKey = "girishorts_following";
-
-function getCreatorFollowing() {
-  try {
-    return JSON.parse(localStorage.getItem(followingKey) || "[]");
-  } catch {
-    return [];
-  }
-}
-
-function updateCreatorFollowButton() {
-  const following = getCreatorFollowing();
-  const isFollowing = following.includes(userId);
-
-  followButton.textContent = isFollowing ? "✓ Mengikuti" : "+ Ikuti";
-}
-
-followButton.onclick = () => {
-  toggleCreatorFollow(userId, followButton);
-};
-
-await updateCreatorFollowButton(userId, followButton);
-
-
-updateCreatorFollowButton();
 
 const creatorHeader = document.querySelector(
   "#creatorProfileModal > div > div"
 );
 
-if (creatorHeader) {
-  const existing = document.getElementById("publicCreatorFollowButton");
-  if (!existing) creatorHeader.appendChild(followButton);
+// Gunakan tombol yang sudah ada agar tidak membuat tombol ganda
+let followButton = document.getElementById(
+  "publicCreatorFollowButton"
+);
+
+if (!followButton) {
+  followButton = document.createElement("button");
+  followButton.id = "publicCreatorFollowButton";
+  followButton.type = "button";
+  followButton.style.cssText =
+    "margin-top:10px;padding:9px 16px;border:0;border-radius:20px;" +
+    "background:#ff2638;color:white;font-weight:bold;cursor:pointer;";
+
+  if (creatorHeader) {
+    creatorHeader.appendChild(followButton);
+  }
 }
 
-    document.getElementById("publicCreatorName").textContent =
+// Gunakan fungsi global yang memeriksa Supabase
+followButton.onclick = async () => {
+  await toggleCreatorFollow(userId, followButton);
+
+  await updateCreatorFollowButton(userId, followButton);
+  await loadCreatorFollowCounts(userId);
+
+  const followingSection = document.getElementById(
+    "followingCreatorsSection"
+  );
+
+  if (
+    followingSection &&
+    followingSection.style.display === "block"
+  ) {
+    await showFollowingCreators();
+  }
+};
+
+await updateCreatorFollowButton(userId, followButton);
+
       name.startsWith("@") ? name : "@" + name;
 
     document.getElementById("publicCreatorBio").textContent =

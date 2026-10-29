@@ -611,6 +611,40 @@
   }
 }
 
+/* GiriShorts: tombol lebih nyaman di HP */
+#videoFeed .short-feed-card .video-info button {
+  min-height: 42px;
+  border-radius: 12px;
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+  touch-action: manipulation;
+}
+
+#videoFeed .short-feed-card .video-info .like-btn {
+  padding: 8px 12px;
+  font-weight: 700;
+}
+
+#videoFeed .short-feed-card .video-info .like-btn.liked {
+  color: #ff4057;
+}
+
+#videoFeed .short-feed-card .video-info .btn {
+  padding: 9px 14px;
+  font-weight: 600;
+}
+
+#videoFeed .short-feed-card .video-info button:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 599px) {
+  #videoFeed .short-feed-card .video-info button {
+    font-size: 13px;
+  }
+}
+
 
   </style>
 </head>

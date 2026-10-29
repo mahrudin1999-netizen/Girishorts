@@ -441,6 +441,48 @@
   }
 }
 
+/* GiriShorts: rapikan interaksi video di beranda */
+#videoFeed .short-feed-card .video-info .video-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+#videoFeed .short-feed-card .video-info button {
+  max-width: 100%;
+  min-height: 38px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+#videoFeed .short-feed-card .video-info .btn {
+  margin-top: 4px;
+}
+
+#videoFeed .short-feed-card .video-info .panel {
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+#videoFeed .short-feed-card .video-info .delete-btn {
+  display: block;
+  margin-top: 10px;
+}
+
+@media (max-width: 599px) {
+  #videoFeed .short-feed-card .video-info {
+    max-height: 65%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  #videoFeed .short-feed-card .video-info button {
+    font-size: 13px;
+  }
+}
+
   </style>
 </head>
 <body>

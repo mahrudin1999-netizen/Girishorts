@@ -562,6 +562,55 @@
 
 #videoFeed .short-feed-card .short-actions .comment-action {
 
+/* GiriShorts: sentuhan akhir tampilan video */
+#videoFeed .short-feed-card {
+  background: #000;
+  isolation: isolate;
+}
+
+#videoFeed .short-feed-card .video-player {
+  background: #000;
+  object-fit: contain;
+}
+
+#videoFeed .short-feed-card .video-info {
+  padding-top: 56px;
+  padding-bottom: 24px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.25) 35%,
+    rgba(0, 0, 0, 0.88) 100%
+  );
+}
+
+#videoFeed .short-feed-card .video-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+#videoFeed .short-feed-card .creator-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#videoFeed .short-feed-card .creator-row img {
+  flex-shrink: 0;
+}
+
+@media (max-width: 599px) {
+  #videoFeed .short-feed-card .video-title {
+    font-size: 15px;
+  }
+
+  #videoFeed .short-feed-card .video-info {
+    padding-bottom: 20px;
+  }
+}
+
 
   </style>
 </head>

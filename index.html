@@ -362,6 +362,15 @@
   <main>
     <div id="globalNotice" class="notice" role="status"></div>
 
+<button type="button" onclick="openCreatorNotifications()">
+  🔔 Notifikasi
+  <span id="creatorNotificationBadge"
+        style="display:none;background:red;color:white;
+               padding:2px 6px;border-radius:10px;">
+    0
+  </span>
+</button>
+
     <!-- BAGIAN BERANDA -->
     <section id="homeTab" class="tab-page active">
       <h1 class="page-title">Beranda 🔥</h1>
@@ -716,7 +725,7 @@
       $("signupBtn").disabled = false;
     }
   }
-
+loadCreatorNotificationBadge();
   async function signup() {
     hideNotice();
 
@@ -2360,6 +2369,153 @@ document
   .getElementById("uploadAvatarBtn")
   .addEventListener("click", uploadMyAvatar);
 
+async function loadCreatorNotificationBadge() {
+  const badge = document.getElementById("creatorNotificationBadge");
+
+  try {
+    const { data: authData, error: authError } = await db.auth.getUser();
+    if (authError) throw authError;
+
+    if (!authData.user) {
+      badge.style.display = "none";
+      return;
+    }
+
+    const { count, error } = await db
+      .from("creator_notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("recipient_id", authData.user.id)
+      .eq("is_read", false);
+
+    if (error) throw error;
+
+    const unread = count || 0;
+    badge.textContent = unread > 99 ? "99+" : String(unread);
+    badge.style.display = unread > 0 ? "inline-block" : "none";
+  } catch (error) {
+    console.error("Gagal memuat jumlah notifikasi:", error);
+  }
+}
+
+async function openCreatorNotifications() {
+  const panel = document.getElementById("creatorNotificationsPanel");
+  const list = document.getElementById("creatorNotificationsList");
+  const message = document.getElementById("creatorNotificationsMessage");
+
+  panel.style.display = "block";
+  list.replaceChildren();
+  message.textContent = "Memuat notifikasi...";
+
+  try {
+    const { data: authData, error: authError } = await db.auth.getUser();
+    if (authError) throw authError;
+
+    const user = authData.user;
+
+    if (!user) {
+      message.textContent = "Silakan login untuk melihat notifikasi.";
+      return;
+    }
+
+    const { data: notifications, error } = await db
+      .from("creator_notifications")
+      .select("id, actor_id, created_at, is_read")
+      .eq("recipient_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+
+    if (!notifications || notifications.length === 0) {
+      message.textContent = "Belum ada notifikasi.";
+      await loadCreatorNotificationBadge();
+      return;
+    }
+
+    const actorIds = [...new Set(notifications.map(n => n.actor_id))];
+
+    const { data: profiles, error: profileError } = await db
+      .from("profiles")
+      .select("id, username, avatar_url")
+      .in("id", actorIds);
+
+    if (profileError) throw profileError;
+
+    const profileMap = new Map((profiles || []).map(p => [p.id, p]));
+
+    for (const notification of notifications) {
+      const profile = profileMap.get(notification.actor_id);
+      const card = document.createElement("div");
+
+      card.style.cssText =
+        "display:flex;align-items:center;gap:12px;padding:12px;" +
+        "border:1px solid #444;border-radius:12px;";
+
+      if (!notification.is_read) {
+        card.style.background = "#252525";
+      }
+
+      const avatar = document.createElement("img");
+      avatar.src = profile?.avatar_url || "";
+      avatar.alt = "Avatar";
+      avatar.style.cssText =
+        "width:48px;height:48px;border-radius:50%;object-fit:cover;";
+      avatar.onerror = function () {
+        this.onerror = null;
+        this.removeAttribute("src");
+      };
+
+      const textBox = document.createElement("div");
+      const name = document.createElement("strong");
+      name.textContent = "@" + (profile?.username || "Kreator");
+
+      const text = document.createElement("p");
+      text.textContent = "mulai mengikuti kamu.";
+      text.style.margin = "4px 0";
+
+      const time = document.createElement("small");
+      time.textContent = new Date(notification.created_at).toLocaleString("id-ID");
+
+      textBox.append(name, text, time);
+      card.append(avatar, textBox);
+
+      card.style.cursor = "pointer";
+      card.onclick = async () => {
+        try {
+          if (!notification.is_read) {
+            const { error: updateError } = await db
+              .from("creator_notifications")
+              .update({ is_read: true })
+              .eq("id", notification.id);
+
+            if (updateError) throw updateError;
+            notification.is_read = true;
+            await loadCreatorNotificationBadge();
+          }
+
+          openCreatorProfile(notification.actor_id);
+          closeCreatorNotifications();
+        } catch (error) {
+          console.error("Gagal menandai notifikasi:", error);
+          alert("Notifikasi belum bisa diperbarui. Coba lagi.");
+        }
+      };
+
+      list.appendChild(card);
+    }
+
+    message.textContent = notifications.length + " notifikasi terbaru.";
+    await loadCreatorNotificationBadge();
+  } catch (error) {
+    console.error("Gagal memuat notifikasi:", error);
+    message.textContent = "Notifikasi gagal dimuat. Periksa koneksi dan izin Supabase.";
+  }
+}
+
+function closeCreatorNotifications() {
+  document.getElementById("creatorNotificationsPanel").style.display = "none";
+}
+
 </script>
 
 <!-- Jendela profil publik kreator -->
@@ -2441,6 +2597,21 @@ document
   <div id="followingCreatorsList"
        style="display:grid;gap:12px;"></div>
 </section>
+
+<div id="creatorNotificationsPanel"
+     style="display:none;position:fixed;inset:0;z-index:10000;
+            background:#111;color:white;overflow-y:auto;padding:18px;">
+  <div style="max-width:600px;margin:auto;">
+    <button type="button" onclick="closeCreatorNotifications()">
+      ← Kembali
+    </button>
+
+    <h2>🔔 Notifikasi</h2>
+    <p id="creatorNotificationsMessage">Memuat notifikasi...</p>
+    <div id="creatorNotificationsList"
+         style="display:grid;gap:12px;padding-bottom:30px;"></div>
+  </div>
+</div>
 
 </body>
 </html>

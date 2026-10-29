@@ -714,6 +714,7 @@
       setAuthStatus("Berhasil masuk!");
       showNotice("Login berhasil. Selamat datang kembali!", "success");
 
+
 db.auth.onAuthStateChange((event, session) => {
   currentUser = session?.user ?? null;
   updateAccountUI();
@@ -733,7 +734,6 @@ db.auth.onAuthStateChange((event, session) => {
   }
 });
 
-      await loadFeed();
       showTab("homeTab");
     } catch (error) {
       setAuthStatus("Login gagal: " + error.message);

@@ -347,6 +347,94 @@
         padding: 22px;
       }
     }
+    
+/* GiriShorts: tampilan feed video vertikal */
+#videoFeed {
+  height: calc(100dvh - 250px);
+  min-height: 380px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  background: #000;
+}
+
+#videoFeed::-webkit-scrollbar {
+  display: none;
+}
+
+#videoFeed .short-feed-card {
+  position: relative;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background: #000;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  isolation: isolate;
+}
+
+#videoFeed .short-feed-card .video-player {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  aspect-ratio: auto;
+  object-fit: contain;
+  background: #000;
+}
+
+#videoFeed .short-feed-card .video-info {
+  position: absolute;
+  z-index: 2;
+  inset: auto 0 0;
+  padding: 48px 14px 18px;
+  color: #fff;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 0, 0, .45) 28%,
+    rgba(0, 0, 0, .88)
+  );
+}
+
+#videoFeed .short-feed-card .video-title {
+  font-size: 15px;
+  line-height: 1.45;
+  margin-bottom: 6px;
+}
+
+#videoFeed .short-feed-card .video-meta {
+  margin-bottom: 8px;
+}
+
+#videoFeed .short-feed-card .video-stats {
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+#videoFeed .short-feed-card .creator-row {
+  cursor: pointer;
+}
+
+@media (max-width: 599px) {
+  #videoFeed {
+    width: 100%;
+    height: calc(100dvh - 250px);
+    min-height: 380px;
+  }
+
+  #videoFeed .short-feed-card .video-info {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -1716,23 +1804,83 @@ creatorLabel.addEventListener("click", () => {
   }
 
   // TAMPILKAN KARTU VIDEO
-  function renderVideoList(container, videos, isOwn = false) {
-    container.replaceChildren();
+  
+function renderVideoList(container, videos, isOwn = false) {
+  container.replaceChildren();
 
-    if (!videos.length) {
-      const empty = document.createElement("div");
-      empty.className = "empty-state";
-      empty.textContent = isOwn
-        ? "Kamu belum mengunggah video."
-        : "Belum ada video. Jadilah yang pertama mengunggah!";
-      container.appendChild(empty);
-      return;
+  if (!videos.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    empty.textContent = isOwn
+      ? "Kamu belum mengunggah video."
+      : "Belum ada video. Jadilah yang pertama mengunggah!";
+    container.appendChild(empty);
+    return;
+  }
+
+  videos.forEach((video) => {
+    const card = createVideoCard(video, isOwn);
+
+    // Terapkan mode video pendek hanya pada beranda.
+    if (container.id === "videoFeed") {
+      card.classList.add("short-feed-card");
+
+      const player = card.querySelector("video");
+
+      if (player) {
+        player.controls = false;
+        player.muted = true;
+        player.loop = true;
+        player.playsInline = true;
+        player.preload = "metadata";
+      }
     }
 
-    videos.forEach((video) => {
-      container.appendChild(createVideoCard(video, isOwn));
-    });
+    container.appendChild(card);
+  });
+
+  if (container.id === "videoFeed") {
+    setupShortFeedPlayback();
   }
+}
+
+let shortFeedObserver = null;
+
+function setupShortFeedPlayback() {
+  const feed = document.getElementById("videoFeed");
+  if (!feed) return;
+
+  if (shortFeedObserver) {
+    shortFeedObserver.disconnect();
+  }
+
+  const players = feed.querySelectorAll(
+    ".short-feed-card video"
+  );
+
+  shortFeedObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const player = entry.target;
+
+      if (entry.isIntersecting &&
+          entry.intersectionRatio >= 0.65) {
+        player.play().catch(() => {
+          // Pemutaran dapat memerlukan interaksi pengguna.
+        });
+      } else {
+        player.pause();
+      }
+    });
+  }, {
+    root: feed,
+    threshold: [0, 0.65, 1]
+  });
+
+  players.forEach((player) => {
+    shortFeedObserver.observe(player);
+  });
+}
+
 
   // MEMUAT BERANDA
   async function loadFeed() {

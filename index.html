@@ -1714,7 +1714,7 @@ async function loadCreatorConnections(mode) {
     message.textContent = profiles.length + " akun ditemukan.";
   } catch (error) {
     console.error("Gagal memuat daftar kreator:", error);
-    message.textContent = "Daftar gagal dimuat. Periksa koneksi dan izin akses.";
+    message.textContent = "Error: " + (error?.message || String(error));
   }
 }
 

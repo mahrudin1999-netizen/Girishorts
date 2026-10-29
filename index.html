@@ -1249,6 +1249,19 @@ async function toggleCreatorFollow(creatorId, button) {
     }
 
     await updateCreatorFollowButton(creatorId, button);
+
+// Perbarui daftar kreator yang diikuti jika tersedia
+if (
+  typeof showFollowingCreators === "function" &&
+  document.getElementById("followingCreatorsSection")?.style.display !== "none"
+) {
+  await showFollowingCreators();
+}
+
+// Perbarui jumlah pengikut jika fungsi ini tersedia
+if (typeof loadCreatorNotificationBadge === "function") {
+  await loadCreatorNotificationBadge();
+}
   } catch (error) {
     console.error("Gagal memperbarui Follow:", error);
     alert("Follow gagal diperbarui. Periksa login dan pengaturan Supabase.");

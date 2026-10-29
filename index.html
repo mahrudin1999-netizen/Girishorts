@@ -1178,6 +1178,35 @@ async function updateCreatorFollowButton(creatorId, button) {
   }
 }
 
+async function loadCreatorFollowCounts(creatorId) {
+  const followerElement =
+    document.getElementById("publicCreatorFollowerCount");
+
+  const followingElement =
+    document.getElementById("publicCreatorFollowingCount");
+
+  followerElement.textContent = "...";
+  followingElement.textContent = "...";
+
+  const [followersResult, followingResult] = await Promise.all([
+    db
+      .from("creator_follows")
+      .select("follower_id", { count: "exact", head: true })
+      .eq("following_id", creatorId),
+
+    db
+      .from("creator_follows")
+      .select("following_id", { count: "exact", head: true })
+      .eq("follower_id", creatorId)
+  ]);
+
+  if (followersResult.error) throw followersResult.error;
+  if (followingResult.error) throw followingResult.error;
+
+  followerElement.textContent = followersResult.count ?? 0;
+  followingElement.textContent = followingResult.count ?? 0;
+}
+
 async function openCreatorProfile(userId) {
   if (!userId) return;
 
@@ -1194,6 +1223,8 @@ async function openCreatorProfile(userId) {
   message.textContent = "Memuat video kreator...";
 
   try {
+await loadCreatorFollowCounts(userId);
+
     // Ambil profil kreator
     const { data: profile, error: profileError } = await db
       .from("profiles")
@@ -2260,6 +2291,18 @@ document
         <p id="publicCreatorVideoCount" style="margin:6px 0 0;color:#bbb;">
           0 video
         </p>
+       
+<div style="display:flex;gap:20px;margin-top:10px;">
+  <div>
+    <strong id="publicCreatorFollowerCount">0</strong>
+    <span> Pengikut</span>
+  </div>
+  <div>
+    <strong id="publicCreatorFollowingCount">0</strong>
+    <span> Mengikuti</span>
+  </div>
+</div>
+ 
       </div>
     </div>
 

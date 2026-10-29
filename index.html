@@ -1207,8 +1207,102 @@ async function loadCreatorFollowCounts(creatorId) {
   followingElement.textContent = followingResult.count ?? 0;
 }
 
+async function loadCreatorConnections(mode) {
+  const creatorId = window.activeCreatorProfileId;
+
+  if (!creatorId) {
+    alert("Buka profil kreator terlebih dahulu.");
+    return;
+  }
+
+  const panel = document.getElementById("creatorConnectionsPanel");
+  const title = document.getElementById("creatorConnectionsTitle");
+  const message = document.getElementById("creatorConnectionsMessage");
+  const list = document.getElementById("creatorConnectionsList");
+
+  panel.style.display = "block";
+  list.replaceChildren();
+  title.textContent = mode === "followers" ? "Pengikut" : "Mengikuti";
+  message.textContent = "Memuat daftar...";
+
+  try {
+    const column = mode === "followers" ? "follower_id" : "following_id";
+    const filterColumn = mode === "followers" ? "following_id" : "follower_id";
+
+    const { data: rows, error } = await db
+      .from("creator_follows")
+      .select(column)
+      .eq(filterColumn, creatorId);
+
+    if (error) throw error;
+
+    const userIds = [...new Set((rows || []).map(row => row[column]))];
+
+    if (userIds.length === 0) {
+      message.textContent = "Belum ada " +
+        (mode === "followers" ? "pengikut." : "kreator yang diikuti.");
+      return;
+    }
+
+    const { data: profiles, error: profileError } = await db
+      .from("profiles")
+      .select("id, username, avatar_url, bio")
+      .in("id", userIds);
+
+    if (profileError) throw profileError;
+
+    if (!profiles || profiles.length === 0) {
+      message.textContent = "Profil belum tersedia.";
+      return;
+    }
+
+    profiles.forEach(profile => {
+      const card = document.createElement("div");
+      card.style.cssText =
+        "display:flex;align-items:center;gap:12px;padding:12px;" +
+        "border:1px solid #444;border-radius:12px;cursor:pointer;";
+
+      const avatar = document.createElement("img");
+      avatar.src = profile.avatar_url || "";
+      avatar.alt = "Avatar kreator";
+      avatar.style.cssText =
+        "width:48px;height:48px;border-radius:50%;object-fit:cover;";
+      avatar.onerror = function () {
+        this.onerror = null;
+        this.removeAttribute("src");
+      };
+
+      const details = document.createElement("div");
+      const name = document.createElement("strong");
+      name.textContent = "@" + (profile.username || "Kreator GiriShorts");
+
+      const bio = document.createElement("p");
+      bio.textContent = profile.bio || "Belum ada bio.";
+      bio.style.margin = "4px 0 0";
+
+      details.append(name, bio);
+      card.append(avatar, details);
+      card.onclick = () => openCreatorProfile(profile.id);
+      list.appendChild(card);
+    });
+
+    message.textContent = profiles.length + " akun ditemukan.";
+  } catch (error) {
+    console.error("Gagal memuat daftar kreator:", error);
+    message.textContent = "Daftar gagal dimuat. Periksa koneksi dan izin akses.";
+  }
+}
+
+function showCreatorFollowers() {
+  return loadCreatorConnections("followers");
+}
+
+function showCreatorFollowing() {
+  return loadCreatorConnections("following");
+}
+
 async function openCreatorProfile(userId) {
-  if (!userId) return;
+  if (!userId) return;window.activeCreatorProfileId = userId;
 
   const modal = document.getElementById("creatorProfileModal");
   const videoList = document.getElementById("publicCreatorVideos");
@@ -2300,6 +2394,28 @@ document
   <div>
     <strong id="publicCreatorFollowingCount">0</strong>
     <span> Mengikuti</span>
+    
+<div style="display:flex;gap:10px;margin-top:12px;">
+  <button type="button"
+          onclick="showCreatorFollowers()"
+          style="padding:8px 12px;border-radius:10px;">
+    Lihat Pengikut
+  </button>
+  <button type="button"
+          onclick="showCreatorFollowing()"
+          style="padding:8px 12px;border-radius:10px;">
+    Lihat Mengikuti
+  </button>
+</div>
+
+<div id="creatorConnectionsPanel"
+     style="display:none;margin-top:16px;">
+  <h3 id="creatorConnectionsTitle">Daftar Kreator</h3>
+  <p id="creatorConnectionsMessage"></p>
+  <div id="creatorConnectionsList"
+       style="display:grid;gap:12px;"></div>
+</div>
+
   </div>
 </div>
  

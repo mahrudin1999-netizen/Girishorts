@@ -369,6 +369,10 @@
         Tonton video terbaru dari komunitas GiriShorts.
       </p>
 
+<button type="button" onclick="showFollowingCreators()">
+  ❤️ Kreator Diikuti
+</button>
+
       <div class="button-row" style="margin-bottom:16px">
         <button class="btn btn-secondary" id="refreshFeedBtn" type="button">
           ↻ Muat ulang video
@@ -925,6 +929,84 @@
   $("uploadForm").addEventListener("submit", uploadVideo);
 </script>
 <script>
+  
+async function showFollowingCreators() {
+  const section = document.getElementById("followingCreatorsSection");
+  const list = document.getElementById("followingCreatorsList");
+  const message = document.getElementById("followingCreatorsMessage");
+
+  section.style.display = "block";
+  list.replaceChildren();
+  message.textContent = "Memuat daftar kreator...";
+
+  try {
+    const following = JSON.parse(
+      localStorage.getItem("girishorts_following") || "[]"
+    );
+
+    if (!Array.isArray(following) || following.length === 0) {
+      message.textContent = "Kamu belum mengikuti kreator mana pun.";
+      return;
+    }
+
+    const { data: profiles, error } = await db
+      .from("profiles")
+      .select("id, username, avatar_url, bio")
+      .in("id", following);
+
+    if (error) throw error;
+
+    list.replaceChildren();
+
+    if (!profiles || profiles.length === 0) {
+      message.textContent = "Profil kreator belum ditemukan.";
+      return;
+    }
+
+    profiles.forEach(profile => {
+      const card = document.createElement("div");
+      card.style.cssText =
+        "display:flex;align-items:center;gap:12px;padding:12px;" +
+        "border:1px solid #444;border-radius:12px;";
+
+      const avatar = document.createElement("img");
+      avatar.src = profile.avatar_url || "";
+      avatar.alt = "Foto kreator";
+      avatar.style.cssText =
+        "width:52px;height:52px;border-radius:50%;object-fit:cover;";
+      avatar.onerror = function () {
+        this.onerror = null;
+        this.removeAttribute("src");
+      };
+
+      const details = document.createElement("div");
+      const name = document.createElement("strong");
+      name.textContent = "@" + (profile.username || "Kreator GiriShorts");
+
+      const bio = document.createElement("p");
+      bio.textContent = profile.bio || "Belum ada bio.";
+      bio.style.margin = "5px 0 0";
+
+      details.append(name, bio);
+      card.append(avatar, details);
+
+      card.style.cursor = "pointer";
+      card.onclick = () => openCreatorProfile(profile.id);
+
+      list.appendChild(card);
+    });
+
+    message.textContent = profiles.length + " kreator diikuti.";
+  } catch (error) {
+    console.error("Gagal memuat kreator yang diikuti:", error);
+    message.textContent = "Daftar gagal dimuat. Coba lagi.";
+  }
+}
+
+function hideFollowingCreators() {
+  document.getElementById("followingCreatorsSection").style.display = "none";
+}
+
   // AMBIL DATA SUKA, TAYANGAN, DAN STATUS SUKA
   async function loadVideoStats(videoIds) {
     likesCache = new Map();
@@ -2098,6 +2180,18 @@ document
          style="display:grid;gap:16px;padding-bottom:30px;"></div>
   </div>
 </div>
+
+<section id="followingCreatorsSection"
+         style="display:none;padding:16px;">
+  <button type="button" onclick="hideFollowingCreators()">
+    ← Kembali
+  </button>
+
+  <h2>❤️ Kreator yang Diikuti</h2>
+  <p id="followingCreatorsMessage"></p>
+  <div id="followingCreatorsList"
+       style="display:grid;gap:12px;"></div>
+</section>
 
 </body>
 </html>

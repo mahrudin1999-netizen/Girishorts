@@ -397,35 +397,37 @@
   position: absolute;
   z-index: 2;
   inset: auto 0 0;
-  padding: 48px 14px 18px;
+  padding: 64px 16px 22px;
   color: #fff;
   background: linear-gradient(
     to bottom,
-    transparent,
-    rgba(0, 0, 0, .45) 28%,
-    rgba(0, 0, 0, .88)
+    transparent 0%,
+    rgba(0, 0, 0, 0.35) 30%,
+    rgba(0, 0, 0, 0.88) 100%
   );
+  overflow-wrap: anywhere;
 }
 
 #videoFeed .short-feed-card .video-title {
+  color: #fff;
   font-size: 15px;
-  line-height: 1.45;
-  margin-bottom: 6px;
+  line-height: 1.5;
+  margin-bottom: 8px;
 }
 
 #videoFeed .short-feed-card .video-meta {
+  color: rgba(255, 255, 255, 0.85);
   margin-bottom: 8px;
 }
 
 #videoFeed .short-feed-card .video-stats {
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 #videoFeed .short-feed-card .creator-row {
   cursor: pointer;
 }
-
 @media (max-width: 599px) {
   #videoFeed {
     width: 100%;

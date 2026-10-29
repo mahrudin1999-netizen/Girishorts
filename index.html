@@ -2188,73 +2188,93 @@ await loadVideoStats(
   }
 
   // SUKA DAN BATAL SUKA
-  async function toggleLike(videoId) {
-    if (!currentUser) {
-      showNotice("Masuk ke akun terlebih dahulu untuk menyukai video.", "error");
-      showTab("accountTab");
-      return;
-    }
+  
+async function toggleLike(videoId) {
+  if (!currentUser) {
+    showNotice(
+      "Masuk ke akun terlebih dahulu untuk menyukai video.",
+      "error"
+    );
+    showTab("accountTab");
+    return;
+  }
 
-    if (busyLikes.has(videoId)) return;
+  if (busyLikes.has(videoId)) return;
 
-    busyLikes.add(videoId);
+  busyLikes.add(videoId);
 
-    const wasLiked = likedCache.has(videoId);
+  try {
+    // Periksa status suka langsung dari database.
+    const { data: existingLike, error: checkError } = await db
+      .from("video_likes")
+      .select("video_id")
+      .eq("video_id", videoId)
+      .eq("user_id", currentUser.id)
+      .maybeSingle();
 
-    try {
-      let error;
+    if (checkError) throw checkError;
 
-      if (wasLiked) {
-        ({ error } = await db
-          .from("video_likes")
-          .delete()
-          .eq("video_id", videoId)
-          .eq("user_id", currentUser.id));
-      } else {
-        ({ error } = await db
-          .from("video_likes")
-          .insert({
-            video_id: videoId,
-            user_id: currentUser.id
-          }));
-      }
+    if (existingLike) {
+      // Jika sudah suka, hapus suka.
+      const { error } = await db
+        .from("video_likes")
+        .delete()
+        .eq("video_id", videoId)
+        .eq("user_id", currentUser.id);
 
       if (error) throw error;
 
-      if (wasLiked) {
-        likedCache.delete(videoId);
-        likesCache.set(
-          videoId,
-          Math.max(0, (likesCache.get(videoId) || 0) - 1)
-        );
-      } else {
-        likedCache.add(videoId);
-        likesCache.set(
-          videoId,
-          (likesCache.get(videoId) || 0) + 1
-        );
-      }
+      likedCache.delete(videoId);
+      likesCache.set(
+        videoId,
+        Math.max(0, (likesCache.get(videoId) || 0) - 1)
+      );
+    } else {
+      // Jika belum suka, tambahkan suka.
+      const { error } = await db
+        .from("video_likes")
+        .insert({
+          video_id: videoId,
+          user_id: currentUser.id
+        });
 
-      // Perbarui tombol pada beranda dan halaman Video Saya.
-      document.querySelectorAll(".video-card").forEach((card) => {
-        if (card.dataset.videoId !== videoId) return;
+      if (error) throw error;
 
-        const button = card.querySelector('[data-action="like"]');
-        if (!button) return;
-
-        const liked = likedCache.has(videoId);
-        const count = likesCache.get(videoId) || 0;
-
-        button.classList.toggle("liked", liked);
-        button.textContent = (liked ? "❤️" : "🤍") + " Suka " + count;
-        button.setAttribute("aria-pressed", liked ? "true" : "false");
-      });
-    } catch (error) {
-      showNotice("Gagal memperbarui suka: " + error.message, "error");
-    } finally {
-      busyLikes.delete(videoId);
+      likedCache.add(videoId);
+      likesCache.set(
+        videoId,
+        (likesCache.get(videoId) || 0) + 1
+      );
     }
+
+    // Perbarui tombol suka di semua tampilan video.
+    document.querySelectorAll(".video-card").forEach((card) => {
+      if (card.dataset.videoId !== videoId) return;
+
+      const button = card.querySelector('[data-action="like"]');
+      if (!button) return;
+
+      const liked = likedCache.has(videoId);
+      const count = likesCache.get(videoId) || 0;
+
+      button.classList.toggle("liked", liked);
+      button.textContent =
+        (liked ? "❤️" : "🤍") + " Suka " + count;
+      button.setAttribute(
+        "aria-pressed",
+        liked ? "true" : "false"
+      );
+    });
+  } catch (error) {
+    showNotice(
+      "Gagal memperbarui suka: " + error.message,
+      "error"
+    );
+  } finally {
+    busyLikes.delete(videoId);
   }
+}
+
 
   // HAPUS VIDEO MILIK SENDIRI
   async function deleteVideo(video) {

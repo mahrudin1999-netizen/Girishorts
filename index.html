@@ -530,6 +530,36 @@
   }
 }
 
+/* Tombol suka pada sisi kanan video */
+#videoFeed .short-feed-card .short-actions .like-btn {
+  width: 54px;
+  min-height: 58px;
+  padding: 6px 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #fff;
+  background: rgba(20, 20, 20, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+#videoFeed .short-feed-card .short-actions .like-btn.liked {
+  color: #ff4057;
+  background: rgba(30, 10, 15, 0.72);
+}
+
+#videoFeed .short-feed-card .short-actions .like-btn:active {
+  transform: scale(0.92);
+}
+
   </style>
 </head>
 <body>

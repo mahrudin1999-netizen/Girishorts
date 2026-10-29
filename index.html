@@ -1721,6 +1721,9 @@ async function loadCreatorConnections(mode) {
 function showCreatorFollowers() {
   return loadCreatorConnections("followers");
 }
+    function showCreatorFollowing() {
+  return loadCreatorConnections("following");
+}
 async function openCreatorProfile(userId) {
   if (!userId) return;window.activeCreatorProfileId = userId;
 

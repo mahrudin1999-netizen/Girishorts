@@ -1573,7 +1573,7 @@ if (typeof loadCreatorNotificationBadge === "function") {
 }
   } catch (error) {
     console.error("Gagal memperbarui Follow:", error);
-    alert("Follow gagal diperbarui. Periksa login dan pengaturan Supabase.");
+    alert("Follow gagal: " + (error?.message || String(error)));
   } finally {
     button.disabled = false;
   }

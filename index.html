@@ -1097,9 +1097,13 @@ async function logout() {
   if (button) button.disabled = true;
 
   try {
-    const { error } = await db.auth.signOut({
-      scope: "local"
-    });
+    
+const { data, error } = await db.auth.signOut({
+  scope: "local"
+});
+
+console.log("Hasil signOut:", { data, error });
+
 
     if (error) {
       showNotice("Gagal keluar: " + error.message, "error");

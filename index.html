@@ -352,9 +352,10 @@
     }
     
 /* GiriShorts: tampilan feed video vertikal */
+
 #videoFeed {
-  height: calc(100dvh - 250px);
-  min-height: 380px;
+  height: calc(100dvh - 160px);
+  min-height: 450px;
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior-y: contain;
@@ -362,6 +363,15 @@
   scrollbar-width: none;
   background: #000;
 }
+
+@media (max-width: 599px) {
+  #videoFeed {
+    width: 100%;
+    height: calc(100dvh - 160px);
+    min-height: 450px;
+  }
+}
+
 
 #videoFeed::-webkit-scrollbar {
   display: none;

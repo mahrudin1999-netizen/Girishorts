@@ -446,18 +446,17 @@
       </p>
 
       <div id="myVideoList">
-        <div class="empty-state">Login untuk melihat video kamu.</div>
-      </div>
-    </section>
-
-    
+  <div class="empty-state">
+    Login untuk melihat video kamu.
+  </div>
+</div>
 </section>
 
-    <section id="accountTab" class="tab-page">
-      <h1 class="page-title">Akun Saya 👤</h1>
-      <p class="page-desc">
-        Masuk atau buat akun untuk mengunggah dan menyukai video.
-      </p>
+<section id="accountTab" class="tab-page">
+  <h1 class="page-title">Akun</h1>
+  <p class="page-desc">
+    Masuk atau buat akun untuk mengunggah dan menyukai video.
+  </p>
 
       <div class="panel" id="authPanel">
         <div class="field">
@@ -1977,8 +1976,7 @@ await loadVideoStats(
   await loadFeed();
   await loadMyVideos();
 }
-
-startApp();
+window.addEventListener("load", startApp);
   // FITUR KOMENTAR GIRISHORTS
   
   // FITUR KOMENTAR DAN BALASAN GIRISHORTS 4.0

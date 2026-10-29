@@ -1788,7 +1788,10 @@ followButton.onclick = async () => {
 
 await updateCreatorFollowButton(userId, followButton);
 
-      name.startsWith("@") ? name : "@" + name;
+      
+document.getElementById("publicCreatorName").textContent =
+  name.startsWith("@") ? name : "@" + name;
+
 
     document.getElementById("publicCreatorBio").textContent =
       profile?.bio || "Kreator ini belum menambahkan bio.";

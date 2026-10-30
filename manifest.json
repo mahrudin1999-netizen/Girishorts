@@ -1,8 +1,8 @@
 {
-  "background_color": "#ffffff",
+  "background_color": "#dbb867",
   "description": "GIRINATAN, tempat berbagi video pendek dan kreativitas.",
   "dir": "ltr",
-  "display": "fullscreen",
+  "display": "standalone",
   "name": "GIRINATAN",
   "orientation": "natural",
   "scope": "/",
@@ -39,7 +39,7 @@
   "categories": [
     "entertainment",
     "photo",
-    "photo &amp;amp; video",
+    "photo &amp;amp;amp; video",
     "social",
     "video"
   ]

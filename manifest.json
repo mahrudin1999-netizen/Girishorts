@@ -34,5 +34,13 @@
   ],
   "share_target": {
     "method": "GET"
-  }
+  },
+  "id": "girinatan",
+  "categories": [
+    "entertainment",
+    "photo",
+    "photo &amp; video",
+    "social",
+    "video"
+  ]
 }

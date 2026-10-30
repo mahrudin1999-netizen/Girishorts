@@ -24,8 +24,12 @@ self.addEventListener("activate", (event) => {
         keys
           .filter(
             (key) =>
-              key.startsWith("girishorts-") &&
-              key !== CACHE_NAME
+              (
+  key.startsWith("girishorts-") ||
+  key.startsWith("girinatan-")
+) &&
+key !== CACHE_NAME
+  
           )
           .map((key) => caches.delete(key))
       )

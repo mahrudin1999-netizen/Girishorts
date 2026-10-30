@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "girishorts-v2";
+const CACHE_NAME = "girinatan-v3";
 
 const APP_FILES = [
   "/Girishorts/",

@@ -3077,6 +3077,10 @@ text.style.margin = "4px 0";
 
       card.style.cursor = "pointer";
       console.log("DATA NOTIFIKASI:", notification);
+      alert(
+  "Jenis: " + notification.notification_type +
+  "\nVideo ID: " + notification.video_id
+);
       card.onclick = async () => {
         try {
           if (!notification.is_read) {

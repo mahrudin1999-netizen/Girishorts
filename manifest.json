@@ -1,58 +1,38 @@
 {
-  "id": "/Girishorts/",
+  "background_color": "#ffffff",
+  "description": "GIRINATAN, tempat berbagi video pendek dan kreativitas.",
+  "dir": "ltr",
+  "display": "fullscreen",
   "name": "GIRINATAN",
+  "orientation": "natural",
+  "scope": "/",
   "short_name": "GIRINATAN",
-  "description": "Platform video pendek GIRINATAN untuk berbagi dan menemukan konten kreatif.",
-  "categories": [
-    "social",
-    "entertainment",
-    "video"
-  ]
-"prefer_related_applications": false,
-"start_url": "/Girishorts/",
-"scope": "/Girishorts/",
-"display": "standalone",
-"display_override": [
-"standalone",
-"minimal-ui"
-],
-  "launch_handler": {
-  "client_mode": "navigate-existing"
-},
-"orientation": "portrait",
-"background_color": "#0b0b0f",
-"theme_color": "#0b0b0f",
-"lang": "id",
-"dir": "ltr",
-"shortcuts": [
-{
-"name": "Beranda GiriShorts",
-"short_name": "Beranda",
-"description": "Buka halaman utama GiriShorts",
-"url": "/Girishorts/"
-}
-],
-"screenshots": [
-{
-"src": "/Girishorts/home.png",
-"sizes": "1080x1920",
-"type": "image/jpeg",
-"form_factor": "narrow",
-"label": "Halaman utama GiriShorts"
-}
-],
-"icons": [
-{
-"src": "/Girishorts/icon-192.png",
-"sizes": "192x192",
-"type": "image/png",
-"purpose": "any"
-},
-{
-"src": "/Girishorts/icon-512.png",
-"sizes": "512x512",
-"type": "image/png",
-"purpose": "any"
-}
-]
+  "start_url": "/",
+  "theme_color": "#080808",
+  "icons": [
+    {
+      "src": "https://mahrudin1999-netizen.github.io/Girishorts/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "isSquare": true,
+      "isPng": true,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 192,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": true
+    }
+  ],
+  "lang": "id",
+  "display_override": [
+    "fullscreen",
+    "browser",
+    "minimal-ui",
+    "standalone",
+    "window-controls-overlay"
+  ],
+  "share_target": {
+    "method": "GET"
+  }
 }

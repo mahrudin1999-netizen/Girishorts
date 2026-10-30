@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#080808">
   <title>GIRINATAN</title>
-  <meta name="description" content="GiriShorts, tempat berbagi video pendek.">
+  <meta name="description" content="GIRINATAN, tempat berbagi video pendek dan kreativitas.">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -350,7 +350,7 @@
         padding: 22px;
       }
     }
-  /* GiriShorts: feed video vertikal */
+  /* GIRINATAN: feed video vertikal */
 #videoFeed {
   height: calc(100dvh - 160px);
   min-height: 450px;
@@ -441,7 +441,7 @@
   }
 }
 
-/* GiriShorts: rapikan interaksi video di beranda */
+/* GIRINATAN: rapikan interaksi video di beranda */
 #videoFeed .short-feed-card .video-info .video-stats {
   display: flex;
   flex-wrap: wrap;
@@ -483,7 +483,7 @@
   }
 }
 
-/* GiriShorts: wadah tombol interaksi ala video pendek */
+/* GIRINATAN: wadah tombol interaksi ala video pendek */
 #videoFeed .short-feed-card .short-actions {
   position: absolute;
   z-index: 5;
@@ -562,7 +562,7 @@
 
 #videoFeed .short-feed-card .short-actions .comment-action {
 
-/* GiriShorts: sentuhan akhir tampilan video */
+/* GIRINATAN: sentuhan akhir tampilan video */
 #videoFeed .short-feed-card {
   background: #000;
   isolation: isolate;
@@ -611,7 +611,7 @@
   }
 }
 
-/* GiriShorts: tombol lebih nyaman di HP */
+/* GIRINATAN: tombol lebih nyaman di HP */
 #videoFeed .short-feed-card .video-info button {
   min-height: 42px;
   border-radius: 12px;
@@ -673,7 +673,7 @@
     <section id="homeTab" class="tab-page active">
       <h1 class="page-title">Beranda 🔥</h1>
       <p class="page-desc">
-        Tonton video terbaru dari komunitas GiriShorts.
+        Tonton video terbaru dari komunitas GIRINATAN.
       </p>
 
 <button type="button" onclick="showFollowingCreators()">
@@ -695,7 +695,7 @@
     <section id="uploadTab" class="tab-page">
       <h1 class="page-title">Unggah Video ⬆️</h1>
       <p class="page-desc">
-        Bagikan video kamu ke komunitas GiriShorts.
+        Bagikan video kamu ke komunitas GIRINATAN.
       </p>
 
       <div class="panel">
@@ -795,7 +795,7 @@
 
       <div class="panel" id="loggedInPanel" style="display:none">
         
-<!-- GiriShorts 5.0: Panel Profil -->
+<!-- GIRINATAN 5.0: Panel Profil -->
 <section id="profilePanel" class="panel" style="display:none;">
   <h2>👤 Profil Saya</h2>
 <div style="text-align:center; margin:16px 0;">
@@ -2976,7 +2976,7 @@ if (!badge) return;
 
     if (error) throw error;
 
-    const unread = count || 0;
+  const unread = count || 0;
     badge.textContent = unread > 99 ? "99+" : String(unread);
     badge.style.display = unread > 0 ? "inline-block" : "none";
   } catch (error) {
@@ -3228,7 +3228,7 @@ function closeCreatorNotifications() {
   </div>
 </div>
 
-<!-- Panel Notifikasi GiriShorts -->
+<!-- Panel Notifikasi GIRINATAN -->
 <div id="creatorNotificationsPanel"
      style="display:none;position:fixed;inset:0;z-index:10000;
             background:#111;color:white;overflow-y:auto;padding:18px;">

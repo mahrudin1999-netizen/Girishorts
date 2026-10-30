@@ -2993,7 +2993,9 @@ text.textContent =
     ? "menyukai video kamu ❤️"
     : notification.notification_type === "comment"
       ? "mengomentari video kamu 💬"
-      : "mulai mengikuti kamu.";
+      : notification.notification_type === "reply"
+        ? "membalas komentar kamu 💬"
+        : "mulai mengikuti kamu.";
 
 text.style.margin = "4px 0";
 

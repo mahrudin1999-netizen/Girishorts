@@ -2116,7 +2116,77 @@ function setupShortFeedPlayback() {
     shortFeedObserver.observe(player);
   });
 }
+async function openVideoFromNotification(videoId, commentId) {
+  if (!videoId) {
+    alert("Video tujuan tidak tersedia.");
+    return;
+  }
 
+  const feed = document.getElementById("videoFeed");
+  if (!feed) return;
+
+  const { data: video, error } = await db
+    .from("videos")
+    .select("id, user_id, title, video_path, created_at")
+    .eq("id", videoId)
+    .maybeSingle();
+
+  if (error || !video) {
+    alert("Video tidak ditemukan atau sudah dihapus.");
+    return;
+  }
+
+  const { data: profile } = await db
+    .from("profiles")
+    .select("id, username, avatar_url, bio")
+    .eq("id", video.user_id)
+    .maybeSingle();
+
+  if (profile) creatorProfilesCache.set(video.user_id, profile);
+
+  const { data: stats } = await db
+    .from("video_likes")
+    .select("user_id")
+    .eq("video_id", videoId);
+
+  likesCache.set(videoId, stats?.length || 0);
+
+  const card = createVideoCard(
+    video,
+    video.user_id === currentUser?.id
+  );
+
+  card.classList.add("short-feed-card");
+
+  const player = card.querySelector("video");
+  if (player) {
+    player.controls = false;
+    player.muted = true;
+    player.loop = true;
+    player.playsInline = true;
+  }
+
+  feed.replaceChildren(card);
+
+  setupShortFeedPlayback();
+
+  card.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+  if (commentId) {
+    const commentButton = card.querySelector("button.btn-secondary");
+
+    if (commentButton) {
+      commentButton.click();
+    }
+  }
+
+  setTimeout(() => {
+    player?.play().catch(() => {});
+  }, 500);
+    }
 
   // MEMUAT BERANDA
   async function loadFeed() {
@@ -2936,7 +3006,7 @@ await loadCreatorNotificationBadge();
 
     const { data: notifications, error } = await db
       .from("creator_notifications")
-      .select("id, actor_id, notification_type, created_at, is_read")
+      .select("id, actor_id, notification_type, video_id, comment_id, created_at, is_read")
       .eq("recipient_id", user.id)
       .order("created_at", { ascending: false })
       .limit(50);
@@ -3019,8 +3089,20 @@ text.style.margin = "4px 0";
             await loadCreatorNotificationBadge();
           }
 
-          openCreatorProfile(notification.actor_id);
           closeCreatorNotifications();
+
+if (
+  notification.notification_type === "like" ||
+  notification.notification_type === "comment" ||
+  notification.notification_type === "reply"
+) {
+  await openVideoFromNotification(
+    notification.video_id,
+    notification.comment_id
+  );
+} else {
+  openCreatorProfile(notification.actor_id);
+}
         } catch (error) {
           console.error("Gagal menandai notifikasi:", error);
           alert("Notifikasi belum bisa diperbarui. Coba lagi.");

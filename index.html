@@ -2936,7 +2936,7 @@ await loadCreatorNotificationBadge();
 
     const { data: notifications, error } = await db
       .from("creator_notifications")
-      .select("id, actor_id, created_at, is_read")
+      .select("id, actor_id, notification_type, created_at, is_read")
       .eq("recipient_id", user.id)
       .order("created_at", { ascending: false })
       .limit(50);
@@ -2987,8 +2987,13 @@ await loadCreatorNotificationBadge();
       name.textContent = "@" + (profile?.username || "Kreator");
 
       const text = document.createElement("p");
-      text.textContent = "mulai mengikuti kamu.";
-      text.style.margin = "4px 0";
+
+text.textContent =
+  notification.notification_type === "like"
+    ? "menyukai video kamu ❤️"
+    : "mulai mengikuti kamu.";
+
+text.style.margin = "4px 0";
 
       const time = document.createElement("small");
       time.textContent = new Date(notification.created_at).toLocaleString("id-ID");

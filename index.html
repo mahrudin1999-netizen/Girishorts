@@ -3012,7 +3012,17 @@ await loadCreatorNotificationBadge();
       .limit(50);
 
     if (error) throw error;
+console.log("NOTIFIKASI DARI SUPABASE:", notifications);
 
+alert(JSON.stringify(
+  notifications.map(n => ({
+    type: n.notification_type,
+    video_id: n.video_id,
+    comment_id: n.comment_id
+  })),
+  null,
+  2
+));
     if (!notifications || notifications.length === 0) {
       message.textContent = "Belum ada notifikasi.";
       await loadCreatorNotificationBadge();

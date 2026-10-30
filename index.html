@@ -2991,7 +2991,9 @@ await loadCreatorNotificationBadge();
 text.textContent =
   notification.notification_type === "like"
     ? "menyukai video kamu ❤️"
-    : "mulai mengikuti kamu.";
+    : notification.notification_type === "comment"
+      ? "mengomentari video kamu 💬"
+      : "mulai mengikuti kamu.";
 
 text.style.margin = "4px 0";
 

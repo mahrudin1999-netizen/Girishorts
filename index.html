@@ -3012,17 +3012,7 @@ await loadCreatorNotificationBadge();
       .limit(50);
 
     if (error) throw error;
-console.log("NOTIFIKASI DARI SUPABASE:", notifications);
 
-alert(JSON.stringify(
-  notifications.map(n => ({
-    type: n.notification_type,
-    video_id: n.video_id,
-    comment_id: n.comment_id
-  })),
-  null,
-  2
-));
     if (!notifications || notifications.length === 0) {
       message.textContent = "Belum ada notifikasi.";
       await loadCreatorNotificationBadge();
@@ -3086,11 +3076,7 @@ text.style.margin = "4px 0";
       card.append(avatar, textBox);
 
       card.style.cursor = "pointer";
-      console.log("DATA NOTIFIKASI:", notification);
-      alert(
-  "Jenis: " + notification.notification_type +
-  "\nVideo ID: " + notification.video_id
-);
+      
       card.onclick = async () => {
         try {
           if (!notification.is_read) {

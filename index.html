@@ -3078,11 +3078,7 @@ text.style.margin = "4px 0";
       card.style.cursor = "pointer";
       
       card.onclick = async () => {
-        alert(
-  "ID: " + notification.id +
-  "\nJenis: " + notification.notification_type +
-  "\nVideo: " + notification.video_id
-);
+        
         try {
           if (!notification.is_read) {
             const { error: updateError } = await db

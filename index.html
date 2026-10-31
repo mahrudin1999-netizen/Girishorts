@@ -48,10 +48,11 @@
       font: inherit;
     }
 
-    button {
+    
+button {
   cursor: pointer;
-  background: linear-gradient(135deg, #D6AD48, #A9822D);
-  color: #080B08;
+  background: linear-gradient(135deg, #E5C36A, #B88A2E);
+  color: #080808;
   border: 1px solid #E5C36A;
   border-radius: 12px;
   padding: 10px 16px;
@@ -59,6 +60,16 @@
   font-weight: 700;
   transition: 0.2s ease;
 }
+
+button:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
 
 button:hover {
   filter: brightness(1.12);
@@ -205,15 +216,37 @@ button:active {
       cursor: not-allowed;
     }
 
-    .btn-secondary {
-      background: var(--panel2);
-      border: 1px solid #3a3a3a;
-    }
+    
+.btn-secondary {
+  background: #202820;
+  color: #00C875;
+  border: 1px solid #3C9B65;
+  border-radius: 12px;
+  transition: 0.2s ease;
+}
 
-    .btn-danger {
-      background: #381319;
-      border: 1px solid #7e2631;
-    }
+.btn-secondary:hover {
+  background: #263D2E;
+  border-color: #00C875;
+  color: #FFFFFF;
+}
+
+
+    
+.btn-danger {
+  background: #301316;
+  color: #FF8A8A;
+  border: 1px solid #8B3038;
+  border-radius: 12px;
+  transition: 0.2s ease;
+}
+
+.btn-danger:hover {
+  background: #481820;
+  border-color: #FF626D;
+  color: #FFFFFF;
+}
+
 
     .btn-full {
       width: 100%;
@@ -710,11 +743,26 @@ button,
 }
 
 /* Header dan navigasi */
+
 .topbar,
 .bottom-nav {
-  background: #050805 !important;
-  border-color: #174D2B !important;
+  background: #080808 !important;
+  border-color: #806326 !important;
+  border-bottom: 1px solid #806326 !important;
 }
+
+/* Logo GIRI SHORTS */
+.topbar .brand,
+.topbar .logo {
+  color: #D6AD48 !important;
+}
+
+/* Navigasi aktif */
+.bottom-nav .active,
+.bottom-nav .active i {
+  color: #00C875 !important;
+}
+
 
 /* Logo dan navigasi aktif */
 .brand span,
@@ -763,18 +811,40 @@ textarea:focus {
   color: #D5E5D8 !important;
 }
 
+.brand {
+  color: #D6AD48 !important;
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.brand span {
+  color: #D6AD48 !important;
+}
+
+.brand-sub {
+  color: #A8ADA8;
+  font-size: 12px;
+}
+
+.status {
+  color: #00C875;
+}
+
 
   </style>
 </head>
 <body>
 
-  <header class="topbar">
-    <div>
-      <div class="brand">GIRI<span>NATAN</span></div>
-      <div class="brand-sub">Video pendek, cerita tanpa batas.</div>
-    </div>
-    <div class="status" id="loginStatus">Memeriksa akun...</div>
-  </header>
+  
+<header class="topbar">
+  <div>
+    <div class="brand">GIRI<span> NATAN</span></div>
+    <div class="brand-sub">Video pendek, cerita tanpa batas.</div>
+  </div>
+  <div class="status" id="loginStatus">Memeriksa akun...</div>
+</header>
+
 
   <main>
     <div id="globalNotice" class="notice" role="status"></div>

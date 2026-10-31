@@ -13,14 +13,16 @@
 
   <style>
     :root {
-      --bg: #080808;
-      --panel: #151515;
-      --panel2: #202020;
-      --red: #ff2638;
-      --text: #ffffff;
-      --muted: #a8a8a8;
-      --border: #303030;
-    }
+  --bg: #080B08;
+  --panel: #141914;
+  --panel2: #202820;
+  --red: #D6AD48;
+  --text: #ffffff;
+  --muted: #A8ADA8;
+  --border: #343B32;
+  --gold: #D6AD48;
+  --green: #3C9B65;
+}
 
     * {
       box-sizing: border-box;
@@ -39,8 +41,24 @@
     }
 
     button {
-      cursor: pointer;
-    }
+  cursor: pointer;
+  background: linear-gradient(135deg, #D6AD48, #A9822D);
+  color: #080B08;
+  border: 1px solid #E5C36A;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  filter: brightness(1.12);
+}
+
+button:active {
+  transform: scale(0.97);
+}
 
     .topbar {
       position: sticky;

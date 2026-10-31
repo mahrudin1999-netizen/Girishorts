@@ -69,7 +69,7 @@ self.addEventListener("fetch", (event) => {
           ) || (
             await caches.match("/Girishorts/index.html")
           ) || new Response(
-            "GiriShorts sedang offline.",
+            "GIRINATAN sedang offline.",
             {
               status: 503,
               headers: {

@@ -934,7 +934,31 @@ textarea:focus {
   color: #D6AD48;
   font-weight: 800;
 }
+/* GIRINATAN - Beranda */
+    #homeTab > button.btn-secondary {
+  background: #202020;
+  color: #D6AD48;
+  border: 1px solid #806326;
+  border-radius: 12px;
+  font-weight: 700;
+}
 
+#homeTab > button.btn-secondary:active {
+  transform: scale(0.97);
+}
+#homeTab .page-desc {
+  color: #A8ADA8;
+}
+
+#homeTab .button-row .btn-secondary {
+  background: #202020;
+  color: #D6AD48;
+  border: 1px solid #806326;
+}
+
+#homeTab #videoFeed {
+  background: #080808;
+}
 /* Deskripsi halaman */
 .page-desc {
   color: #A8ADA8;
@@ -1010,7 +1034,7 @@ textarea:focus {
         Tonton video terbaru dari komunitas GIRINATAN.
       </p>
 
-<button type="button" onclick="showFollowingCreators()">
+<button class="btn btn-secondary" type="button" onclick="showFollowingCreators()">
   ❤️ Kreator Diikuti
 </button>
 

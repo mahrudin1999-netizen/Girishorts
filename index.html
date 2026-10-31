@@ -258,34 +258,56 @@ button:active {
       gap: 9px;
     }
 
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 30;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      background: #101010;
-      border-top: 1px solid var(--border);
-      padding: 8px 5px calc(8px + env(safe-area-inset-bottom));
-    }
+    
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: #080808;
+  border-top: 1px solid #806326;
+  padding: 8px 5px calc(8px + env(safe-area-inset-bottom));
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.4);
+}
 
-    .nav-btn {
-      border: 0;
-      background: transparent;
-      color: #a8a8a8;
-      padding: 7px 2px;
-      font-size: 11px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-    }
 
-    .nav-btn .nav-icon {
-      font-size: 20px;
-    }
+    
+.nav-btn {
+  border: 0;
+  background: transparent !important;
+  color: #A8ADA8 !important;
+  padding: 7px 2px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  transition: 0.2s ease;
+}
+
+.nav-btn.active {
+  color: #00C875 !important;
+}
+
+.nav-btn:hover {
+  color: #D6AD48 !important;
+}
+
+.nav-btn.active i,
+.nav-btn.active svg {
+  color: #00C875 !important;
+  stroke: #00C875;
+}
+
+
+    
+.nav-ntn .tn .nav-icon {
+  font-size: 20px;
+}
+
 
     .nav-btn.active {
       color: var(--red);
@@ -350,14 +372,22 @@ button:active {
       font-size: 13px;
     }
 
-    .like-btn {
-      border: 1px solid #424242;
-      background: #242424;
-      color: white;
-      border-radius: 20px;
-      padding: 8px 13px;
-      font-weight: 700;
-    }
+    
+.like-btn {
+  border: 1px solid #806326;
+  background: #141414;
+  color: #D6AD48;
+  border-radius: 20px;
+  padding: 8px 13px;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.like-btn:hover {
+  border-color: #00C875;
+  color: #00C875;
+}
+
 
     .like-btn.liked {
       background: #40151c;
@@ -412,7 +442,7 @@ button:active {
       }
     }
   /* GIRINATAN: feed video vertikal */
-#videoFeed {
+    #videoFeed {
   height: calc(100dvh - 160px);
   min-height: 450px;
   overflow-y: auto;
@@ -420,7 +450,26 @@ button:active {
   overscroll-behavior-y: contain;
   scroll-snap-type: y mandatory;
   scrollbar-width: none;
-  background: #000;
+  background: #080808;
+}
+
+#videoFeed .short-feed-card .video-title {
+  color: #D6AD48 !important;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+#videoFeed .short-feed-card .video-meta {
+  color: #FFFFFF !important;
+}
+
+#videoFeed .short-feed-card .creator-row {
+  color: #D6AD48;
+}
+
+#videoFeed .short-feed-card .video-stats {
+  color: #00C875 !important;
 }
 
 #videoFeed::-webkit-scrollbar {
@@ -432,10 +481,10 @@ button:active {
   height: 100%;
   min-height: 100%;
   margin: 0;
-  border: 0;
+  border: 1px solid rgba(214, 173, 72, 0.25);
   border-radius: 0;
   overflow: hidden;
-  background: #000;
+  background: #080808;
   scroll-snap-align: start;
   scroll-snap-stop: always;
   isolation: isolate;
@@ -451,24 +500,32 @@ button:active {
   aspect-ratio: auto;
   object-fit: cover;
   object-position: center;
-  background: #000;
+  background: #080808;
 }
 
+    
 #videoFeed .short-feed-card .video-info {
   position: absolute;
   z-index: 2;
   inset: auto 0 0;
   padding: 64px 16px 22px;
-  color: #fff;
+  color: #FFFFFF;
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(0, 0, 0, 0.35) 30%,
-    rgba(0, 0, 0, 0.88) 100%
+    rgba(0, 0, 0, 0.40) 30%,
+    rgba(8, 8, 8, 0.96) 100%
   );
   overflow-wrap: anywhere;
 }
 
+#videoFeed .short-feed-card .video-info strong {
+  color: #D6AD48;
+}
+
+#videoFeed .short-feed-card .video-info a {
+  color: #00C875;
+}
 #videoFeed .short-feed-card .video-title {
   color: #fff;
   font-size: 15px;
@@ -545,6 +602,8 @@ button:active {
 }
 
 /* GIRINATAN: wadah tombol interaksi ala video pendek */
+
+
 #videoFeed .short-feed-card .short-actions {
   position: absolute;
   z-index: 5;
@@ -555,9 +614,29 @@ button:active {
   align-items: center;
   gap: 18px;
 }
+#videoFeed .short-feed-card .short-actions {
+  color: #FFFFFF;
+}
+
+#videoFeed .short-feed-card .short-actions .active {
+  color: #00C875 !important;
+}
+/* Ikon tombol aksi */
+#videoFeed .short-feed-card .short-actions button {
+  background: rgba(8, 8, 8, 0.82);
+  color: #D6AD48;
+  border: 1px solid rgba(214, 173, 72, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+/* Ikon aksi aktif */
+#videoFeed .short-feed-card .short-actions button.active {
+  color: #00C875;
+  border-color: #00C875;
+}
 
 #videoFeed .short-feed-card .short-actions button {
-  display: flex;
+    display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -565,20 +644,21 @@ button:active {
   min-width: 44px;
   min-height: 44px;
   padding: 5px;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.38);
-  border: 0;
+  color: #FFFFFF;
+  background: rgba(8, 8, 8, 0.65);
+  border: 1px solid rgba(214, 173, 72, 0.35);
   border-radius: 12px;
   font-size: 22px;
   cursor: pointer;
   touch-action: manipulation;
 }
 
+
 #videoFeed .short-feed-card .short-actions span {
   font-size: 11px;
   line-height: 1.2;
+  color: #FFFFFF;
 }
-
 #videoFeed .short-feed-card .short-actions button:active {
   transform: scale(0.94);
 }
@@ -601,10 +681,9 @@ button:active {
   align-items: center;
   justify-content: center;
   gap: 5px;
-  color: #fff;
-  background: rgba(20, 20, 20, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 14px;
+    color: #FFFFFF;
+  background: rgba(20, 20, 20, 0.75);
+  border: 1px solid rgba(214, 173, 72, 0.45); border-radius: 14px;
   font-size: 12px;
   font-weight: 700;
   line-height: 1.2;
@@ -613,19 +692,20 @@ button:active {
 }
 
 #videoFeed .short-feed-card .short-actions .like-btn.liked {
-  color: #ff4057;
-  background: rgba(30, 10, 15, 0.72);
+  color: #00C875 !important;
+  background: rgba(0, 200, 117, 0.15);
+  border: 1px solid #00C875;
 }
 
 #videoFeed .short-feed-card .short-actions .like-btn:active {
   transform: scale(0.92);
 }
 
-#videoFeed .short-feed-card .short-actions .comment-action {
+
 
 /* GIRINATAN: sentuhan akhir tampilan video */
 #videoFeed .short-feed-card {
-  background: #000;
+  background: #080808;
   isolation: isolate;
 }
 
@@ -751,7 +831,7 @@ button,
   border-bottom: 1px solid #806326 !important;
 }
 
-/* Logo GIRI SHORTS */
+/* Logo GIRINATAN */
 .topbar .brand,
 .topbar .logo {
   color: #D6AD48 !important;
@@ -794,12 +874,20 @@ textarea:focus {
   border-color: #00E676 !important;
 }
 
-/* Tombol suka */
+
+/* Tombol suka aktif */
 .like-btn.liked {
   background: #103B25 !important;
-  color: #00E676 !important;
-  border-color: #00E676 !important;
+  color: #00C875 !important;
+  border: 1px solid #00C875 !important;
+  box-shadow: 0 0 10px rgba(0, 200, 117, 0.25);
 }
+
+/* Efek saat tombol suka disentuh */
+.like-btn:active {
+  transform: scale(0.94);
+}
+
 
 /* Progress unggahan */
 .progress-bar {
@@ -807,9 +895,18 @@ textarea:focus {
 }
 
 /* Ikon dan garis */
+
 .video-stats {
-  color: #D5E5D8 !important;
+  color: #D6AD48 !important;
+  font-size: 12px;
+  font-weight: 600;
 }
+
+.video-stats .active,
+.video-stats .liked {
+  color: #00C875 !important;
+}
+
 
 .brand {
   color: #D6AD48 !important;
@@ -831,6 +928,27 @@ textarea:focus {
   color: #00C875;
 }
 
+
+/* Judul halaman */
+.page-title {
+  color: #D6AD48;
+  font-weight: 800;
+}
+
+/* Deskripsi halaman */
+.page-desc {
+  color: #A8ADA8;
+}
+
+/* Tampilan saat belum ada video */
+.empty-state {
+  background: #141414;
+  color: #A8ADA8;
+  border: 1px solid #806326;
+  border-radius: 14px;
+  padding: 22px;
+  text-align: center;
+}
 
   </style>
 </head>
@@ -993,18 +1111,18 @@ textarea:focus {
     alt="Foto profil"
     width="120"
     height="120"
-    style="width:120px;height:120px;object-fit:cover;border-radius:50%;border:3px solid #ff2638;display:block;margin:0 auto 12px;"
-  >
+  style="width:120px;height:120px;object-fit:cover;border-radius:50%;border:3px solid #D6AD48;display:block;margin:0 auto 12px;"
+    >
 
-  <label for="avatarFile" style="display:block;margin-bottom:10px;">
-    Pilih foto profil
-  </label>
+  <label for="avatarFile" style="display:block;margin-bottom:10px;color:#D6AD48;">
+  Pilih foto profil
+</label>
 
   <input
     id="avatarFile"
     type="file"
     accept="image/jpeg,image/png,image/webp"
-    style="max-width:100%;"
+    style="max-width:100%;color:#FFFFFF;"
   >
 
   <button
@@ -1017,20 +1135,20 @@ textarea:focus {
   </button>
 </div>
 
-  <label for="profileUsername">Nama pengguna</label>
-  <input
-    id="profileUsername"
-    type="text"
-    maxlength="30"
-    placeholder="Masukkan nama pengguna"
-  />
+  <label for="profileUsername" style="color:#D6AD48;">Nama pengguna</label>
+<input
+  id="profileUsername"
+  type="text"
+  maxlength="30"
+  placeholder="Masukkan nama pengguna"
+/>
 
-  <label for="profileBio">Bio</label>
-  <textarea
-    id="profileBio"
-    maxlength="160"
-    placeholder="Ceritakan sedikit tentang dirimu"
-  ></textarea>
+<label for="profileBio" style="color:#D6AD48;">Bio</label>
+<textarea
+  id="profileBio"
+  maxlength="160"
+  placeholder="Ceritakan sedikit tentang dirimu"
+></textarea>
 
   <button id="saveProfileBtn" class="btn" type="button">
     Simpan Profil
@@ -1039,7 +1157,7 @@ textarea:focus {
   <p id="profileMessage" class="small-note"></p>
 </section>
 
-        <div style="font-weight:800;margin-bottom:8px">Kamu sudah masuk ✅</div>
+        <div style="font-weight:800;margin-bottom:8px;color:#D6AD48;">Kamu sudah masuk ✅</div>
         <div class="video-meta" id="accountEmail"></div>
         <button class="btn btn-danger" id="logoutBtn" type="button">
           Keluar dari akun

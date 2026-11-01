@@ -2818,19 +2818,29 @@ async function toggleLike(videoId) {
 
   // MULAI APLIKASI
   async function startApp() {
-  await refreshSession();
-  updateAccountUI();
-  await loadMyProfile();
-  await loadFeed();
-  await loadMyVideos();
-}
-window.addEventListener("load", () => {
-  startApp().catch(error => {
+  showNotice("Tahap 1: Memulai aplikasi...", "info");
+
+  try {
+    await refreshSession();
+    showNotice("Tahap 2: Session berhasil", "info");
+
+    updateAccountUI();
+
+    await loadMyProfile();
+    showNotice("Tahap 3: Profil berhasil", "info");
+
+    await loadFeed();
+    showNotice("Tahap 4: Feed selesai diproses", "info");
+
+    await loadMyVideos();
+    showNotice("Tahap 5: Aplikasi selesai", "success");
+
+  } catch (error) {
     console.error("Gagal memulai aplikasi:", error);
-    showNotice("Gagal memuat aplikasi: " + error.message, "error");
-  });
-});
-  // FITUR KOMENTAR GIRISHORTS
+    showNotice("Gagal: " + error.message, "error");
+  }
+} 
+    // FITUR KOMENTAR GIRISHORTS
   
   // FITUR KOMENTAR DAN BALASAN GIRISHORTS 4.0
 

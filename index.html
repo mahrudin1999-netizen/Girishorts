@@ -1844,6 +1844,7 @@ async function isFollowingCreator(creatorId) {
   return !!data;
 }
 
+
 async function toggleCreatorFollow(creatorId, button) {
   try {
     const user = await getLoggedInUser();
@@ -1883,27 +1884,22 @@ async function toggleCreatorFollow(creatorId, button) {
 
     await updateCreatorFollowButton(creatorId, button);
 
-try {
-  await loadCreatorFollowCounts(creatorId);
-} catch (countError) {
-  console.error("Gagal memperbarui jumlah pengikut:", countError);
-}
+    loadCreatorFollowCounts(creatorId).catch(error => {
+      console.error("Gagal memuat jumlah pengikut:", error);
+    });
 
-// Perbarui daftar kreator yang diikuti jika tersedia
-const followingSection = document.getElementById("followingCreatorsSection");
+    const followingSection = document.getElementById(
+      "followingCreatorsSection"
+    );
 
-if (
-  typeof showFollowingCreators === "function" &&
-  followingSection &&
-  followingSection.style.display !== "none"
-) {
-  await showFollowingCreators();
-}
+    if (
+      typeof showFollowingCreators === "function" &&
+      followingSection &&
+      followingSection.style.display !== "none"
+    ) {
+      await showFollowingCreators();
+    }
 
-// Perbarui jumlah pengikut jika fungsi ini tersedia
-if (typeof loadCreatorNotificationBadge === "function") {
-  await loadCreatorNotificationBadge();
-}
   } catch (error) {
     console.error("Gagal memperbarui Follow:", error);
     alert("Follow gagal: " + (error?.message || String(error)));
@@ -1911,6 +1907,7 @@ if (typeof loadCreatorNotificationBadge === "function") {
     button.disabled = false;
   }
 }
+
 
 async function updateCreatorFollowButton(creatorId, button) {
   try {

@@ -2625,11 +2625,11 @@ if (viewsResult.error) {
 
     renderVideoList(container, videosCache, false);
 
-  } catch (error) {
+    } catch (error) {
     container.textContent =
       "PEMERIKSAAN GAGAL: " + error.message;
   }
-  }
+
 
   // MEMUAT VIDEO MILIK PENGGUNA
   async function loadMyVideos() {

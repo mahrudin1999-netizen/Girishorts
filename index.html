@@ -1641,9 +1641,14 @@ showTab("homeTab");
     return;
   }
 
-  section.style.display = "block";
-  list.replaceChildren();
-  message.textContent = "Memuat daftar kreator...";
+  document.querySelectorAll(".tab-page").forEach(tab => {
+  tab.style.display = "none";
+});
+
+section.style.display = "block";
+
+list.replaceChildren();
+message.textContent = "Memuat daftar kreator...";
 
   try {
     const { data: userData, error: userError } =
@@ -1743,8 +1748,14 @@ avatar.style.cssText =
 
 function hideFollowingCreators() {
   const section = document.getElementById("followingCreatorsSection");
-  if (section) section.style.display = "none";
+
+  if (section) {
+    section.style.display = "none";
+  }
+
+  showTab("homeTab");
 }
+
 
   // AMBIL DATA SUKA, TAYANGAN, DAN STATUS SUKA
   async function loadVideoStats(videoIds) {

@@ -49,6 +49,7 @@
     }
 
     
+/* GIRINATAN: tombol utama */
 button {
   cursor: pointer;
   background: linear-gradient(135deg, #E5C36A, #B88A2E);
@@ -59,6 +60,21 @@ button {
   font-size: 15px;
   font-weight: 700;
   transition: 0.2s ease;
+}
+
+/* Tombol sekunder */
+button.btn-secondary {
+  background: #202820;
+  color: #00C875;
+  border: 1px solid #3C9B65;
+}
+
+/* Tombol berbahaya */
+button.btn-danger,
+button.delete-btn {
+  background: #301316;
+  color: #FF8A8A;
+  border: 1px solid #8B3038;
 }
 
 button:hover {
@@ -817,19 +833,41 @@ button:active {
 }
 
 
-/* Logo dan navigasi aktif */
-.brand span,
-.nav-btn.active {
-  color: #00E676 !important;
+/* GIRINATAN: warna logo dan navigasi */
+.brand,
+.brand span {
+  color: #D6AD48 !important;
 }
 
-/* Panel dan kartu */
+.nav-btn {
+  color: #A8ADA8 !important;
+}
+
+.nav-btn.active {
+  color: #00C875 !important;
+  font-weight: 800;
+}
+
+.nav-btn:hover {
+  color: #D6AD48 !important;
+}
+
+/* GIRINATAN: panel dan kartu */
 .panel,
-.short-feed-card,
-.video-card,
+.video-card {
+  background: #141414 !important;
+  border-color: #343434 !important;
+}
+
+.short-feed-card {
+  background: #080808 !important;
+  border-color: rgba(214, 173, 72, 0.35) !important;
+}
+
 .empty-state {
-  background: #101810 !important;
-  border-color: #263D2B !important;
+  background: #141414 !important;
+  border-color: #806326 !important;
+  color: #A8ADA8 !important;
 }
 
 /* Formulir */
@@ -867,8 +905,8 @@ textarea:focus {
   background: #00C875 !important;
 }
 
-/* Ikon dan garis */
 
+/* GIRINATAN: warna statistik video */
 .video-stats {
   color: #D6AD48 !important;
   font-size: 12px;
@@ -876,7 +914,8 @@ textarea:focus {
 }
 
 .video-stats .active,
-.video-stats .liked {
+.video-stats .liked,
+.video-stats .is-liked {
   color: #00C875 !important;
 }
 
@@ -907,16 +946,20 @@ textarea:focus {
   color: #D6AD48;
   font-weight: 800;
 }
-
 /* GIRINATAN - Beranda */
 #homeTab > button.btn-secondary {
-  background: #202020;
-  color: #D6AD48;
-  border: 1px solid #806326;
+  background: #202820;
+  color: #00C875;
+  border: 1px solid #3C9B65;
   border-radius: 12px;
   font-weight: 700;
 }
 
+#homeTab .button-row .btn-secondary {
+  background: #202820;
+  color: #00C875;
+  border: 1px solid #3C9B65;
+}
 #homeTab > button.btn-secondary:active {
   transform: scale(0.97);
 }

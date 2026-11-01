@@ -2574,42 +2574,59 @@ if (viewsResult.error) {
 
   // MEMUAT BERANDA
   async function loadFeed() {
-    const container = $("videoFeed");
+  const container = $("videoFeed");
 
-    container.innerHTML =
-      '<div class="empty-state">Memuat video...</div>';
+  container.innerHTML =
+    '<div class="empty-state">Memuat video...</div>';
+
+  try {
+    const { data, error } = await db
+      .from("videos")
+      .select("id,user_id,title,video_path,created_at")
+      .order("created_at", { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+
+    videosCache = data || [];
+
+    if (videosCache.length === 0) {
+      container.innerHTML =
+        '<div class="empty-state">Belum ada video.</div>';
+      return;
+    }
 
     try {
-      const { data, error } = await db
-        .from("videos")
-        .select("id,user_id,title,video_path,created_at")
-        .order("created_at", { ascending: false })
-        .limit(100);
-
-      if (error) throw error;
-
-videosCache = data || [];
-
-await loadCreatorProfiles(
-  videosCache.map((video) => video.user_id)
-);
-
-await loadVideoStats(
-  videosCache.map((video) => video.id)
-);
-
-      
-
-      renderVideoList(container, videosCache, false);
-    } catch (error) {
-      container.replaceChildren();
-
-      const message = document.createElement("div");
-      message.className = "empty-state";
-      message.textContent = "Gagal memuat video: " + error.message;
-      container.appendChild(message);
+      await loadCreatorProfiles(
+        videosCache.map(video => video.user_id)
+      );
+    } catch (profileError) {
+      console.error("Gagal memuat profil kreator:", profileError);
     }
+
+    try {
+      await loadVideoStats(
+        videosCache.map(video => video.id)
+      );
+    } catch (statsError) {
+      console.error("Gagal memuat statistik video:", statsError);
+    }
+
+    renderVideoList(container, videosCache, false);
+
+  } catch (error) {
+    console.error("Gagal memuat feed:", error);
+
+    container.innerHTML = "";
+
+    const message = document.createElement("div");
+    message.className = "empty-state";
+    message.textContent =
+      "Gagal memuat video: " + error.message;
+
+    container.appendChild(message);
   }
+}
 
   // MEMUAT VIDEO MILIK PENGGUNA
   async function loadMyVideos() {

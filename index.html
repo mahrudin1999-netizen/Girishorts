@@ -2869,6 +2869,8 @@ async function startApp() {
     await refreshSession();
     updateAccountUI();
 
+    await loadCreatorNotificationBadge();
+
     await loadMyProfile();
     await loadFeed();
     await loadMyVideos();

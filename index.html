@@ -1011,7 +1011,7 @@ textarea:focus {
   </span>
 </button>
    <!-- BAGIAN BERANDA -->
-    <section id="homeTab" class="tab-page active">
+<section id="homeTab" class="tab-page active">
       <h1 class="page-title">Beranda 🔥</h1>
       <p class="page-desc">
         Tonton video terbaru dari komunitas GIRINATAN.
@@ -2644,11 +2644,11 @@ if (viewsResult.error) {
 
     renderVideoList(container, videosCache, false);
 
-    } catch (error) {
+  } catch (error) {
     container.textContent =
       "PEMERIKSAAN GAGAL: " + error.message;
   }
-
+}
 
   // MEMUAT VIDEO MILIK PENGGUNA
   async function loadMyVideos() {

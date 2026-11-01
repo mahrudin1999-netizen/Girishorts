@@ -1040,6 +1040,31 @@ textarea:focus {
   font-size: 22px !important;
   box-shadow: none !important;
 }
+    /* Posisi tombol interaksi video */
+#videoFeed .short-feed-card {
+  position: relative;
+}
+
+/* Tombol suka di kanan */
+#videoFeed .short-feed-card .short-actions {
+  position: absolute;
+  right: 12px;
+  bottom: 100px;
+  z-index: 10;
+}
+
+/* Tombol lonceng transparan di kiri */
+#videoFeed .notification-video-btn {
+  position: absolute;
+  left: 12px;
+  bottom: 100px;
+  z-index: 20;
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  font-size: 24px;
+  padding: 10px !important;
+}
   </style>
 </head>
 <body>
@@ -1054,15 +1079,6 @@ textarea:focus {
   
   <main>
     <div id="globalNotice" class="notice" role="status"></div>
-
-    <button class="btn-notification" type="button"
-        onclick="openCreatorNotifications()">
-  🔔
-  <span id="creatorNotificationBadge"
-        style="display:none;background:red;color:white;
-               padding:2px 6px;border-radius:10px;">
-  </span>
-</button> 
  
 <!-- BAGIAN BERANDA -->
 <section id="homeTab" class="tab-page active">
@@ -2371,7 +2387,25 @@ creatorLabel.addEventListener("click", () => {
     
 stats.append(views);
 info.append(title, meta, stats);
+// Satu tombol notifikasi di pojok kiri video.
+if (container.id === "videoFeed" &&
+    !document.getElementById("videoNotificationButton")) {
 
+  const notificationButton = document.createElement("button");
+  notificationButton.id = "videoNotificationButton";
+  notificationButton.className = "notification-video-btn";
+  notificationButton.type = "button";
+  notificationButton.textContent = "🔔";
+  notificationButton.onclick = openCreatorNotifications;
+
+  const badge = document.createElement("span");
+  badge.id = "creatorNotificationBadge";
+  badge.style.cssText =
+    "display:none;background:red;color:white;padding:2px 6px;border-radius:10px;font-size:12px;";
+
+  notificationButton.appendChild(badge);
+  card.appendChild(notificationButton);
+    }
 // Wadah tombol interaksi di sisi kanan video.
 const shortActions = document.createElement("div");
 shortActions.className = "short-actions";

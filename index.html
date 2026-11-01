@@ -3499,10 +3499,9 @@ text.style.margin = "4px 0";
           closeCreatorNotifications();
 
 if (
-  notification.notification_type === "like" ||
-  notification.notification_type === "comment" ||
-  notification.notification_type === "reply"
-) 
+  
+closeCreatorNotifications();
+
 if (
   ["like", "comment", "reply"].includes(notification.notification_type) &&
   notification.video_id
@@ -3513,15 +3512,10 @@ if (
   );
 } else if (notification.notification_type === "follow") {
   openCreatorProfile(notification.actor_id);
-}
-{
-  await openVideoFromNotification(
-    notification.video_id,
-    notification.comment_id
-  );
 } else {
-  openCreatorProfile(notification.actor_id);
+  alert("Tujuan notifikasi tidak tersedia.");
 }
+
         } catch (error) {
           console.error("Gagal menandai notifikasi:", error);
           alert("Notifikasi belum bisa diperbarui. Coba lagi.");

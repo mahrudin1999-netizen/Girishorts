@@ -3589,7 +3589,7 @@ text.style.margin = "4px 0";
 
       card.style.cursor = "pointer";
       
-      card.onclick = async () => {
+            card.onclick = async () => {
   try {
     if (!notification.is_read) {
       const { error: updateError } = await db
@@ -3625,8 +3625,12 @@ text.style.margin = "4px 0";
   }
 };
 
+list.append(card);
+    } // AKHIR LOOP NOTIFIKASI
+
     message.textContent = notifications.length + " notifikasi terbaru.";
     await loadCreatorNotificationBadge();
+
   } catch (error) {
     console.error("Gagal memuat notifikasi:", error);
     message.textContent = "Notifikasi gagal dimuat. Periksa koneksi dan izin Supabase.";

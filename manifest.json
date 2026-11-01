@@ -1,45 +1,27 @@
+
 {
-  "background_color": "#dbb867",
-  "description": "GIRINATAN, tempat berbagi video pendek dan kreativitas.",
-  "dir": "ltr",
-  "display": "standalone",
+  "id": "/Girishorts/",
   "name": "GIRINATAN",
-  "orientation": "natural",
-  "scope": "/",
-  "short_name": "GIRINATAN",
+  "short_name": "GiriShorts",
+  "description": "GIRINATAN, tempat berbagi video pendek dan kreativitas.",
+  "lang": "id",
+  "dir": "ltr",
   "start_url": "/Girishorts/",
+  "scope": "/Girishorts/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080808",
   "theme_color": "#080808",
   "icons": [
     {
-      "src": "https://mahrudin1999-netizen.github.io/Girishorts/icon-192.png",
-      "type": "image/png",
+      "src": "/Girishorts/icon-192.png",
       "sizes": "192x192",
-      "isSquare": true,
-      "isPng": true,
-      "isWebp": false,
-      "isJpg": false,
-      "width": 192,
-      "is512x512": false,
-      "is256x256": false,
-      "is192x192": true
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
-  "lang": "id",
-  "display_override": [
-    "fullscreen",
-    "browser",
-    "minimal-ui",
-    "standalone",
-    "window-controls-overlay"
-  ],
-  "share_target": {
-    "method": "GET"
-  },
-  "id": "mahrudin1999-netizen.github.io",
   "categories": [
     "entertainment",
-    "photo",
-    "photo &amp;amp;amp;amp; video",
     "social",
     "video"
   ]

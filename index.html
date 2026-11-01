@@ -1058,16 +1058,7 @@ textarea:focus {
  
 <!-- BAGIAN BERANDA -->
 <section id="homeTab" class="tab-page active">
-  <button
-    class="btn btn-secondary"
-    type="button"
-    onclick="showFollowingCreators()"
-  >
-    ❤️ Kreator Diikuti
-  </button>
-
   
-
   <div id="videoFeed">
     <div class="empty-state">Memuat video...</div>
   </div>
@@ -1175,7 +1166,14 @@ textarea:focus {
       </div>
 
       <div class="panel" id="loggedInPanel" style="display:none">
-
+<button
+  class="btn btn-secondary"
+  type="button"
+  onclick="showFollowingCreators()"
+  style="width:100%; margin-bottom:16px;"
+>
+  ❤️ Kreator Diikuti
+</button>
     
 <!-- GIRINATAN 5.0: Panel Profil -->
 <section id="profilePanel" class="panel" style="display:none;">

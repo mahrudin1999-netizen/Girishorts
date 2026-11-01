@@ -2576,57 +2576,60 @@ if (viewsResult.error) {
   async function loadFeed() {
   const container = $("videoFeed");
 
-  container.innerHTML =
-    '<div class="empty-state">Memuat video...</div>';
+  container.textContent = "Pemeriksaan 1: loadFeed berjalan...";
 
   try {
-    const { data, error } = await db
-      .from("videos")
-      .select("id,user_id,title,video_path,created_at")
-      .order("created_at", { ascending: false })
-      .limit(100);
+    container.textContent = "Pemeriksaan 2: menghubungi Supabase...";
 
-    if (error) throw error;
+    const result = await Promise.race([
+      db
+        .from("videos")
+        .select("id,user_id,title,video_path,created_at")
+        .order("created_at", { ascending: false })
+        .limit(100),
 
-    videosCache = data || [];
+      new Promise(resolve => {
+        setTimeout(() => {
+          resolve({
+            error: new Error("Supabase tidak merespons dalam 15 detik.")
+          });
+        }, 15000);
+      })
+    ]);
 
-    if (videosCache.length === 0) {
-      container.innerHTML =
-        '<div class="empty-state">Belum ada video.</div>';
-      return;
-    }
+    if (result.error) throw result.error;
+
+    videosCache = result.data || [];
+
+    container.textContent =
+      "Pemeriksaan 3: data diterima. Jumlah video: " +
+      videosCache.length;
+
+    if (videosCache.length === 0) return;
 
     try {
       await loadCreatorProfiles(
         videosCache.map(video => video.user_id)
       );
-    } catch (profileError) {
-      console.error("Gagal memuat profil kreator:", profileError);
+    } catch (e) {
+      console.error("Profil:", e);
     }
 
     try {
       await loadVideoStats(
         videosCache.map(video => video.id)
       );
-    } catch (statsError) {
-      console.error("Gagal memuat statistik video:", statsError);
+    } catch (e) {
+      console.error("Statistik:", e);
     }
 
     renderVideoList(container, videosCache, false);
 
   } catch (error) {
-    console.error("Gagal memuat feed:", error);
-
-    container.innerHTML = "";
-
-    const message = document.createElement("div");
-    message.className = "empty-state";
-    message.textContent =
-      "Gagal memuat video: " + error.message;
-
-    container.appendChild(message);
+    container.textContent =
+      "PEMERIKSAAN GAGAL: " + error.message;
   }
-}
+  }
 
   // MEMUAT VIDEO MILIK PENGGUNA
   async function loadMyVideos() {

@@ -1270,6 +1270,22 @@ textarea:focus {
     </button>
   </nav>
   <script>
+window.addEventListener("error", function(e) {
+  alert(
+    "KESALAHAN JAVASCRIPT:\n" +
+    e.message +
+    "\nBaris: " + e.lineno
+  );
+});
+
+window.addEventListener("unhandledrejection", function(e) {
+  alert(
+    "KESALAHAN PROMISE:\n" +
+    (e.reason?.message || e.reason)
+  );
+});
+</script>
+  <script>
   // KONFIGURASI SUPABASE
   const SUPABASE_URL = "https://ozypepeusicvnlgqqcld.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY =

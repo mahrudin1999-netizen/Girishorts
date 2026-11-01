@@ -2641,67 +2641,73 @@ if (viewsResult.error) {
   }, 500);
     }
 
-  // MEMUAT BERANDA
-  async function loadFeed() {
+  
+// MEMUAT BERANDA
+async function loadFeed() {
   const container = $("videoFeed");
 
-  container.textContent = "Pemeriksaan 1: loadFeed berjalan...";
+  if (!container) {
+    console.error("Elemen videoFeed tidak ditemukan.");
+    return;
+  }
+
+  container.textContent = "Tahap 1: Memulai pemuatan video...";
 
   try {
-    container.textContent = "Pemeriksaan 2: menghubungi Supabase...";
+    container.textContent = "Tahap 2: Mengambil data Supabase...";
 
-    const result = await Promise.race([
-      db
-        .from("videos")
-        .select("id,user_id,title,video_path,created_at")
-        .order("created_at", { ascending: false })
-        .limit(100),
+    const { data, error } = await db
+      .from("videos")
+      .select("id,user_id,title,video_path,created_at")
+      .order("created_at", { ascending: false })
+      .limit(100);
 
-      new Promise(resolve => {
-        setTimeout(() => {
-          resolve({
-            error: new Error("Supabase tidak merespons dalam 15 detik.")
-          });
-        }, 15000);
-      })
-    ]);
+    if (error) throw error;
 
-    if (result.error) throw result.error;
+    videosCache = data || [];
 
-    videosCache = result.data || [];
-
-    container.textContent =
-      "Pemeriksaan 3: data diterima. Jumlah video: " +
-      videosCache.length;
+    console.log("Data video diterima:", videosCache);
 
     if (videosCache.length === 0) {
-  renderVideoList(container, [], false);
-  return;
-}
+      container.textContent = "Belum ada video.";
+      return;
+    }
+
+    container.textContent =
+      "Tahap 3: " + videosCache.length + " video ditemukan. Memuat profil...";
 
     try {
       await loadCreatorProfiles(
         videosCache.map(video => video.user_id)
       );
-    } catch (e) {
-      console.error("Profil:", e);
+    } catch (error) {
+      console.error("Gagal memuat profil:", error);
     }
+
+    container.textContent = "Tahap 4: Memuat statistik video...";
 
     try {
       await loadVideoStats(
         videosCache.map(video => video.id)
       );
-    } catch (e) {
-      console.error("Statistik:", e);
+    } catch (error) {
+      console.error("Gagal memuat statistik:", error);
     }
+
+    container.textContent = "Tahap 5: Menampilkan video...";
 
     renderVideoList(container, videosCache, false);
 
+    console.log("Feed berhasil ditampilkan.");
+
   } catch (error) {
+    console.error("GAGAL LOAD FEED:", error);
+
     container.textContent =
-      "PEMERIKSAAN GAGAL: " + error.message;
+      "Gagal memuat video: " + error.message;
   }
 }
+
 
   // MEMUAT VIDEO MILIK PENGGUNA
   async function loadMyVideos() {

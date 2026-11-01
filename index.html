@@ -1371,7 +1371,7 @@ textarea:focus {
       updateAccountUI();
       await loadMyProfile();
       setAuthStatus("Berhasil masuk!");
-      showNotice("Login berhasil. Selamat datang kembali!", "success");
+showNotice("Login berhasil. Selamat datang kembali!", "success");
 showTab("homeTab");
 
       showTab("homeTab");
@@ -1471,13 +1471,8 @@ console.log("Hasil signOut:", { data, error });
     }
 
     currentUser = null;
-    likedCache.clear();
 await resetUserState();
-    updateAccountUI();
-    await loadCreatorNotificationBadge();
-
-    showTab("homeTab");
-await loadMyVideos();
+showTab("homeTab");
 
   } catch (error) {
     console.error("Logout error:", error);
@@ -1647,7 +1642,7 @@ showTab("homeTab");
 </script>
 
   <script>
-    alert("SCRIPT KEDUA BERHASIL DIMUAT");
+
   async function showFollowingCreators() {
   const section = document.getElementById("followingCreatorsSection");
   const list = document.getElementById("followingCreatorsList");
@@ -1719,9 +1714,10 @@ showTab("homeTab");
 } else {
   avatar.alt = "Foto profil belum tersedia";
 }
-      avatar.alt = "Foto kreator";
-      avatar.style.cssText =
-        "width:52px;height:52px;border-radius:50%;object-fit:cover;";
+
+avatar.style.cssText =
+  "width:52px;height:52px;border-radius:50%;object-fit:cover;";
+    
 
       avatar.onerror = function () {
         this.onerror = null;
@@ -2047,18 +2043,17 @@ message.textContent = "Memuat daftar...";
         "border:1px solid #444;border-radius:12px;cursor:pointer;";
 
       const avatar = document.createElement("img");
-      if (profile.avatar_url) {
-  avatar.src = profile.avatar_url;
-} else {
-  avatar.alt = "Foto profil belum tersedia";
-}
-      avatar.alt = "Avatar kreator";
-      avatar.style.cssText =
-        "width:48px;height:48px;border-radius:50%;object-fit:cover;";
-      avatar.onerror = function () {
-        this.onerror = null;
-        this.removeAttribute("src");
-      };
+
+avatar.src = profile.avatar_url || "";
+avatar.alt = "Avatar kreator";
+
+avatar.style.cssText =
+  "width:48px;height:48px;border-radius:50%;object-fit:cover;";
+
+avatar.onerror = function () {
+  this.onerror = null;
+  this.removeAttribute("src");
+};
 
       const details = document.createElement("div");
       const name = document.createElement("strong");
@@ -2141,10 +2136,13 @@ if (!followButton) {
     creatorHeader.appendChild(followButton);
   }
 }
-if (!creatorHeader && !followButton) {
-  console.warn("Header profil kreator tidak ditemukan.");
-}
+
 // Gunakan fungsi global yang memeriksa Supabase
+if (!followButton) {
+  console.error("Tombol follow kreator tidak tersedia.");
+  return;
+}
+
 followButton.onclick = async () => {
   await toggleCreatorFollow(userId, followButton);
 
@@ -2624,7 +2622,10 @@ if (viewsResult.error) {
       "Pemeriksaan 3: data diterima. Jumlah video: " +
       videosCache.length;
 
-    if (videosCache.length === 0) return;
+    if (videosCache.length === 0) {
+  renderVideoList(container, [], false);
+  return;
+}
 
     try {
       await loadCreatorProfiles(
@@ -3167,7 +3168,7 @@ input.style.border = "1px solid #806326";
               video_id: videoId,
               user_id: currentUser.id,
               content: text,
-              parent_comment_id: comment.id
+              parent_comment_id: null
             });
 
           if (insertError) throw insertError;
@@ -3231,8 +3232,7 @@ async function loadMyProfile() {
 if (avatarPreview) {
   avatarPreview.src = data?.avatar_url ||
     "https://placehold.co/120x120/202020/ffffff?text=Foto";
-}
-  if (avatarPreview) {
+
   avatarPreview.onerror = function () {
     this.onerror = null;
     this.src =
@@ -3532,47 +3532,40 @@ text.style.margin = "4px 0";
       card.style.cursor = "pointer";
       
       card.onclick = async () => {
-        
-        try {
-          if (!notification.is_read) {
-            const { error: updateError } = await db
-              .from("creator_notifications")
-              .update({ is_read: true })
-              .eq("id", notification.id);
+  try {
+    if (!notification.is_read) {
+      const { error: updateError } = await db
+        .from("creator_notifications")
+        .update({ is_read: true })
+        .eq("id", notification.id);
 
-            if (updateError) throw updateError;
-            notification.is_read = true;
-            await loadCreatorNotificationBadge();
-          }
+      if (updateError) throw updateError;
 
-          closeCreatorNotifications();
-
-if (
-  
-closeCreatorNotifications();
-
-if (
-  ["like", "comment", "reply"].includes(notification.notification_type) &&
-  notification.video_id
-) {
-  await openVideoFromNotification(
-    notification.video_id,
-    notification.comment_id
-  );
-} else if (notification.notification_type === "follow") {
-  openCreatorProfile(notification.actor_id);
-} else {
-  alert("Tujuan notifikasi tidak tersedia.");
-}
-
-        } catch (error) {
-          console.error("Gagal menandai notifikasi:", error);
-          alert("Notifikasi belum bisa diperbarui. Coba lagi.");
-        }
-      };
-
-      list.appendChild(card);
+      notification.is_read = true;
+      await loadCreatorNotificationBadge();
     }
+
+    closeCreatorNotifications();
+
+    if (
+      ["like", "comment", "reply"].includes(notification.notification_type) &&
+      notification.video_id
+    ) {
+      await openVideoFromNotification(
+        notification.video_id,
+        notification.comment_id
+      );
+    } else if (notification.notification_type === "follow") {
+      openCreatorProfile(notification.actor_id);
+    } else {
+      alert("Tujuan notifikasi tidak tersedia.");
+    }
+
+  } catch (error) {
+    console.error("Gagal menandai notifikasi:", error);
+    alert("Notifikasi belum bisa diperbarui. Coba lagi.");
+  }
+};
 
     message.textContent = notifications.length + " notifikasi terbaru.";
     await loadCreatorNotificationBadge();

@@ -1058,12 +1058,6 @@ textarea:focus {
  
 <!-- BAGIAN BERANDA -->
 <section id="homeTab" class="tab-page active">
-  <h1 class="page-title">Beranda 🔥</h1>
-
-  <p class="page-desc">
-    Tonton video terbaru dari komunitas GIRINATAN.
-  </p>
-
   <button
     class="btn btn-secondary"
     type="button"
@@ -1072,11 +1066,7 @@ textarea:focus {
     ❤️ Kreator Diikuti
   </button>
 
-  <div class="button-row" style="margin-bottom:16px">
-    <button class="btn btn-secondary" id="refreshFeedBtn" type="button">
-      ↻ Muat ulang video
-    </button>
-  </div>
+  
 
   <div id="videoFeed">
     <div class="empty-state">Memuat video...</div>
@@ -2869,8 +2859,12 @@ async function toggleLike(videoId) {
   }
 
   // TOMBOL MUAT ULANG
-  $("refreshFeedBtn").addEventListener("click", loadFeed);
+  
+const refreshBtn = $("refreshFeedBtn");
 
+if (refreshBtn) {
+  refreshBtn.addEventListener("click", loadFeed);
+}
   // MULAI APLIKASI
 async function startApp() {
   try {

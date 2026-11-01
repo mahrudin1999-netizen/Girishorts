@@ -1272,16 +1272,10 @@ textarea:focus {
   <script>
 window.addEventListener("error", function(e) {
   alert(
-    "KESALAHAN JAVASCRIPT:\n" +
-    e.message +
-    "\nBaris: " + e.lineno
-  );
-});
-
-window.addEventListener("unhandledrejection", function(e) {
-  alert(
-    "KESALAHAN PROMISE:\n" +
-    (e.reason?.message || e.reason)
+    "ERROR: " + e.message +
+    "\nFILE: " + e.filename +
+    "\nBARIS: " + e.lineno +
+    "\nKOLOM: " + e.colno
   );
 });
 </script>

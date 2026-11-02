@@ -3789,6 +3789,27 @@ startApp();
   </div>
 </div>
 
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/Girishorts/service-worker.js")
+      .then((registration) => {
+        console.log(
+          "GIRINATAN PWA aktif:",
+          registration.scope
+        );
+      })
+      .catch((error) => {
+        console.error(
+          "GIRINATAN PWA gagal:",
+          error
+        );
+      });
+  });
+}
+</script>
+
 
 </body>
 </html>   

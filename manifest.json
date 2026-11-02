@@ -2,10 +2,8 @@
 {
   "id": "/Girishorts/",
   "name": "GIRINATAN",
-  "short_name": "GiriShorts",
+  "short_name": "GIRINATAN",
   "description": "GIRINATAN, tempat berbagi video pendek dan kreativitas.",
-  "lang": "id",
-  "dir": "ltr",
   "start_url": "/Girishorts/",
   "scope": "/Girishorts/",
   "display": "standalone",
@@ -18,11 +16,12 @@
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/Girishorts/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
-  ],
-  "categories": [
-    "entertainment",
-    "social",
-    "video"
   ]
 }

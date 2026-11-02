@@ -1764,6 +1764,46 @@ showTab("homeTab");
   }
 
   $("uploadForm").addEventListener("submit", uploadVideo);
+
+// LOGIN TIKTOK GIRINATAN
+(async function handleTikTokLogin() {
+  const params = new URLSearchParams(window.location.search);
+  const tokenHash = params.get("tiktok_token_hash");
+  const tiktokError = params.get("tiktok_error");
+
+  if (!tokenHash && !tiktokError) return;
+
+  window.history.replaceState(
+    {},
+    document.title,
+    window.location.pathname
+  );
+
+  if (tiktokError) {
+    showNotice(tiktokError, "error");
+    return;
+  }
+
+  try {
+    const { data, error } = await db.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: "magiclink"
+    });
+
+    if (error) throw error;
+
+    currentUser = data.user;
+    updateAccountUI();
+    await loadMyProfile();
+
+    setAuthStatus("Berhasil masuk dengan TikTok!");
+    showNotice("Login TikTok berhasil. Selamat datang!", "success");
+    showTab("homeTab");
+
+  } catch (error) {
+    showNotice("Login TikTok gagal: " + error.message, "error");
+  }
+})();
 </script>
 
   <script>

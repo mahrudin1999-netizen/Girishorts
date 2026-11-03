@@ -3133,6 +3133,7 @@ if (error) throw error;
 }
       
 {
+  
   // FITUR PENGELOLAAN TIM
   const teamBox = document.createElement("div");
   teamBox.style.marginTop = "18px";
@@ -3157,112 +3158,113 @@ if (error) throw error;
 
       teamList.replaceChildren();
 
-      
-teams.forEach(team => {
-  const teamCard = document.createElement("div");
-  teamCard.style.marginTop = "12px";
-  teamCard.style.padding = "12px";
-  teamCard.style.border = "1px solid #343434";
-  teamCard.style.borderRadius = "10px";
-
-  const teamName = document.createElement("h4");
-  teamName.textContent = "📁 " + team.team_name;
-
-  const creatorList = document.createElement("div");
-  creatorList.textContent = "Memuat kreator...";
-
-  const usernameInput = document.createElement("input");
-  usernameInput.placeholder = "Username TikTok";
-  usernameInput.maxLength = 100;
-
-  const addButton = document.createElement("button");
-  addButton.type = "button";
-  addButton.textContent = "Tambah Kreator";
-
-  async function loadTeamCreators() {
-    const { data, error } = await db
-      .from("agency_creators")
-      .select("id, tiktok_username, backstage_status")
-      .eq("team_id", team.id);
-
-    if (error) throw error;
-
-    creatorList.replaceChildren();
-
-    if (!data || data.length === 0) {
-      creatorList.textContent = "Belum ada kreator.";
-      return;
-    }
-
-    data.forEach(creator => {
-      const item = document.createElement("p");
-      item.textContent =
-        "@" + creator.tiktok_username +
-        " | " + creator.backstage_status.toUpperCase();
-
-      creatorList.appendChild(item);
-    });
-  }
-
-  addButton.addEventListener("click", async () => {
-    const username = usernameInput.value
-      .trim()
-      .replace(/^@/, "");
-
-    if (!username) {
-      showNotice("Masukkan username TikTok.", "error");
-      return;
-    }
-
-    addButton.disabled = true;
-
-    try {
-      const { error } = await db
-        .from("agency_creators")
-        .insert({
-          agency_id: agency.id,
-          team_id: team.id,
-          tiktok_username: username,
-          creator_name: username,
-          source: "manual",
-          backstage_status: "unverified"
-        });
-
-      if (error) throw error;
-
-      showNotice("Kreator berhasil ditambahkan!", "success");
-      usernameInput.value = "";
-
-      await loadTeamCreators();
-
-    } catch (error) {
-      showNotice(
-        "Gagal menambahkan kreator: " + error.message,
-        "error"
-      );
-    } finally {
-      addButton.disabled = false;
-    }
-  });
-
-  teamCard.append(
-    teamName,
-    creatorList,
-    usernameInput,
-    addButton
-  );
-
-  teamList.appendChild(teamCard);
-
-  loadTeamCreators().catch(error => {
-    creatorList.textContent =
-      "Gagal memuat kreator: " + error.message;
-  });
-});
-
+      if (!teams || teams.length === 0) {
+        teamList.textContent = "Belum ada tim.";
       }
 
-      // OWNER DAN ADMIN DAPAT MEMBUAT TIM
+      for (const team of teams || []) {
+        const teamCard = document.createElement("div");
+        teamCard.style.marginTop = "12px";
+        teamCard.style.padding = "12px";
+        teamCard.style.border = "1px solid #343434";
+        teamCard.style.borderRadius = "10px";
+
+        const teamName = document.createElement("h4");
+        teamName.textContent = "📁 " + team.team_name;
+
+        const creatorList = document.createElement("div");
+        creatorList.textContent = "Memuat kreator...";
+
+        const usernameInput = document.createElement("input");
+        usernameInput.placeholder = "Username TikTok";
+        usernameInput.maxLength = 100;
+
+        const addButton = document.createElement("button");
+        addButton.type = "button";
+        addButton.textContent = "Tambah Kreator";
+
+        async function loadTeamCreators() {
+          const { data, error } = await db
+            .from("agency_creators")
+            .select("id, tiktok_username, backstage_status")
+            .eq("team_id", team.id);
+
+          if (error) throw error;
+
+          creatorList.replaceChildren();
+
+          if (!data || data.length === 0) {
+            creatorList.textContent = "Belum ada kreator.";
+            return;
+          }
+
+          data.forEach(creator => {
+            const item = document.createElement("p");
+            item.textContent =
+              "@" + creator.tiktok_username +
+              " | " + creator.backstage_status.toUpperCase();
+
+            creatorList.appendChild(item);
+          });
+        }
+
+        addButton.addEventListener("click", async () => {
+          const username = usernameInput.value
+            .trim()
+            .replace(/^@/, "");
+
+          if (!username) {
+            showNotice("Masukkan username TikTok.", "error");
+            return;
+          }
+
+          addButton.disabled = true;
+
+          try {
+            const { error } = await db
+              .from("agency_creators")
+              .insert({
+                agency_id: agency.id,
+                team_id: team.id,
+                tiktok_username: username,
+                creator_name: username,
+                source: "manual",
+                backstage_status: "unverified"
+              });
+
+            if (error) throw error;
+
+            showNotice("Kreator berhasil ditambahkan!", "success");
+            usernameInput.value = "";
+
+            await loadTeamCreators();
+
+          } catch (error) {
+            showNotice(
+              "Gagal menambahkan kreator: " + error.message,
+              "error"
+            );
+          } finally {
+            addButton.disabled = false;
+          }
+        });
+
+        teamCard.append(
+          teamName,
+          creatorList,
+          usernameInput,
+          addButton
+        );
+
+        teamList.appendChild(teamCard);
+
+        loadTeamCreators().catch(error => {
+          creatorList.textContent =
+            "Gagal memuat kreator: " + error.message;
+        });
+      }
+
+      // FORM PEMBUATAN TIM UNTUK OWNER DAN ADMIN
       if (isOwner || isAdmin) {
         const teamNameInput = document.createElement("input");
         teamNameInput.placeholder = "Nama tim baru";
@@ -3343,7 +3345,7 @@ teams.forEach(team => {
         "Gagal memuat tim: " + error.message;
     }
   })();
-}
+
 
 if (
   agency.owner_id === currentUser.id &&

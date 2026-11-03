@@ -1227,7 +1227,19 @@ textarea:focus {
     placeholder="Ceritakan tentang agensi..."
     maxlength="1000"
   ></textarea>
+<label>Bukti Resmi Agensi TikTok</label>
+<input
+  type="url"
+  id="agencyEvidenceUrl"
+  placeholder="Masukkan link bukti resmi"
+>
 
+<label>Catatan Verifikasi</label>
+<textarea
+  id="agencyVerificationNotes"
+  placeholder="Jelaskan bukti atau informasi pendukung..."
+  maxlength="1000"
+></textarea>
   <button
     type="button"
     id="createAgencyBtn"
@@ -2996,7 +3008,59 @@ async function loadAgencyPage() {
         "Status: " + agency.verification_status.toUpperCase();
 
       card.append(title, type, status);
-      container.appendChild(card);
+
+if (
+  agency.owner_id === currentUser.id &&
+  ["draft", "pending", "rejected"].includes(
+    agency.verification_status
+  )
+) {
+  const verifyButton = document.createElement("button");
+  verifyButton.type = "button";
+  verifyButton.textContent = "Ajukan Verifikasi";
+
+  verifyButton.addEventListener("click", async () => {
+    const evidence = $("agencyEvidenceUrl").value.trim();
+    const notes = $("agencyVerificationNotes").value.trim();
+
+    if (!evidence) {
+      showNotice("Masukkan link bukti resmi agensi.", "error");
+      return;
+    }
+
+    verifyButton.disabled = true;
+    verifyButton.textContent = "Mengirim...";
+
+    try {
+      const { error } = await db.rpc(
+        "agency_submit_verification",
+        {
+          p_agency_id: agency.id,
+          p_evidence_url: evidence,
+          p_notes: notes
+        }
+      );
+
+      if (error) throw error;
+
+      showNotice("Pengajuan verifikasi berhasil dikirim.", "success");
+
+      $("agencyEvidenceUrl").value = "";
+      $("agencyVerificationNotes").value = "";
+
+      await loadAgencyPage();
+
+    } catch (error) {
+      showNotice("Gagal mengajukan verifikasi: " + error.message, "error");
+      verifyButton.disabled = false;
+      verifyButton.textContent = "Ajukan Verifikasi";
+    }
+  });
+
+  card.appendChild(verifyButton);
+}
+
+container.appendChild(card);
     });
 
   } catch (error) {

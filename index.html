@@ -3097,17 +3097,16 @@ if (
     inviteButton.textContent = "Mengirim...";
 
     try {
-      const { error } = await db
-        .from("agency_invitations")
-        .insert({
-          agency_id: agency.id,
-          invited_email: email,
-          invited_role: role,
-          invited_by: currentUser.id,
-          status: "pending"
-        });
+      const { error } = await db.rpc(
+  "agency_send_invitation",
+  {
+    p_agency_id: agency.id,
+    p_invited_email: email,
+    p_invited_role: role
+  }
+);
 
-      if (error) throw error;
+if (error) throw error;
 
       showNotice("Undangan berhasil dikirim!", "success");
       emailInput.value = "";

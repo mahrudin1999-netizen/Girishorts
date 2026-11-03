@@ -3462,7 +3462,7 @@ async function loadAgencyInvitations() {
         try {
           const { error } = await db.rpc(
             "agency_accept_invitation",
-            { p_invitation_id: invitation.id }
+            { p_invitation_id: invitation.invitation_id }
           );
 
           if (error) throw error;
@@ -3489,7 +3489,7 @@ async function loadAgencyInvitations() {
         const { error } = await db.rpc(
   "agency_reject_invitation",
   {
-    p_invitation_id: invitation.id
+    p_invitation_id: invitation.invitation_id
   }
 );
 

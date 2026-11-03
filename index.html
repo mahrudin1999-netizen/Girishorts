@@ -1266,6 +1266,17 @@ textarea:focus {
 
   </div>
   <!-- AKHIR PANEL SUPER ADMIN -->
+  <!-- UNDANGAN AGENSI MASUK -->
+<div class="upload-card" id="agencyInvitationBox">
+  <h3>📩 Undangan Agensi</h3>
+
+  <div id="agencyInvitationContent">
+    <div class="empty-state">
+      Memuat undangan...
+    </div>
+  </div>
+</div>
+<!-- AKHIR UNDANGAN AGENSI -->
   <div id="agencyContent">
     <div class="empty-state">
       Fitur agensi sedang disiapkan.
@@ -2971,6 +2982,7 @@ async function loadAgencyPage() {
   return;
 }
 await loadPlatformAdminPanel();
+  await loadAgencyInvitations();
   container.innerHTML =
     '<div class="empty-state">Memuat data agensi...</div>';
 
@@ -3031,7 +3043,95 @@ await loadPlatformAdminPanel();
         "Status: " + agency.verification_status.toUpperCase();
 
       card.append(title, type, status);
+const membership = (memberships || []).find(
+  m => m.agency_id === agency.id
+);
 
+const isOwner = agency.owner_id === currentUser.id;
+const isAdmin =
+  membership &&
+  membership.role === "admin";
+
+if (
+  agency.verification_status === "verified" &&
+  (isOwner || isAdmin)
+) {
+  const inviteBox = document.createElement("div");
+  inviteBox.style.marginTop = "15px";
+
+  const inviteTitle = document.createElement("h4");
+  inviteTitle.textContent = "✉️ Undang Anggota";
+
+  const emailInput = document.createElement("input");
+  emailInput.type = "email";
+  emailInput.placeholder = "Email akun anggota";
+  emailInput.maxLength = 255;
+
+  const roleSelect = document.createElement("select");
+
+  if (isOwner) {
+    roleSelect.innerHTML = `
+      <option value="admin">Admin</option>
+      <option value="manager">Manager</option>
+    `;
+  } else {
+    roleSelect.innerHTML = `
+      <option value="manager">Manager</option>
+    `;
+  }
+
+  const inviteButton = document.createElement("button");
+  inviteButton.type = "button";
+  inviteButton.textContent = "Kirim Undangan";
+
+  inviteButton.addEventListener("click", async () => {
+    const email = emailInput.value.trim().toLowerCase();
+    const role = roleSelect.value;
+
+    if (!email || !emailInput.checkValidity()) {
+      showNotice("Masukkan email yang valid.", "error");
+      return;
+    }
+
+    inviteButton.disabled = true;
+    inviteButton.textContent = "Mengirim...";
+
+    try {
+      const { error } = await db
+        .from("agency_invitations")
+        .insert({
+          agency_id: agency.id,
+          invited_email: email,
+          invited_role: role,
+          invited_by: currentUser.id,
+          status: "pending"
+        });
+
+      if (error) throw error;
+
+      showNotice("Undangan berhasil dikirim!", "success");
+      emailInput.value = "";
+
+    } catch (error) {
+      showNotice(
+        "Gagal mengirim undangan: " + error.message,
+        "error"
+      );
+    } finally {
+      inviteButton.disabled = false;
+      inviteButton.textContent = "Kirim Undangan";
+    }
+  });
+
+  inviteBox.append(
+    inviteTitle,
+    emailInput,
+    roleSelect,
+    inviteButton
+  );
+
+  card.appendChild(inviteBox);
+}
 if (
   agency.owner_id === currentUser.id &&
   ["draft", "pending", "rejected"].includes(
@@ -3302,7 +3402,135 @@ container.appendChild(card);
     button.textContent = "Daftarkan Agensi";
   }
 }
+async function loadAgencyInvitations() {
+  const box = $("agencyInvitationBox");
+  const container = $("agencyInvitationContent");
 
+  if (!box || !container) return;
+
+  if (!currentUser) {
+    box.style.display = "none";
+    return;
+  }
+
+  box.style.display = "block";
+  container.textContent = "Memuat undangan...";
+
+  try {
+    const email = currentUser.email.toLowerCase();
+
+    const { data, error } = await db
+      .from("agency_invitations")
+      .select("id,agency_id,invited_role,created_at,expires_at")
+      .eq("invited_email", email)
+      .eq("status", "pending")
+      .gt("expires_at", new Date().toISOString());
+
+    if (error) throw error;
+
+    container.replaceChildren();
+
+    if (!data || data.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = "Belum ada undangan agensi.";
+      container.appendChild(empty);
+      return;
+    }
+
+    const agencyIds = [...new Set(data.map(item => item.agency_id))];
+
+    const { data: agencies, error: agencyError } = await db
+      .from("agencies")
+      .select("id,name,agency_type")
+      .in("id", agencyIds);
+
+    if (agencyError) throw agencyError;
+
+    data.forEach(invitation => {
+      const agency = (agencies || []).find(
+        a => a.id === invitation.agency_id
+      );
+
+      if (!agency) return;
+
+      const card = document.createElement("div");
+      card.className = "empty-state";
+
+      const title = document.createElement("h4");
+      title.textContent = agency.name;
+
+      const role = document.createElement("p");
+      role.textContent =
+        "Jabatan: " + invitation.invited_role.toUpperCase();
+
+      const acceptButton = document.createElement("button");
+      acceptButton.type = "button";
+      acceptButton.textContent = "✅ Terima";
+
+      const rejectButton = document.createElement("button");
+      rejectButton.type = "button";
+      rejectButton.textContent = "❌ Tolak";
+
+      acceptButton.addEventListener("click", async () => {
+        acceptButton.disabled = true;
+        rejectButton.disabled = true;
+
+        try {
+          const { error } = await db.rpc(
+            "agency_accept_invitation",
+            { p_invitation_id: invitation.id }
+          );
+
+          if (error) throw error;
+
+          showNotice("Berhasil bergabung dengan agensi!", "success");
+
+          await loadAgencyInvitations();
+          await loadAgencyPage();
+
+        } catch (error) {
+          showNotice("Gagal menerima undangan: " + error.message, "error");
+          acceptButton.disabled = false;
+          rejectButton.disabled = false;
+        }
+      });
+
+      rejectButton.addEventListener("click", async () => {
+        if (!confirm("Tolak undangan dari " + agency.name + "?")) return;
+
+        rejectButton.disabled = true;
+        acceptButton.disabled = true;
+
+        try {
+          const { error } = await db
+            .from("agency_invitations")
+            .update({ status: "rejected" })
+            .eq("id", invitation.id)
+            .eq("invited_email", email)
+            .eq("status", "pending");
+
+          if (error) throw error;
+
+          showNotice("Undangan berhasil ditolak.", "success");
+          await loadAgencyInvitations();
+
+        } catch (error) {
+          showNotice("Gagal menolak undangan: " + error.message, "error");
+          acceptButton.disabled = false;
+          rejectButton.disabled = false;
+        }
+      });
+
+      card.append(title, role, acceptButton, rejectButton);
+      container.appendChild(card);
+    });
+
+  } catch (error) {
+    container.textContent =
+      "Gagal memuat undangan: " + error.message;
+  }
+          }
 $("createAgencyBtn").addEventListener("click", createAgency);
   // SUKA DAN BATAL SUKA
   

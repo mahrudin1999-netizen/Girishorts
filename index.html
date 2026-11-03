@@ -1247,6 +1247,25 @@ textarea:focus {
     Daftarkan Agensi
   </button>
 </div>
+    <!-- PANEL SUPER ADMIN -->
+  <div id="platformAdminPanel"
+       class="upload-card"
+       style="display:none;">
+
+    <h3>🛡️ Super Admin</h3>
+
+    <p class="page-desc">
+      Kelola dan periksa pengajuan verifikasi seluruh agensi.
+    </p>
+
+    <div id="platformAdminContent">
+      <div class="empty-state">
+        Memuat pengajuan verifikasi...
+      </div>
+    </div>
+
+  </div>
+  <!-- AKHIR PANEL SUPER ADMIN -->
   <div id="agencyContent">
     <div class="empty-state">
       Fitur agensi sedang disiapkan.
@@ -2943,11 +2962,15 @@ async function loadAgencyPage() {
   if (!container) return;
 
   if (!currentUser) {
-    container.innerHTML =
-      '<div class="empty-state">Login untuk mengakses fitur Agensi.</div>';
-    return;
-  }
+  container.innerHTML =
+    '<div class="empty-state">Login untuk mengakses fitur Agensi.</div>';
 
+  const adminPanel = $("platformAdminPanel");
+  if (adminPanel) adminPanel.style.display = "none";
+
+  return;
+}
+await loadPlatformAdminPanel();
   container.innerHTML =
     '<div class="empty-state">Memuat data agensi...</div>';
 
@@ -3070,8 +3093,170 @@ container.appendChild(card);
     message.textContent =
       "Gagal memuat agensi: " + error.message;
     container.appendChild(message);
+  
   }
   }
+    async function loadPlatformAdminPanel() {
+  const panel = $("platformAdminPanel");
+  const container = $("platformAdminContent");
+
+  if (!panel || !container || !currentUser) {
+    if (panel) panel.style.display = "none";
+    return;
+  }
+
+  panel.style.display = "none";
+
+  try {
+    const { data: isAdmin, error: adminError } =
+      await db.rpc("is_platform_admin");
+
+    if (adminError) throw adminError;
+
+    if (isAdmin !== true) return;
+
+    panel.style.display = "block";
+    container.textContent = "Memuat pengajuan...";
+
+    const { data, error } = await db.rpc(
+      "platform_admin_get_pending_verifications"
+    );
+
+    if (error) throw error;
+
+    container.replaceChildren();
+
+    if (!data || data.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = "Belum ada pengajuan verifikasi.";
+      container.appendChild(empty);
+      return;
+    }
+
+    data.forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "upload-card";
+
+      const title = document.createElement("h3");
+      title.textContent = item.agency_name;
+
+      const type = document.createElement("p");
+      type.textContent =
+        "Jenis: " + item.agency_type.toUpperCase();
+
+      const email = document.createElement("p");
+      email.textContent =
+        "Email pemilik: " + (item.owner_email || "Tidak tersedia");
+
+      const notes = document.createElement("p");
+      notes.textContent =
+        "Catatan pemohon: " + (item.notes || "Tidak ada");
+
+      const evidence = document.createElement("a");
+      evidence.textContent = "🔗 Lihat Bukti Resmi";
+      evidence.href = item.evidence_url;
+      evidence.target = "_blank";
+      evidence.rel = "noopener noreferrer";
+
+      if (!/^https?:\/\//i.test(item.evidence_url || "")) {
+        evidence.removeAttribute("href");
+        evidence.textContent = "Link bukti tidak valid";
+      }
+
+      const reviewInput = document.createElement("textarea");
+      reviewInput.placeholder = "Catatan pemeriksaan Super Admin...";
+      reviewInput.maxLength = 1000;
+
+      const approveButton = document.createElement("button");
+      approveButton.type = "button";
+      approveButton.textContent = "✅ Setujui";
+      approveButton.className = "btn";
+
+      const rejectButton = document.createElement("button");
+      rejectButton.type = "button";
+      rejectButton.textContent = "❌ Tolak";
+      rejectButton.className = "btn";
+
+      async function reviewAgency(decision, button) {
+        const reviewNotes = reviewInput.value.trim();
+
+        if (decision === "rejected" && !reviewNotes) {
+          showNotice(
+            "Tuliskan alasan penolakan terlebih dahulu.",
+            "error"
+          );
+          return;
+        }
+
+        approveButton.disabled = true;
+        rejectButton.disabled = true;
+        button.textContent = "Memproses...";
+
+        try {
+          const { error } = await db.rpc(
+            "platform_admin_review_verification",
+            {
+              p_verification_id: item.verification_id,
+              p_decision: decision,
+              p_review_notes: reviewNotes
+            }
+          );
+
+          if (error) throw error;
+
+          showNotice(
+            decision === "approved"
+              ? "Agensi berhasil disetujui!"
+              : "Pengajuan agensi berhasil ditolak.",
+            "success"
+          );
+
+          await loadPlatformAdminPanel();
+          await loadAgencyPage();
+
+        } catch (error) {
+          showNotice(
+            "Gagal memproses pengajuan: " + error.message,
+            "error"
+          );
+
+          approveButton.disabled = false;
+          rejectButton.disabled = false;
+          approveButton.textContent = "✅ Setujui";
+          rejectButton.textContent = "❌ Tolak";
+        }
+      }
+
+      approveButton.addEventListener("click", () => {
+        reviewAgency("approved", approveButton);
+      });
+
+      rejectButton.addEventListener("click", () => {
+        reviewAgency("rejected", rejectButton);
+      });
+
+      card.append(
+        title,
+        type,
+        email,
+        notes,
+        evidence,
+        reviewInput,
+        approveButton,
+        rejectButton
+      );
+
+      container.appendChild(card);
+    });
+
+  } catch (error) {
+    container.textContent =
+      "Gagal memuat panel Super Admin: " + error.message;
+
+    panel.style.display = "block";
+  }
+          }
     async function createAgency() {
   if (!currentUser) {
     showNotice("Silakan login terlebih dahulu.", "error");

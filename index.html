@@ -3131,6 +3131,125 @@ if (error) throw error;
 
   card.appendChild(inviteBox);
 }
+      
+{
+  // FITUR PENGELOLAAN TIM
+  const teamBox = document.createElement("div");
+  teamBox.style.marginTop = "18px";
+
+  const teamTitle = document.createElement("h4");
+  teamTitle.textContent = "👥 Tim Saya";
+
+  const teamList = document.createElement("div");
+  teamList.textContent = "Memuat daftar tim...";
+
+  teamBox.append(teamTitle, teamList);
+  card.appendChild(teamBox);
+
+  (async () => {
+    try {
+      const { data: teams, error: teamError } = await db
+        .from("agency_teams")
+        .select("id, team_name, manager_member_id")
+        .eq("agency_id", agency.id);
+
+      if (teamError) throw teamError;
+
+      teamList.replaceChildren();
+
+      if (!teams || teams.length === 0) {
+        teamList.textContent = "Belum ada tim.";
+      } else {
+        teams.forEach(team => {
+          const item = document.createElement("p");
+          item.textContent = "📁 " + team.team_name;
+          teamList.appendChild(item);
+        });
+      }
+
+      // OWNER DAN ADMIN DAPAT MEMBUAT TIM
+      if (isOwner || isAdmin) {
+        const teamNameInput = document.createElement("input");
+        teamNameInput.placeholder = "Nama tim baru";
+        teamNameInput.maxLength = 100;
+
+        const managerSelect = document.createElement("select");
+
+        const { data: managers, error: managerError } = await db
+          .from("agency_members")
+          .select("id, user_id")
+          .eq("agency_id", agency.id)
+          .eq("role", "manager")
+          .eq("status", "active");
+
+        if (managerError) throw managerError;
+
+        managerSelect.innerHTML =
+          '<option value="">Pilih Manager</option>';
+
+        (managers || []).forEach(manager => {
+          const option = document.createElement("option");
+          option.value = manager.id;
+          option.textContent =
+            "Manager " + manager.user_id.slice(0, 8);
+          managerSelect.appendChild(option);
+        });
+
+        const createTeamButton = document.createElement("button");
+        createTeamButton.type = "button";
+        createTeamButton.textContent = "Buat Tim";
+
+        createTeamButton.addEventListener("click", async () => {
+          const teamName = teamNameInput.value.trim();
+          const managerId = managerSelect.value;
+
+          if (!teamName || !managerId) {
+            showNotice(
+              "Isi nama tim dan pilih Manager.",
+              "error"
+            );
+            return;
+          }
+
+          createTeamButton.disabled = true;
+
+          try {
+            const { error } = await db
+              .from("agency_teams")
+              .insert({
+                agency_id: agency.id,
+                team_name: teamName,
+                manager_member_id: managerId
+              });
+
+            if (error) throw error;
+
+            showNotice("Tim berhasil dibuat!", "success");
+            await loadAgencyPage();
+
+          } catch (error) {
+            showNotice(
+              "Gagal membuat tim: " + error.message,
+              "error"
+            );
+            createTeamButton.disabled = false;
+          }
+        });
+
+        teamBox.append(
+          teamNameInput,
+          managerSelect,
+          createTeamButton
+        );
+      }
+
+    } catch (error) {
+      teamList.textContent =
+        "Gagal memuat tim: " + error.message;
+    }
+  })();
+}
+
 if (
   agency.owner_id === currentUser.id &&
   ["draft", "pending", "rejected"].includes(

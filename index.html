@@ -1203,7 +1203,38 @@ textarea:focus {
     onclick="showTab('myVideosTab')">
     🎬 Buka Video Saya
   </button>
+<div class="upload-card" id="agencyCreateBox">
+  <h3>🏢 Daftarkan Agensi</h3>
 
+  <label>Nama Agensi</label>
+  <input
+    type="text"
+    id="newAgencyName"
+    placeholder="Masukkan nama agensi"
+    maxlength="100"
+  >
+
+  <label>Jenis Agensi</label>
+  <select id="newAgencyType">
+    <option value="live">LIVE</option>
+    <option value="content">Content</option>
+    <option value="both">LIVE + Content</option>
+  </select>
+
+  <label>Deskripsi Agensi</label>
+  <textarea
+    id="newAgencyDescription"
+    placeholder="Ceritakan tentang agensi..."
+    maxlength="1000"
+  ></textarea>
+
+  <button
+    type="button"
+    id="createAgencyBtn"
+  >
+    Daftarkan Agensi
+  </button>
+</div>
   <div id="agencyContent">
     <div class="empty-state">
       Fitur agensi sedang disiapkan.
@@ -2977,6 +3008,53 @@ async function loadAgencyPage() {
     container.appendChild(message);
   }
   }
+    async function createAgency() {
+  if (!currentUser) {
+    showNotice("Silakan login terlebih dahulu.", "error");
+    return;
+  }
+
+  const name = $("newAgencyName").value.trim();
+  const type = $("newAgencyType").value;
+  const description = $("newAgencyDescription").value.trim();
+  const button = $("createAgencyBtn");
+
+  if (!name) {
+    showNotice("Nama agensi wajib diisi.", "error");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Mendaftarkan...";
+
+  try {
+    const { error } = await db
+      .from("agencies")
+      .insert({
+        name: name,
+        agency_type: type,
+        description: description,
+        owner_id: currentUser.id
+      });
+
+    if (error) throw error;
+
+    showNotice("Agensi berhasil didaftarkan!", "success");
+
+    $("newAgencyName").value = "";
+    $("newAgencyDescription").value = "";
+
+    await loadAgencyPage();
+
+  } catch (error) {
+    showNotice("Gagal mendaftarkan agensi: " + error.message, "error");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Daftarkan Agensi";
+  }
+}
+
+$("createAgencyBtn").addEventListener("click", createAgency);
   // SUKA DAN BATAL SUKA
   
 async function toggleLike(videoId) {

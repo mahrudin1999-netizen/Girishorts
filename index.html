@@ -3420,11 +3420,11 @@ async function loadAgencyInvitations() {
     const email = currentUser.email.toLowerCase();
 
     const { data, error } = await db
-      .from("agency_invitations")
-      .select("id,agency_id,invited_role,created_at,expires_at")
-      .eq("invited_email", email)
-      .eq("status", "pending")
-      .gt("expires_at", new Date().toISOString());
+  .from("agency_invitations")
+  .select("id,agency_id,invited_role,created_at,expires_at")
+  .eq("invited_email", email)
+  .eq("status", "pending")
+  .gt("expires_at", new Date().toISOString());
 
     if (error) throw error;
 
@@ -3503,12 +3503,12 @@ async function loadAgencyInvitations() {
         acceptButton.disabled = true;
 
         try {
-          const { error } = await db
-            .from("agency_invitations")
-            .update({ status: "rejected" })
-            .eq("id", invitation.id)
-            .eq("invited_email", email)
-            .eq("status", "pending");
+        const { error } = await db.rpc(
+  "agency_reject_invitation",
+  {
+    p_invitation_id: invitation.id
+  }
+);
 
           if (error) throw error;
 

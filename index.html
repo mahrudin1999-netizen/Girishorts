@@ -1459,6 +1459,7 @@ textarea:focus {
 
     if (tabId === "homeTab") loadFeed();
     if (tabId === "myVideosTab") loadMyVideos();
+    if (tabId === "agencyTab") loadAgencyPage();
   }
 
   window.showTab = showTab;
@@ -2893,7 +2894,89 @@ await loadVideoStats(
       container.appendChild(message);
     }
   }
+async function loadAgencyPage() {
+  const container = $("agencyContent");
 
+  if (!container) return;
+
+  if (!currentUser) {
+    container.innerHTML =
+      '<div class="empty-state">Login untuk mengakses fitur Agensi.</div>';
+    return;
+  }
+
+  container.innerHTML =
+    '<div class="empty-state">Memuat data agensi...</div>';
+
+  try {
+    const { data: owned, error: ownedError } = await db
+      .from("agencies")
+      .select("id,name,agency_type,verification_status,description,owner_id")
+      .eq("owner_id", currentUser.id);
+
+    if (ownedError) throw ownedError;
+
+    const { data: memberships, error: memberError } = await db
+      .from("agency_members")
+      .select("agency_id,role,status")
+      .eq("user_id", currentUser.id)
+      .eq("status", "active");
+
+    if (memberError) throw memberError;
+
+    const agencyIds = [
+      ...new Set([
+        ...(owned || []).map(a => a.id),
+        ...(memberships || []).map(m => m.agency_id)
+      ])
+    ];
+
+    container.replaceChildren();
+
+    if (agencyIds.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent =
+        "Kamu belum memiliki atau bergabung dengan agensi.";
+      container.appendChild(empty);
+      return;
+    }
+
+    const { data: agencies, error } = await db
+      .from("agencies")
+      .select("id,name,agency_type,verification_status,description,owner_id")
+      .in("id", agencyIds);
+
+    if (error) throw error;
+
+    (agencies || []).forEach(agency => {
+      const card = document.createElement("div");
+      card.className = "empty-state";
+
+      const title = document.createElement("h3");
+      title.textContent = agency.name;
+
+      const type = document.createElement("p");
+      type.textContent =
+        "Jenis: " + agency.agency_type.toUpperCase();
+
+      const status = document.createElement("p");
+      status.textContent =
+        "Status: " + agency.verification_status.toUpperCase();
+
+      card.append(title, type, status);
+      container.appendChild(card);
+    });
+
+  } catch (error) {
+    container.innerHTML = "";
+    const message = document.createElement("div");
+    message.className = "empty-state";
+    message.textContent =
+      "Gagal memuat agensi: " + error.message;
+    container.appendChild(message);
+  }
+  }
   // SUKA DAN BATAL SUKA
   
 async function toggleLike(videoId) {

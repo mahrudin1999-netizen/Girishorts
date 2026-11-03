@@ -3417,16 +3417,9 @@ async function loadAgencyInvitations() {
   container.textContent = "Memuat undangan...";
 
   try {
-    const email = currentUser.email.toLowerCase();
-
-    const { data, error } = await db
-  .from("agency_invitations")
-  .select("id,agency_id,invited_role,created_at,expires_at")
-  .eq("invited_email", email)
-  .eq("status", "pending")
-  .gt("expires_at", new Date().toISOString());
-
-    if (error) throw error;
+       const { data, error } = await db.rpc(
+  "agency_get_my_invitations"
+);    if (error) throw error;
 
     container.replaceChildren();
 
@@ -3438,21 +3431,12 @@ async function loadAgencyInvitations() {
       return;
     }
 
-    const agencyIds = [...new Set(data.map(item => item.agency_id))];
-
-    const { data: agencies, error: agencyError } = await db
-      .from("agencies")
-      .select("id,name,agency_type")
-      .in("id", agencyIds);
-
-    if (agencyError) throw agencyError;
-
     data.forEach(invitation => {
-      const agency = (agencies || []).find(
-        a => a.id === invitation.agency_id
-      );
-
-      if (!agency) return;
+      const agency = {
+  id: invitation.agency_id,
+  name: invitation.agency_name,
+  agency_type: invitation.agency_type
+};
 
       const card = document.createElement("div");
       card.className = "empty-state";

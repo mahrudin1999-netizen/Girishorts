@@ -1192,7 +1192,24 @@ textarea:focus {
   </div>
 </div>
 </section>
+<!-- BAGIAN AGENSI -->
+<section id="agencyTab" class="tab-page">
+  <h1 class="page-title">Agensi 🏢</h1>
+  <p class="page-desc">
+    Kelola agensi, manager, tim, kreator, dan ruang obrolan.
+  </p>
 
+  <button class="btn" type="button"
+    onclick="showTab('myVideosTab')">
+    🎬 Buka Video Saya
+  </button>
+
+  <div id="agencyContent">
+    <div class="empty-state">
+      Fitur agensi sedang disiapkan.
+    </div>
+  </div>
+</section>
 <section id="accountTab" class="tab-page">
   <h1 class="page-title">Akun</h1>
   <p class="page-desc">
@@ -1356,10 +1373,10 @@ textarea:focus {
       <span class="nav-icon">⬆️</span>
       <span>Unggah</span>
     </button>
-    <button class="nav-btn" data-tab="myVideosTab" type="button">
-      <span class="nav-icon">🎬</span>
-      <span>Video Saya</span>
-    </button>
+    <button class="nav-btn" data-tab="agencyTab" type="button">
+  <span class="nav-icon">🏢</span>
+  <span>Agensi</span>
+</button>
     <button class="nav-btn" data-tab="accountTab" type="button">
       <span class="nav-icon">👤</span>
       <span>Akun</span>
@@ -1422,12 +1439,13 @@ textarea:focus {
 
   function showTab(tabId) {
   const validTabs = [
-    "homeTab",
-    "uploadTab",
-    "myVideosTab",
-    "accountTab",
-    "marketTab"
-  ];
+  "homeTab",
+  "uploadTab",
+  "myVideosTab",
+  "agencyTab",
+  "accountTab",
+  "marketTab"
+];
 
     if (!validTabs.includes(tabId)) return;
 

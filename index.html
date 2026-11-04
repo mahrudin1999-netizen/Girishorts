@@ -3876,19 +3876,31 @@ if (refreshBtn) {
 }
   // MULAI APLIKASI
 async function startApp() {
+  await refreshSession();
+  updateAccountUI();
+
   try {
-    await refreshSession();
-    updateAccountUI();
-
     await loadCreatorNotificationBadge();
-
-    await loadMyProfile();
-    await loadFeed();
-    await loadMyVideos();
-
   } catch (error) {
-    console.error("Gagal memulai aplikasi:", error);
-    showNotice("Gagal: " + error.message, "error");
+    console.error("Notifikasi gagal:", error);
+  }
+
+  try {
+    await loadMyProfile();
+  } catch (error) {
+    console.error("Profil gagal:", error);
+  }
+
+  try {
+    await loadFeed();
+  } catch (error) {
+    console.error("Beranda gagal:", error);
+  }
+
+  try {
+    await loadMyVideos();
+  } catch (error) {
+    console.error("Video saya gagal:", error);
   }
 }
     // FITUR KOMENTAR GIRISHORTS

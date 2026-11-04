@@ -2884,8 +2884,7 @@ async function loadFeed() {
   }
 
   try {
-    container.textContent = "TES GIRINATAN: Fungsi loadFeed berjalan.";
-
+    container.textContent = "Memuat video...";
     const request = db
       .from("videos")
       .select("id,user_id,title,video_path,created_at")
@@ -4647,7 +4646,6 @@ function closeCreatorNotifications() {
 }
   // JALANKAN APLIKASI
 startApp();
-    console.log("TES: startApp sudah dipanggil");
 </script>
   
 

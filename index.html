@@ -2878,14 +2878,25 @@ async function loadFeed() {
     return;
   }
 
-  container.textContent = "Memuat video...";
-
   try {
-    const { data, error } = await db
+    container.textContent = "Menghubungi database...";
+
+    const request = db
       .from("videos")
       .select("id,user_id,title,video_path,created_at")
       .order("created_at", { ascending: false })
       .limit(100);
+
+    const timeout = new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error("Database tidak merespons selama 15 detik."));
+      }, 15000);
+    });
+
+    const { data, error } = await Promise.race([
+      request,
+      timeout
+    ]);
 
     if (error) throw error;
 
@@ -2896,6 +2907,8 @@ async function loadFeed() {
       return;
     }
 
+    container.textContent = "Data video diterima, memuat profil...";
+
     try {
       await loadCreatorProfiles(
         videosCache.map(video => video.user_id)
@@ -2903,6 +2916,8 @@ async function loadFeed() {
     } catch (error) {
       console.error("Gagal memuat profil:", error);
     }
+
+    container.textContent = "Memuat statistik video...";
 
     try {
       await loadVideoStats(
@@ -2913,8 +2928,6 @@ async function loadFeed() {
     }
 
     renderVideoList(container, videosCache, false);
-
-    console.log("Feed berhasil ditampilkan.");
 
   } catch (error) {
     console.error("GAGAL LOAD FEED:", error);

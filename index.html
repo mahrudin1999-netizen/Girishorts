@@ -3893,9 +3893,13 @@ if (refreshBtn) {
 }
   // MULAI APLIKASI
 async function startApp() {
-  await refreshSession();
-  updateAccountUI();
+  console.log("TES 1: startApp dimulai");
 
+  await refreshSession();
+  console.log("TES 2: refreshSession selesai");
+
+  updateAccountUI();
+  console.log("TES 3: updateAccountUI selesai");
   try {
     await loadCreatorNotificationBadge();
   } catch (error) {

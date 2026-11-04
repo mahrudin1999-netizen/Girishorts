@@ -3461,12 +3461,11 @@ container.appendChild(card);
     container.replaceChildren();
 
     if (!data || data.length === 0) {
-      const empty = document.createElement("div");
-      empty.className = "empty-state";
-      empty.textContent = "Belum ada pengajuan verifikasi.";
-      container.appendChild(empty);
-      return;
-    }
+  const empty = document.createElement("div");
+  empty.className = "empty-state";
+  empty.textContent = "Belum ada pengajuan verifikasi agensi.";
+  container.appendChild(empty);
+} else {
 
     data.forEach((item) => {
       const card = document.createElement("div");
@@ -3583,6 +3582,94 @@ container.appendChild(card);
 
       container.appendChild(card);
     });
+    }
+    
+// DAFTAR VERIFIKASI KREATOR
+const creatorHeading = document.createElement("h3");
+creatorHeading.textContent = "👥 Verifikasi Kreator";
+container.appendChild(creatorHeading);
+
+try {
+  const { data: creators, error: creatorError } =
+    await db.rpc("platform_admin_get_pending_creators");
+
+  if (creatorError) throw creatorError;
+
+  if (!creators || creators.length === 0) {
+    const emptyCreator = document.createElement("div");
+    emptyCreator.className = "empty-state";
+    emptyCreator.textContent = "Tidak ada kreator menunggu verifikasi.";
+    container.appendChild(emptyCreator);
+  } else {
+    creators.forEach(creator => {
+      const creatorCard = document.createElement("div");
+      creatorCard.className = "upload-card";
+
+      const creatorName = document.createElement("h3");
+      creatorName.textContent =
+        creator.creator_name || creator.tiktok_username;
+
+      const username = document.createElement("p");
+      username.textContent = "TikTok: @" + creator.tiktok_username;
+
+      const status = document.createElement("p");
+      status.textContent = "Status: UNVERIFIED";
+
+      const verifyButton = document.createElement("button");
+      verifyButton.type = "button";
+      verifyButton.className = "btn";
+      verifyButton.textContent = "✅ Verifikasi Kreator";
+
+      verifyButton.addEventListener("click", async () => {
+        verifyButton.disabled = true;
+        verifyButton.textContent = "Memverifikasi...";
+
+        try {
+          const { error } = await db.rpc(
+            "platform_admin_verify_creator",
+            {
+              p_creator_id: creator.id
+            }
+          );
+
+          if (error) throw error;
+
+          showNotice(
+            "Kreator berhasil diverifikasi!",
+            "success"
+          );
+
+          await loadPlatformAdminPanel();
+          await loadAgencyPage();
+
+        } catch (error) {
+          showNotice(
+            "Gagal memverifikasi kreator: " + error.message,
+            "error"
+          );
+
+          verifyButton.disabled = false;
+          verifyButton.textContent = "✅ Verifikasi Kreator";
+        }
+      });
+
+      creatorCard.append(
+        creatorName,
+        username,
+        status,
+        verifyButton
+      );
+
+      container.appendChild(creatorCard);
+    });
+  }
+
+} catch (error) {
+  const errorMessage = document.createElement("p");
+  errorMessage.textContent =
+    "Gagal memuat daftar kreator: " + error.message;
+  container.appendChild(errorMessage);
+}
 
   } catch (error) {
     container.textContent =

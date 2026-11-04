@@ -3564,6 +3564,69 @@ container.appendChild(card);
 
     container.replaceChildren();
 
+// DAFTAR SELURUH AGENSI
+const agencyTitle = document.createElement("h3");
+agencyTitle.textContent = "🏢 Daftar Seluruh Agensi";
+container.appendChild(agencyTitle);
+
+const agencyList = document.createElement("div");
+agencyList.textContent = "Memuat daftar agensi...";
+container.appendChild(agencyList);
+
+const { data: agencies, error: agencyError } = await db
+  .from("agencies")
+  .select("id, name, agency_type, owner_id, verification_status, created_at")
+  .order("created_at", { ascending: false });
+
+if (agencyError) throw agencyError;
+
+agencyList.replaceChildren();
+
+if (!agencies || agencies.length === 0) {
+  agencyList.textContent = "Belum ada agensi terdaftar.";
+} else {
+  agencies.forEach(agency => {
+    const agencyCard = document.createElement("div");
+    agencyCard.className = "upload-card";
+
+    const agencyName = document.createElement("h3");
+    agencyName.textContent = "🏢 " + agency.name;
+
+    const agencyType = document.createElement("p");
+    agencyType.textContent =
+      "Jenis: " + (agency.agency_type || "-");
+
+    const status = document.createElement("p");
+    status.textContent =
+      "Status: " + (agency.verification_status || "belum terverifikasi");
+
+    const detailButton = document.createElement("button");
+    detailButton.type = "button";
+    detailButton.textContent = "Lihat Detail Agensi";
+
+    detailButton.addEventListener("click", () => {
+      showNotice(
+        "Agensi dipilih: " + agency.name,
+        "success"
+      );
+    });
+
+    agencyCard.append(
+      agencyName,
+      agencyType,
+      status,
+      detailButton
+    );
+
+    agencyList.appendChild(agencyCard);
+  });
+}
+
+// PEMBATAS PENGAJUAN VERIFIKASI
+const verificationTitle = document.createElement("h3");
+verificationTitle.textContent = "📩 Pengajuan Verifikasi Agensi";
+container.appendChild(verificationTitle);
+
     if (!data || data.length === 0) {
   const empty = document.createElement("div");
   empty.className = "empty-state";

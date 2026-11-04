@@ -3719,7 +3719,76 @@ rejectButton.addEventListener("click", async () => {
     "Gagal memuat daftar kreator: " + error.message;
   container.appendChild(errorMessage);
 }
+// RIWAYAT VERIFIKASI KREATOR
+const historyHeading = document.createElement("h3");
+historyHeading.textContent = "📋 Riwayat Verifikasi Kreator";
+container.appendChild(historyHeading);
 
+try {
+  const { data: history, error: historyError } =
+    await db.rpc("platform_admin_get_creator_history");
+
+  if (historyError) throw historyError;
+
+  if (!history || history.length === 0) {
+    const emptyHistory = document.createElement("div");
+    emptyHistory.className = "empty-state";
+    emptyHistory.textContent = "Belum ada riwayat verifikasi.";
+    container.appendChild(emptyHistory);
+  } else {
+    history.forEach(record => {
+      const card = document.createElement("div");
+      card.className = "upload-card";
+
+      const name = document.createElement("h3");
+      name.textContent =
+        record.creator_name || record.creator_username;
+
+      const username = document.createElement("p");
+      username.textContent =
+        "TikTok: @" + record.creator_username;
+
+      const decision = document.createElement("p");
+      decision.textContent =
+        "Keputusan: " + record.decision.toUpperCase();
+
+      decision.style.color =
+        record.decision === "verified"
+          ? "#00C875"
+          : "#FF6B6B";
+
+      const notes = document.createElement("p");
+      notes.textContent =
+        "Alasan: " + (record.review_notes || "Tidak ada");
+
+      const admin = document.createElement("p");
+      admin.textContent =
+        "ID Super Admin: " + (record.reviewed_by || "-");
+
+      const date = document.createElement("p");
+      date.textContent =
+        "Tanggal: " +
+        new Date(record.created_at).toLocaleString("id-ID");
+
+      card.append(
+        name,
+        username,
+        decision,
+        notes,
+        admin,
+        date
+      );
+
+      container.appendChild(card);
+    });
+  }
+
+} catch (error) {
+  const historyErrorMessage = document.createElement("p");
+  historyErrorMessage.textContent =
+    "Gagal memuat riwayat: " + error.message;
+  container.appendChild(historyErrorMessage);
+    }
   } catch (error) {
     container.textContent =
       "Gagal memuat panel Super Admin: " + error.message;

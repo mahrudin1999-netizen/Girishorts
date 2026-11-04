@@ -1471,14 +1471,7 @@ textarea:focus {
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
   );
-document.getElementById("videoFeed").textContent =
-  "SCRIPT UTAMA GIRINATAN AKTIF";
-    window.addEventListener("error", function(event) {
-  document.getElementById("videoFeed").textContent =
-    "KESALAHAN: " + event.message +
-    " | BARIS: " + event.lineno +
-    " | KOLOM: " + event.colno;
-});
+
 
 window.addEventListener("unhandledrejection", function(event) {
   document.getElementById("videoFeed").textContent =

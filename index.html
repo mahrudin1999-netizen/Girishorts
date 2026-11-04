@@ -2897,7 +2897,10 @@ async function loadFeed() {
       request,
       timeout
     ]);
-
+console.log("HASIL DATABASE:", {
+  data: data,
+  error: error
+});
     if (error) throw error;
 
     videosCache = data || [];

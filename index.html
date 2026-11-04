@@ -3180,7 +3180,111 @@ if (error) throw error;
       if (!teams || teams.length === 0) {
         teamList.textContent = "Belum ada tim.";
       }
+      // FORM TAMBAH KREATOR LANGSUNG KE AGENSI
+      if (isOwner || isAdmin) {
+        const directCreatorBox = document.createElement("div");
+        directCreatorBox.style.marginTop = "15px";
+        directCreatorBox.style.padding = "12px";
+        directCreatorBox.style.border = "1px solid #D6AD48";
+        directCreatorBox.style.borderRadius = "10px";
 
+        const directTitle = document.createElement("h4");
+        directTitle.textContent = "Tambah Kreator Agensi";
+
+        const directUsernameInput = document.createElement("input");
+        directUsernameInput.placeholder = "Username TikTok";
+        directUsernameInput.maxLength = 100;
+
+        const directAddButton = document.createElement("button");
+        directAddButton.type = "button";
+        directAddButton.textContent = "Tambah ke Agensi";
+
+        const directCreatorList = document.createElement("div");
+        directCreatorList.textContent = "Memuat kreator...";
+
+        async function loadDirectCreators() {
+          const { data, error } = await db
+            .from("agency_creators")
+            .select("id, tiktok_username")
+            .eq("agency_id", agency.id)
+            .is("team_id", null)
+            .order("created_at", { ascending: false });
+
+          if (error) throw error;
+
+          directCreatorList.replaceChildren();
+
+          if (!data || data.length === 0) {
+            directCreatorList.textContent =
+              "Belum ada kreator tanpa tim.";
+            return;
+          }
+
+          data.forEach(creator => {
+            const item = document.createElement("p");
+            item.textContent = "@" + creator.tiktok_username;
+            directCreatorList.appendChild(item);
+          });
+        }
+
+        directAddButton.addEventListener("click", async () => {
+          const username = directUsernameInput.value
+            .trim()
+            .replace(/^@/, "");
+
+          if (!username) {
+            showNotice("Masukkan username TikTok.", "error");
+            return;
+          }
+
+          directAddButton.disabled = true;
+
+          try {
+            const { error } = await db
+              .from("agency_creators")
+              .insert({
+                agency_id: agency.id,
+                team_id: null,
+                tiktok_username: username,
+                creator_name: username,
+                source: "manual",
+                backstage_status: "active"
+              });
+
+            if (error) throw error;
+
+            showNotice(
+              "Kreator berhasil ditambahkan ke agensi!",
+              "success"
+            );
+
+            directUsernameInput.value = "";
+            await loadDirectCreators();
+
+          } catch (error) {
+            showNotice(
+              "Gagal menambahkan kreator: " + error.message,
+              "error"
+            );
+          } finally {
+            directAddButton.disabled = false;
+          }
+        });
+
+        directCreatorBox.append(
+          directTitle,
+          directUsernameInput,
+          directAddButton,
+          directCreatorList
+        );
+
+        teamList.appendChild(directCreatorBox);
+
+        loadDirectCreators().catch(error => {
+          directCreatorList.textContent =
+            "Gagal memuat kreator: " + error.message;
+        });
+          }
       for (const team of teams || []) {
         const teamCard = document.createElement("div");
         teamCard.style.marginTop = "12px";
@@ -3248,7 +3352,7 @@ if (error) throw error;
                 tiktok_username: username,
                 creator_name: username,
                 source: "manual",
-                backstage_status: "unverified"
+                backstage_status: "active"
               });
 
             if (error) throw error;

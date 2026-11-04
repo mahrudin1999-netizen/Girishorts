@@ -3652,13 +3652,62 @@ try {
           verifyButton.textContent = "✅ Verifikasi Kreator";
         }
       });
+const rejectNotes = document.createElement("textarea");
+rejectNotes.placeholder = "Tuliskan alasan penolakan kreator...";
+rejectNotes.rows = 3;
+rejectNotes.style.width = "100%";
+rejectNotes.style.marginTop = "10px";
 
+const rejectButton = document.createElement("button");
+rejectButton.type = "button";
+rejectButton.className = "btn";
+rejectButton.textContent = "❌ Tolak Kreator";
+
+rejectButton.addEventListener("click", async () => {
+  const notes = rejectNotes.value.trim();
+
+  if (!notes) {
+    showNotice("Alasan penolakan wajib diisi.", "error");
+    return;
+  }
+
+  rejectButton.disabled = true;
+  rejectButton.textContent = "Memproses...";
+
+  try {
+    const { error } = await db.rpc(
+      "platform_admin_reject_creator",
+      {
+        p_creator_id: creator.id,
+        p_review_notes: notes
+      }
+    );
+
+    if (error) throw error;
+
+    showNotice("Pengajuan kreator berhasil ditolak.", "success");
+
+    await loadPlatformAdminPanel();
+    await loadAgencyPage();
+
+  } catch (error) {
+    showNotice(
+      "Gagal menolak kreator: " + error.message,
+      "error"
+    );
+
+    rejectButton.disabled = false;
+    rejectButton.textContent = "❌ Tolak Kreator";
+  }
+});
       creatorCard.append(
-        creatorName,
-        username,
-        status,
-        verifyButton
-      );
+  creatorName,
+  username,
+  status,
+  verifyButton,
+  rejectNotes,
+  rejectButton
+);
 
       container.appendChild(creatorCard);
     });

@@ -3603,13 +3603,102 @@ if (!agencies || agencies.length === 0) {
     const detailButton = document.createElement("button");
     detailButton.type = "button";
     detailButton.textContent = "Lihat Detail Agensi";
+detailButton.addEventListener("click", async () => {
+  agencyList.replaceChildren();
 
-    detailButton.addEventListener("click", () => {
-      showNotice(
-        "Agensi dipilih: " + agency.name,
-        "success"
-      );
-    });
+  const backButton = document.createElement("button");
+  backButton.type = "button";
+  backButton.textContent = "← Kembali ke Daftar Agensi";
+
+  backButton.addEventListener("click", () => {
+    loadPlatformAdminPanel();
+  });
+
+  const detailTitle = document.createElement("h3");
+  detailTitle.textContent = "🏢 " + agency.name;
+
+  const agencyInfo = document.createElement("div");
+  agencyInfo.className = "upload-card";
+
+  agencyInfo.innerHTML = `
+    <p>Jenis Agensi: ${agency.agency_type || "-"}</p>
+    <p>Status: ${agency.verification_status || "-"}</p>
+    <p>ID Pemilik: ${agency.owner_id || "-"}</p>
+  `;
+
+  const teamTitle = document.createElement("h3");
+  teamTitle.textContent = "📁 Daftar Tim";
+
+  const teamContainer = document.createElement("div");
+  teamContainer.textContent = "Memuat tim...";
+
+  const creatorTitle = document.createElement("h3");
+  creatorTitle.textContent = "🎬 Daftar Kreator";
+
+  const creatorContainer = document.createElement("div");
+  creatorContainer.textContent = "Memuat kreator...";
+
+  agencyList.append(
+    backButton,
+    detailTitle,
+    agencyInfo,
+    teamTitle,
+    teamContainer,
+    creatorTitle,
+    creatorContainer
+  );
+
+  try {
+    const { data: teams, error: teamError } = await db
+      .from("agency_teams")
+      .select("id, team_name, manager_member_id")
+      .eq("agency_id", agency.id);
+
+    if (teamError) throw teamError;
+
+    teamContainer.replaceChildren();
+
+    if (!teams || teams.length === 0) {
+      teamContainer.textContent = "Belum ada tim.";
+    } else {
+      teams.forEach(team => {
+        const item = document.createElement("p");
+        item.textContent = "📁 " + team.team_name;
+        teamContainer.appendChild(item);
+      });
+    }
+
+    const { data: creators, error: creatorError } = await db
+      .from("agency_creators")
+      .select("id, team_id, tiktok_username, creator_name, backstage_status")
+      .eq("agency_id", agency.id);
+
+    if (creatorError) throw creatorError;
+
+    creatorContainer.replaceChildren();
+
+    if (!creators || creators.length === 0) {
+      creatorContainer.textContent = "Belum ada kreator.";
+    } else {
+      creators.forEach(creator => {
+        const item = document.createElement("p");
+        item.textContent =
+          "@" + creator.tiktok_username +
+          " | " + (creator.creator_name || "-") +
+          " | " + (creator.backstage_status || "-");
+
+        creatorContainer.appendChild(item);
+      });
+    }
+
+  } catch (error) {
+    showNotice(
+      "Gagal memuat detail agensi: " + error.message,
+      "error"
+    );
+  }
+});
+  
 
     agencyCard.append(
       agencyName,

@@ -3456,38 +3456,48 @@ async function loadTeamCreators() {
     creatorList.appendChild(item);
   });
 }
+          
+addButton.addEventListener("click", async () => {
+  const username = usernameInput.value
+    .trim()
+    .replace(/^@/, "");
 
+  if (!username) {
+    showNotice("Masukkan username TikTok.", "error");
+    return;
+  }
 
-          addButton.disabled = true;
+  addButton.disabled = true;
 
-          try {
-            const { error } = await db
-              .from("agency_creators")
-              .insert({
-                agency_id: agency.id,
-                team_id: team.id,
-                tiktok_username: username,
-                creator_name: username,
-                source: "manual",
-                backstage_status: "active"
-              });
+  try {
+    const { error } = await db
+      .from("agency_creators")
+      .insert({
+        agency_id: agency.id,
+        team_id: team.id,
+        tiktok_username: username,
+        creator_name: username,
+        source: "manual",
+        backstage_status: "active"
+      });
 
-            if (error) throw error;
+    if (error) throw error;
 
-            showNotice("Kreator berhasil ditambahkan!", "success");
-            usernameInput.value = "";
+    showNotice("Kreator berhasil ditambahkan!", "success");
+    usernameInput.value = "";
 
-            await loadTeamCreators();
+    await loadTeamCreators();
 
-          } catch (error) {
-            showNotice(
-              "Gagal menambahkan kreator: " + error.message,
-              "error"
-            );
-          } finally {
-            addButton.disabled = false;
-          }
-        });
+  } catch (error) {
+    showNotice(
+      "Gagal menambahkan kreator: " + error.message,
+      "error"
+    );
+  } finally {
+    addButton.disabled = false;
+  }
+});
+
 
         teamCard.append(
           teamName,

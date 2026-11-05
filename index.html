@@ -3025,7 +3025,7 @@ await loadPlatformAdminPanel();
   // MEMERIKSA KEANGGOTAAN KREATOR
 const { data: creatorMemberships, error: creatorError } = await db
   .from("agency_creators")
-  .select("agency_id, team_id, tiktok_username");
+  .select("agency_id, team_id, tiktok_username, backstage_status");
 
 if (creatorError) throw creatorError;
 
@@ -3094,7 +3094,53 @@ const isOwner = agency.owner_id === currentUser.id;
 const isAdmin =
   membership &&
   membership.role === "admin";
+const creatorMembership = (creatorMemberships || []).find(
+  c => c.agency_id === agency.id
+);
 
+const isManager =
+  membership &&
+  membership.role === "manager";
+
+// TAMPILAN KHUSUS KREATOR
+if (
+  creatorMembership &&
+  !isOwner &&
+  !isAdmin &&
+  !isManager
+) {
+  const creatorInfo = document.createElement("div");
+  creatorInfo.className = "upload-card";
+  creatorInfo.style.marginTop = "15px";
+
+  const creatorTitle = document.createElement("h4");
+  creatorTitle.textContent = "🎬 Keanggotaan Kreator";
+
+  const creatorName = document.createElement("p");
+  creatorName.textContent =
+    "Username: @" + creatorMembership.tiktok_username;
+
+  const creatorStatus = document.createElement("p");
+  creatorStatus.textContent =
+    "Status: " +
+    (creatorMembership.backstage_status || "active").toUpperCase();
+
+  const creatorMessage = document.createElement("p");
+  creatorMessage.textContent =
+    "Kamu sudah terdaftar sebagai kreator di agensi ini.";
+
+  creatorInfo.append(
+    creatorTitle,
+    creatorName,
+    creatorStatus,
+    creatorMessage
+  );
+
+  card.appendChild(creatorInfo);
+  container.appendChild(card);
+
+  return;
+}
 if (
   agency.verification_status === "verified" &&
   (isOwner || isAdmin)

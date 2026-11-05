@@ -3028,7 +3028,19 @@ await loadPlatformAdminPanel();
         ...(memberships || []).map(m => m.agency_id)
       ])
     ];
+// ATUR TAMPILAN FORM AGENSI
+const createBox = $("agencyCreateBox");
+const invitationBox = $("agencyInvitationBox");
 
+const alreadyJoined = agencyIds.length > 0;
+
+if (createBox) {
+  createBox.style.display = alreadyJoined ? "none" : "block";
+}
+
+if (invitationBox) {
+  invitationBox.style.display = alreadyJoined ? "none" : "block";
+}
     container.replaceChildren();
 
     if (agencyIds.length === 0) {

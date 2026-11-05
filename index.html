@@ -3375,83 +3375,88 @@ if (error) throw error;
         addButton.type = "button";
         addButton.textContent = "Tambah Kreator";
 
-        async function loadTeamCreators() {
-          const { data, error } = await db
-            .from("agency_creators")
-            .select("id, tiktok_username, backstage_status")
-            .eq("team_id", team.id);
+        
+async function loadTeamCreators() {
+  const { data, error } = await db
+    .from("agency_creators")
+    .select("id, tiktok_username, membership_status, team_membership_status, backstage_status")
+    .eq("team_id", team.id)
+    .eq("membership_status", "active")
+    .eq("team_membership_status", "active");
 
-          if (error) throw error;
+  if (error) throw error;
 
-          creatorList.replaceChildren();
+  creatorList.replaceChildren();
 
-          if (!data || data.length === 0) {
-            creatorList.textContent = "Belum ada kreator.";
-            return;
-          }
-data.forEach(creator => {
-  const item = document.createElement("div");
-  item.style.marginBottom = "12px";
+  if (!data || data.length === 0) {
+    creatorList.textContent = "Belum ada kreator aktif di tim ini.";
+    return;
+  }
 
-  const creatorName = document.createElement("p");
-  creatorName.textContent =
-    "@" + creator.tiktok_username +
-    " | " + (creator.backstage_status || "active").toUpperCase();
+  data.forEach(creator => {
+    const item = document.createElement("div");
+    item.style.marginBottom = "12px";
 
-  const statusButton = document.createElement("button");
-  statusButton.type = "button";
+    const creatorName = document.createElement("p");
+    creatorName.textContent =
+      "@" + creator.tiktok_username;
 
-  const isActive = creator.backstage_status === "active";
+    const backstageInfo = document.createElement("small");
+    backstageInfo.textContent =
+      "Backstage: " +
+      (creator.backstage_status || "unverified").toUpperCase();
 
-  statusButton.textContent = isActive
-    ? "Nonaktifkan"
-    : "Aktifkan";
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.textContent = "Keluarkan dari Tim";
 
-  statusButton.addEventListener("click", async () => {
-    const newStatus = isActive ? "inactive" : "active";
-
-    statusButton.disabled = true;
-
-    try {
-      const { error } = await db
-        .from("agency_creators")
-        .update({ backstage_status: newStatus })
-        .eq("id", creator.id);
-
-      if (error) throw error;
-
-      showNotice(
-        "Status kreator berhasil diubah.",
-        "success"
+    removeButton.addEventListener("click", async () => {
+      const confirmed = confirm(
+        "Keluarkan @" + creator.tiktok_username +
+        " dari tim ini? Keanggotaan agensinya tetap aktif."
       );
 
-      await loadTeamCreators();
+      if (!confirmed) return;
 
-    } catch (error) {
-      showNotice(
-        "Gagal mengubah status: " + error.message,
-        "error"
-      );
+      removeButton.disabled = true;
 
-      statusButton.disabled = false;
-    }
+      try {
+        const { error } = await db
+          .from("agency_creators")
+          .update({
+            team_membership_status: "removed"
+          })
+          .eq("id", creator.id);
+
+        if (error) throw error;
+
+        showNotice(
+          "Kreator berhasil dikeluarkan dari tim.",
+          "success"
+        );
+
+        await loadTeamCreators();
+
+      } catch (error) {
+        showNotice(
+          "Gagal mengeluarkan kreator: " + error.message,
+          "error"
+        );
+
+        removeButton.disabled = false;
+      }
+    });
+
+    item.append(
+      creatorName,
+      backstageInfo,
+      removeButton
+    );
+
+    creatorList.appendChild(item);
   });
+}
 
-  item.append(creatorName, statusButton);
-  creatorList.appendChild(item);
-});
-          
-        }
-
-        addButton.addEventListener("click", async () => {
-          const username = usernameInput.value
-            .trim()
-            .replace(/^@/, "");
-
-          if (!username) {
-            showNotice("Masukkan username TikTok.", "error");
-            return;
-          }
 
           addButton.disabled = true;
 

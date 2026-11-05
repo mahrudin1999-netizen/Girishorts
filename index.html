@@ -5350,6 +5350,22 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 
+<script>
+(function () {
+  const isInstalled =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.matchMedia("(display-mode: fullscreen)").matches ||
+    window.navigator.standalone === true;
 
+  if (isInstalled) {
+    const downloadSection =
+      document.getElementById("appDownloadSection");
+
+    if (downloadSection) {
+      downloadSection.style.display = "none";
+    }
+  }
+})();
+</script>
 </body>
 </html>   

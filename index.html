@@ -1094,6 +1094,88 @@ textarea:focus {
   font-size: 24px;
   padding: 10px !important;
 }
+    
+/* =================================
+   GIRINATAN MARKET
+================================= */
+
+#marketTab .market-heading {
+  color: #D6AD48;
+  font-size: 17px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+#marketTab .market-category {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 15px 0;
+}
+
+#marketTab .market-category-item {
+  background: #141414;
+  border: 1px solid #806326;
+  border-radius: 13px;
+  padding: 15px 10px;
+  text-align: center;
+}
+
+#marketTab .market-category-item .market-icon {
+  font-size: 27px;
+  margin-bottom: 8px;
+}
+
+#marketTab .market-category-item strong {
+  display: block;
+  color: #D6AD48;
+  font-size: 13px;
+}
+
+#marketTab .market-category-item p {
+  color: #A8ADA8;
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 6px 0 0;
+}
+
+#marketTab .market-product {
+  background: #101510;
+  border: 1px solid #3C6549;
+  border-radius: 13px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+#marketTab .market-product h3 {
+  color: #D6AD48;
+  font-size: 15px;
+  margin: 0 0 8px;
+}
+
+#marketTab .market-product p {
+  color: #A8ADA8;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+#marketTab .market-price {
+  color: #00C875;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+#marketTab .market-label {
+  display: inline-block;
+  background: #202820;
+  color: #00C875;
+  border: 1px solid #3C9B65;
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  margin-bottom: 9px;
+}
+
   </style>
   <script type="application/ld+json">
 {
@@ -1407,34 +1489,101 @@ textarea:focus {
         </button>
       </div>
     </section>
-    <!-- GIRINATAN MARKET -->
+  
+<!-- GIRINATAN MARKET -->
 <section id="marketTab" class="tab-page">
 
   <h1 class="page-title">🛒 GIRINATAN MARKET</h1>
+
   <p class="page-desc">
-    Top up digital dan belanja kebutuhanmu.
+    Pusat katalog produk dan layanan digital GIRINATAN.
   </p>
 
   <div class="panel">
-    <h2 style="color:#D6AD48;">🪙 Top Up Koin TikTok</h2>
+    <h2 class="market-heading">✨ Kategori Layanan</h2>
 
-    <p class="video-meta">
-      Isi ulang koin TikTok dengan mudah melalui layanan resmi.
-    </p>
+    <div class="market-category">
 
-    <button
-      class="btn"
-      type="button"
-      onclick="showTikTokTopup()"
-      style="width:100%;"
-    >
-      🪙 Lihat Paket Koin
-    </button>
+      <div class="market-category-item">
+        <div class="market-icon">🪙</div>
+        <strong>Top Up TikTok</strong>
+        <p>Layanan isi ulang koin TikTok.</p>
+      </div>
+
+      <div class="market-category-item">
+        <div class="market-icon">📢</div>
+        <strong>Promosi Kreator</strong>
+        <p>Layanan promosi kreator.</p>
+      </div>
+
+      <div class="market-category-item">
+        <div class="market-icon">🎨</div>
+        <strong>Jasa Digital</strong>
+        <p>Layanan desain dan kreativitas.</p>
+      </div>
+
+      <div class="market-category-item">
+        <div class="market-icon">⭐</div>
+        <strong>Layanan Premium</strong>
+        <p>Fitur premium GIRINATAN.</p>
+      </div>
+
+    </div>
   </div>
 
-  <div id="marketContent"></div>
+  <div class="panel">
+    <h2 class="market-heading">📦 Katalog Produk</h2>
+
+    <p class="video-meta">
+      Informasi produk dan layanan yang tersedia.
+    </p>
+
+    <div id="marketContent">
+
+      <div class="market-product">
+        <span class="market-label">Informasi layanan</span>
+        <h3>🪙 Top Up TikTok</h3>
+        <p>
+          Informasi layanan top up TikTok.
+          Ketersediaan dan ketentuan pembelian
+          menunggu konfirmasi penyedia layanan.
+        </p>
+      </div>
+
+      <div class="market-product">
+        <span class="market-label">Informasi layanan</span>
+        <h3>📢 Promosi Kreator</h3>
+        <p>
+          Informasi layanan promosi kreator
+          GIRINATAN. Detail layanan dan harga
+          akan ditampilkan setelah tersedia.
+        </p>
+      </div>
+
+      <div class="market-product">
+        <span class="market-label">Informasi layanan</span>
+        <h3>🎨 Jasa Digital</h3>
+        <p>
+          Informasi layanan kreatif digital
+          GIRINATAN.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2 class="market-heading">📋 Ketentuan Market</h2>
+
+    <p class="video-meta">
+      Setiap produk yang tersedia akan dilengkapi
+      deskripsi, harga, ketentuan pemesanan,
+      dan informasi penyedia layanan.
+    </p>
+  </div>
 
 </section>
+
   </main>
 
   <nav class="bottom-nav" aria-label="Navigasi utama">

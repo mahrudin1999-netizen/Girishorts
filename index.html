@@ -3389,15 +3389,58 @@ if (error) throw error;
             creatorList.textContent = "Belum ada kreator.";
             return;
           }
+data.forEach(creator => {
+  const item = document.createElement("div");
+  item.style.marginBottom = "12px";
 
-          data.forEach(creator => {
-            const item = document.createElement("p");
-            item.textContent =
-              "@" + creator.tiktok_username +
-              " | " + creator.backstage_status.toUpperCase();
+  const creatorName = document.createElement("p");
+  creatorName.textContent =
+    "@" + creator.tiktok_username +
+    " | " + (creator.backstage_status || "active").toUpperCase();
 
-            creatorList.appendChild(item);
-          });
+  const statusButton = document.createElement("button");
+  statusButton.type = "button";
+
+  const isActive = creator.backstage_status === "active";
+
+  statusButton.textContent = isActive
+    ? "Nonaktifkan"
+    : "Aktifkan";
+
+  statusButton.addEventListener("click", async () => {
+    const newStatus = isActive ? "inactive" : "active";
+
+    statusButton.disabled = true;
+
+    try {
+      const { error } = await db
+        .from("agency_creators")
+        .update({ backstage_status: newStatus })
+        .eq("id", creator.id);
+
+      if (error) throw error;
+
+      showNotice(
+        "Status kreator berhasil diubah.",
+        "success"
+      );
+
+      await loadTeamCreators();
+
+    } catch (error) {
+      showNotice(
+        "Gagal mengubah status: " + error.message,
+        "error"
+      );
+
+      statusButton.disabled = false;
+    }
+  });
+
+  item.append(creatorName, statusButton);
+  creatorList.appendChild(item);
+});
+          
         }
 
         addButton.addEventListener("click", async () => {

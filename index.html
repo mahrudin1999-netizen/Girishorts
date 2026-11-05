@@ -3631,7 +3631,11 @@ detailButton.addEventListener("click", async () => {
 
   const teamContainer = document.createElement("div");
   teamContainer.textContent = "Memuat tim...";
+const managerTitle = document.createElement("h3");
+managerTitle.textContent = "👨‍💼 Daftar Manager";
 
+const managerContainer = document.createElement("div");
+managerContainer.textContent = "Memuat Manager...";
   const creatorTitle = document.createElement("h3");
   creatorTitle.textContent = "🎬 Daftar Kreator";
 
@@ -3639,15 +3643,16 @@ detailButton.addEventListener("click", async () => {
   creatorContainer.textContent = "Memuat kreator...";
 
   agencyList.append(
-    backButton,
-    detailTitle,
-    agencyInfo,
-    teamTitle,
-    teamContainer,
-    creatorTitle,
-    creatorContainer
-  );
-
+  backButton,
+  detailTitle,
+  agencyInfo,
+  teamTitle,
+  teamContainer,
+  managerTitle,
+  managerContainer,
+  creatorTitle,
+  creatorContainer
+);
   try {
     const { data: teams, error: teamError } = await db
       .from("agency_teams")
@@ -3667,7 +3672,41 @@ detailButton.addEventListener("click", async () => {
         teamContainer.appendChild(item);
       });
     }
+// MEMUAT DAFTAR MANAGER
+const { data: managers, error: managerError } = await db
+  .from("agency_members")
+  .select("id, user_id, role, status")
+  .eq("agency_id", agency.id)
+  .eq("role", "manager")
+  .eq("status", "active");
 
+if (managerError) throw managerError;
+
+managerContainer.replaceChildren();
+
+if (!managers || managers.length === 0) {
+  managerContainer.textContent = "Belum ada Manager.";
+} else {
+  for (const manager of managers) {
+    const managerItem = document.createElement("div");
+    managerItem.className = "upload-card";
+
+    const { data: profile, error: profileError } = await db
+      .from("profiles")
+      .select("username, bio, avatar_url")
+      .eq("id", manager.user_id)
+      .maybeSingle();
+
+    if (profileError) throw profileError;
+
+    const managerName = document.createElement("p");
+    managerName.textContent =
+      "👨‍💼 " + (profile?.username || manager.user_id);
+
+    managerItem.appendChild(managerName);
+    managerContainer.appendChild(managerItem);
+  }
+}
     const { data: creators, error: creatorError } = await db
       .from("agency_creators")
       .select("id, team_id, tiktok_username, creator_name, backstage_status")

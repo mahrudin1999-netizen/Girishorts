@@ -3022,12 +3022,35 @@ await loadPlatformAdminPanel();
 
     if (memberError) throw memberError;
 
-    const agencyIds = [
-      ...new Set([
-        ...(owned || []).map(a => a.id),
-        ...(memberships || []).map(m => m.agency_id)
-      ])
-    ];
+  // MEMERIKSA KEANGGOTAAN KREATOR
+const { data: creatorMemberships, error: creatorError } = await db
+  .from("agency_creators")
+  .select("agency_id, team_id, tiktok_username");
+
+if (creatorError) throw creatorError;
+
+// GABUNGKAN SEMUA KEANGGOTAAN
+const agencyIds = [
+  ...new Set([
+    ...(owned || []).map(a => a.id),
+    ...(memberships || []).map(m => m.agency_id),
+    ...(creatorMemberships || []).map(c => c.agency_id)
+  ])
+];
+
+// ATUR TAMPILAN FORM AGENSI
+const createBox = $("agencyCreateBox");
+const invitationBox = $("agencyInvitationBox");
+
+const alreadyJoined = agencyIds.length > 0;
+
+if (createBox) {
+  createBox.style.display = alreadyJoined ? "none" : "block";
+}
+
+if (invitationBox) {
+  invitationBox.style.display = alreadyJoined ? "none" : "block";
+}
 // ATUR TAMPILAN FORM AGENSI
 const createBox = $("agencyCreateBox");
 const invitationBox = $("agencyInvitationBox");

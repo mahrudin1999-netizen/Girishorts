@@ -1,48 +1,104 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Ganti Karakter - GIRINATAN</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080808;color:white;font-family:Arial,sans-serif}
-header{padding:18px;display:flex;align-items:center;gap:15px;border-bottom:1px solid #806326}
-header a{color:#D6AD48;font-size:25px;text-decoration:none}
+body{
+  margin:0;background:#080808;color:white;
+  font-family:Arial,sans-serif
+}
+header{
+  padding:18px;display:flex;align-items:center;
+  gap:15px;border-bottom:1px solid #806326
+}
+header a{
+  color:#D6AD48;font-size:25px;text-decoration:none
+}
 .logo{color:#D6AD48;font-size:21px;font-weight:bold}
 main{max-width:650px;margin:auto;padding:20px}
 h1{color:#D6AD48}
 .desc{color:#aaa;line-height:1.6;font-size:14px}
-.section{background:#151515;border:1px solid #55451f;border-radius:15px;padding:17px;margin-top:20px}
+.section{
+  background:#151515;border:1px solid #55451f;
+  border-radius:15px;padding:17px;margin-top:20px
+}
 .section h3{color:#D6AD48;margin-top:0}
-.upload{display:block;background:#202020;border:1px dashed #D6AD48;border-radius:12px;padding:25px 12px;text-align:center;cursor:pointer}
+.upload{
+  display:block;background:#202020;border:1px dashed #D6AD48;
+  border-radius:12px;padding:25px 12px;
+  text-align:center;cursor:pointer
+}
 .upload span{display:block;font-size:35px;margin-bottom:10px}
 input[type=file]{display:none}
-.preview{width:100%;max-height:300px;object-fit:contain;margin-top:15px;border-radius:10px;display:none;background:#080808}
-textarea,select{width:100%;background:#202020;color:white;border:1px solid #555;border-radius:10px;padding:13px;margin-top:10px;font-size:14px}
+.preview{
+  width:100%;max-height:300px;object-fit:contain;
+  margin-top:15px;border-radius:10px;
+  display:none;background:#080808
+}
+textarea,select{
+  width:100%;background:#202020;color:white;
+  border:1px solid #555;border-radius:10px;
+  padding:13px;margin-top:10px;font-size:14px
+}
 textarea{min-height:110px;resize:vertical}
-.audio-option{display:flex;gap:10px;align-items:center;margin:15px 0;color:#ddd;font-size:14px}
+.audio-option{
+  display:flex;gap:10px;align-items:center;
+  margin:15px 0;color:#ddd;font-size:14px
+}
 .audio-option input{accent-color:#00C875}
-.generate{width:100%;padding:16px;margin-top:22px;border:none;border-radius:12px;background:linear-gradient(135deg,#E5C36A,#B88A2E);color:#080808;font-weight:bold;font-size:16px}
-.notice{color:#00C875;font-size:12px;text-align:center;margin-top:15px;line-height:1.5}
+.generate{
+  width:100%;padding:16px;margin-top:22px;
+  border:none;border-radius:12px;
+  background:linear-gradient(135deg,#E5C36A,#B88A2E);
+  color:#080808;font-weight:bold;font-size:16px;
+  cursor:pointer
+}
+.generate:disabled{opacity:.5;cursor:not-allowed}
+.notice{
+  color:#00C875;font-size:12px;text-align:center;
+  margin-top:15px;line-height:1.5
+}
+.result{
+  display:none;margin-top:20px;padding:17px;
+  background:#151515;border:1px solid #00C875;
+  border-radius:15px
+}
+.result video{width:100%;border-radius:10px}
+.download{
+  display:block;text-align:center;margin-top:15px;
+  padding:13px;background:#00C875;color:#080808;
+  text-decoration:none;font-weight:bold;border-radius:10px
+}
+.small{font-size:12px;color:#aaa;line-height:1.5}
 </style>
 </head>
+
 <body>
 <header>
 <a href="index.html">←</a>
 <div class="logo">GIRINATAN</div>
 </header>
+
 <main>
 <h1>AI Ganti Karakter 🎬</h1>
-<p class="desc">Ganti karakter dalam video menggunakan foto karakter pilihanmu. Gunakan video dan foto yang kamu miliki atau punya izin untuk menggunakannya.</p>
+<p class="desc">
+Ganti karakter dalam video menggunakan foto pilihanmu.
+Gunakan video dan foto yang kamu miliki atau punya izin
+untuk menggunakannya.
+</p>
 
 <div class="section">
 <h3>1. Video Referensi</h3>
 <label class="upload" for="referenceVideo">
 <span>🎥</span>Pilih video referensi
-<p class="desc">MP4, WebM atau MOV</p>
+<p class="desc">Format MP4, maksimal 45 MB</p>
 </label>
-<input type="file" id="referenceVideo" accept="video/mp4,video/webm,video/quicktime">
+<input type="file" id="referenceVideo" accept="video/mp4,.mp4">
 <video id="videoPreview" class="preview" controls playsinline></video>
 </div>
 
@@ -50,60 +106,277 @@ textarea{min-height:110px;resize:vertical}
 <h3>2. Foto Karakter Pengganti</h3>
 <label class="upload" for="characterPhoto">
 <span>🧑</span>Pilih foto karakter
-<p class="desc">JPG, PNG atau WebP</p>
+<p class="desc">JPG, PNG atau WebP, maksimal 10 MB</p>
 </label>
-<input type="file" id="characterPhoto" accept="image/jpeg,image/png,image/webp">
-<img id="photoPreview" class="preview" alt="Pratinjau foto karakter">
+<input type="file" id="characterPhoto"
+accept="image/jpeg,image/png,image/webp">
+<img id="photoPreview" class="preview" alt="Foto karakter">
 </div>
 
 <div class="section">
 <h3>3. Instruksi AI</h3>
-<textarea id="prompt" placeholder="Contoh: Ganti karakter utama dalam video dengan karakter dari foto. Pertahankan gerakan tubuh, ekspresi, sudut kamera dan suasana video asli."></textarea>
+<textarea id="prompt"
+placeholder="Contoh: Ganti karakter utama dalam video dengan karakter dari foto. Pertahankan gerakan tubuh, ekspresi, sudut kamera dan suasana video asli."></textarea>
 </div>
 
 <div class="section">
 <h3>4. Pengaturan Audio</h3>
-<label class="audio-option"><input type="radio" name="audio" value="original" checked>Pertahankan audio asli</label>
-<label class="audio-option"><input type="radio" name="audio" value="silent">Tanpa audio</label>
-<label class="audio-option"><input type="radio" name="audio" value="replace">Ganti audio</label>
+<label class="audio-option">
+<input type="radio" name="audio" value="original" checked>
+Pertahankan audio asli
+</label>
+<label class="audio-option">
+<input type="radio" name="audio" value="silent">
+Tanpa audio
+</label>
+<p class="small">Fitur ganti audio belum tersedia.</p>
 </div>
 
-<button class="generate" type="button" onclick="showStatus()">✨ Hasilkan Video</button>
-<p class="notice" id="status">Tampilan awal. Mesin AI belum dihubungkan.</p>
+<button class="generate" id="generateBtn" type="button">
+✨ Hasilkan Video
+</button>
+
+<p class="notice" id="status">
+Siap digunakan. Pilih video, foto karakter, dan instruksi AI.
+</p>
+
+<div class="result" id="resultBox">
+<h3 style="color:#00C875">🎉 Video Selesai!</h3>
+<video id="resultVideo" controls playsinline></video>
+<a id="downloadLink" class="download" target="_blank" rel="noopener">
+Unduh Video
+</a>
+<p class="small">
+Simpan hasil video segera. Tautan hasil dari mesin AI
+dapat memiliki masa berlaku.
+</p>
+</div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-const videoInput=document.getElementById("referenceVideo");
-const photoInput=document.getElementById("characterPhoto");
+const SUPABASE_URL = "https://ozypepeusicvnlgqqcld.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_8CDQECDwjuziyGRhlucdDw_qCAYogOa";
 
-videoInput.addEventListener("change",function(){
-const file=this.files[0];
-if(!file)return;
-const preview=document.getElementById("videoPreview");
-preview.src=URL.createObjectURL(file);
-preview.style.display="block";
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+const videoInput = document.getElementById("referenceVideo");
+const photoInput = document.getElementById("characterPhoto");
+const promptInput = document.getElementById("prompt");
+const statusText = document.getElementById("status");
+const generateBtn = document.getElementById("generateBtn");
+
+let currentUser = null;
+
+function setStatus(message) {
+  statusText.textContent = message;
+}
+
+function previewFile(input, elementId) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const preview = document.getElementById(elementId);
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
+}
+
+videoInput.addEventListener("change", () => {
+  previewFile(videoInput, "videoPreview");
 });
 
-photoInput.addEventListener("change",function(){
-const file=this.files[0];
-if(!file)return;
-const preview=document.getElementById("photoPreview");
-preview.src=URL.createObjectURL(file);
-preview.style.display="block";
+photoInput.addEventListener("change", () => {
+  previewFile(photoInput, "photoPreview");
 });
 
-function showStatus(){
-const video=videoInput.files[0];
-const photo=photoInput.files[0];
-const prompt=document.getElementById("prompt").value.trim();
-const status=document.getElementById("status");
+async function checkLogin() {
+  const { data, error } = await db.auth.getSession();
 
-if(!video||!photo||!prompt){
-status.textContent="Lengkapi video referensi, foto karakter, dan instruksi AI.";
-return;
+  if (error || !data.session) {
+    currentUser = null;
+    setStatus("Silakan login melalui akun GIRINATAN terlebih dahulu.");
+    generateBtn.disabled = true;
+    return false;
+  }
+
+  currentUser = data.session.user;
+  generateBtn.disabled = false;
+  return true;
 }
-status.textContent="Data sudah siap. Mesin AI belum terhubung, video belum dihasilkan.";
+
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+function getErrorMessage(error) {
+  return error?.message || "Terjadi kesalahan. Silakan coba kembali.";
+}
+
+async function uploadFile(path, file) {
+  const { error } = await db.storage
+    .from("video-ai")
+    .upload(path, file, {
+      upsert: false,
+      contentType: file.type
+    });
+
+  if (error) throw error;
+
+  const { data, error: signedError } = await db.storage
+    .from("video-ai")
+    .createSignedUrl(path, 3600);
+
+  if (signedError) throw signedError;
+
+  return data.signedUrl;
+}
+
+async function startGeneration() {
+  const video = videoInput.files[0];
+  const photo = photoInput.files[0];
+  const prompt = promptInput.value.trim();
+  const audioMode = document.querySelector(
+    'input[name="audio"]:checked'
+  ).value;
+
+  if (!video || !photo || !prompt) {
+    setStatus("Lengkapi video, foto karakter, dan instruksi AI.");
+    return;
+  }
+
+  if (video.type !== "video/mp4") {
+    setStatus("Gunakan video dengan format MP4.");
+    return;
+  }
+
+  if (video.size > 45 * 1024 * 1024) {
+    setStatus("Ukuran video maksimal 45 MB.");
+    return;
+  }
+
+  if (!["image/jpeg", "image/png", "image/webp"].includes(photo.type)) {
+    setStatus("Gunakan foto JPG, PNG, atau WebP.");
+    return;
+  }
+
+  if (photo.size > 10 * 1024 * 1024) {
+    setStatus("Ukuran foto maksimal 10 MB.");
+    return;
+  }
+
+  generateBtn.disabled = true;
+  document.getElementById("resultBox").style.display = "none";
+
+  try {
+    const loggedIn = await checkLogin();
+    if (!loggedIn) throw new Error("Silakan login terlebih dahulu.");
+
+    setStatus("Mengunggah video referensi...");
+
+    const folder = currentUser.id + "/" + Date.now();
+
+    const videoUrl = await uploadFile(
+      folder + "-video.mp4",
+      video
+    );
+
+    setStatus("Mengunggah foto karakter...");
+
+    const extension = photo.type === "image/png" ? "png" :
+      photo.type === "image/webp" ? "webp" : "jpg";
+
+    const imageUrl = await uploadFile(
+      folder + "-character." + extension,
+      photo
+    );
+
+    setStatus("Mengirim permintaan ke mesin AI...");
+
+    const { data, error } = await db.functions.invoke(
+      "video-ai-generate",
+      {
+        body: {
+          action: "start",
+          video_url: videoUrl,
+          image_url: imageUrl,
+          prompt: prompt,
+          audio_mode: audioMode
+        }
+      }
+    );
+
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+    if (!data?.id) throw new Error("ID proses AI tidak diterima.");
+
+    setStatus("Mesin AI mulai bekerja. Mohon tunggu...");
+
+    await checkPrediction(data.id);
+
+  } catch (error) {
+    setStatus("Gagal: " + getErrorMessage(error));
+  } finally {
+    generateBtn.disabled = false;
+  }
+}
+
+async function checkPrediction(predictionId) {
+  const maxAttempts = 240;
+
+  for (let i = 0; i < maxAttempts; i++) {
+    await wait(5000);
+
+    setStatus(
+      "AI sedang memproses video... " +
+      Math.round(((i + 1) * 5) / 60) +
+      " menit"
+    );
+
+    const { data, error } = await db.functions.invoke(
+      "video-ai-generate",
+      {
+        body: {
+          action: "status",
+          prediction_id: predictionId
+        }
+      }
+    );
+
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+
+    if (data.status === "succeeded") {
+      const outputUrl = Array.isArray(data.output)
+        ? data.output[0]
+        : data.output;
+
+      if (!outputUrl) {
+        throw new Error("Video selesai tetapi tautan hasil tidak ditemukan.");
+      }
+
+      document.getElementById("resultVideo").src = outputUrl;
+      document.getElementById("downloadLink").href = outputUrl;
+      document.getElementById("resultBox").style.display = "block";
+
+      setStatus("Berhasil! Video AI sudah selesai dibuat.");
+      return;
+    }
+
+    if (data.status === "failed" || data.status === "canceled") {
+      throw new Error(data.error || "Proses AI gagal atau dibatalkan.");
+    }
+  }
+
+  throw new Error("Proses terlalu lama. Coba periksa kembali nanti.");
+}
+
+generateBtn.addEventListener("click", startGeneration);
+
+checkLogin();
 </script>
 </body>
 </html>

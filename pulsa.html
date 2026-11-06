@@ -1,0 +1,336 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080808">
+  <title>Pulsa - GIRINATAN Market</title>
+
+  <style>
+    :root {
+      --bg: #080808;
+      --panel: #151515;
+      --gold: #D6AD48;
+      --green: #00C875;
+      --text: #FFFFFF;
+      --muted: #A8ADA8;
+      --border: #343434;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      padding: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: #080808;
+    }
+
+    .brand {
+      color: var(--gold);
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .brand span {
+      color: white;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    .back {
+      color: var(--green);
+      font-size: 14px;
+    }
+
+    main {
+      max-width: 650px;
+      margin: auto;
+      padding: 20px 16px 50px;
+    }
+
+    h1 {
+      color: var(--gold);
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 15px;
+      background: var(--panel);
+      color: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+      font-size: 15px;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--gold);
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .product {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 17px 12px;
+      color: white;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .product.active {
+      border: 1px solid var(--green);
+      background: #10251A;
+    }
+
+    .product h3 {
+      color: var(--gold);
+      font-size: 17px;
+      margin-bottom: 7px;
+    }
+
+    .product p {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .summary {
+      margin-top: 25px;
+      padding: 17px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .summary h3 {
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .summary p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 8px 0;
+    }
+
+    .continue {
+      width: 100%;
+      margin-top: 18px;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #E5C36A, #B88A2E);
+      color: #080808;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .notice {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">GIRI<span>NATAN</span></div>
+  <a class="back" href="index.html">← Market</a>
+</header>
+
+<main>
+
+  <h1>Pembelian Pulsa</h1>
+  <p class="subtitle">
+    Pilih operator dan nominal pulsa yang kamu inginkan.
+  </p>
+
+  <div class="form-group">
+    <label for="phone">Nomor HP Tujuan</label>
+    <input
+      type="tel"
+      id="phone"
+      placeholder="Masukkan nomor HP"
+      maxlength="15"
+      inputmode="numeric">
+  </div>
+
+  <div class="form-group">
+    <label for="operator">Pilih Operator</label>
+    <select id="operator">
+      <option value="">-- Pilih Operator --</option>
+      <option value="Telkomsel">Telkomsel</option>
+      <option value="Indosat">Indosat</option>
+      <option value="XL">XL</option>
+      <option value="Axis">Axis</option>
+      <option value="Tri">Tri</option>
+      <option value="Smartfren">Smartfren</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Pilih Nominal Pulsa</label>
+
+    <div class="products">
+
+      <button class="product" data-value="5000">
+        <h3>Rp5.000</h3>
+        <p>Pulsa reguler</p>
+      </button>
+
+      <button class="product" data-value="10000">
+        <h3>Rp10.000</h3>
+        <p>Pulsa reguler</p>
+      </button>
+
+      <button class="product" data-value="15000">
+        <h3>Rp15.000</h3>
+        <p>Pulsa reguler</p>
+      </button>
+
+      <button class="product" data-value="20000">
+        <h3>Rp20.000</h3>
+        <p>Pulsa reguler</p>
+      </button>
+
+      <button class="product" data-value="25000">
+        <h3>Rp25.000</h3>
+        <p>Pulsa reguler</p>
+      </button>
+
+      <button class="product" data-value="50000">
+        <h3>Rp50.000</h3>
+        <p>Pulsa reguler</p>
+      </button>
+
+      <button class="product" data-value="100000">
+        <h3>Rp100.000</h3>
+        <p>Pulsa reguler</p>
+      </button>
+
+    </div>
+  </div>
+
+  <div class="summary">
+    <h3>Ringkasan Pesanan</h3>
+    <p>Nomor: <span id="summaryPhone">-</span></p>
+    <p>Operator: <span id="summaryOperator">-</span></p>
+    <p>Nominal: <span id="summaryNominal">-</span></p>
+
+    <button class="continue" onclick="continueOrder()">
+      Lanjutkan
+    </button>
+  </div>
+
+  <p class="notice">
+    Harga dan transaksi akan diaktifkan setelah integrasi
+    supplier dan sistem pembayaran GIRINATAN selesai.
+  </p>
+
+</main>
+
+<script>
+  let selectedNominal = "";
+
+  const phone = document.getElementById("phone");
+  const operator = document.getElementById("operator");
+
+  phone.addEventListener("input", () => {
+    document.getElementById("summaryPhone").textContent =
+      phone.value || "-";
+  });
+
+  operator.addEventListener("change", () => {
+    document.getElementById("summaryOperator").textContent =
+      operator.value || "-";
+  });
+
+  document.querySelectorAll(".product").forEach(button => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".product").forEach(item => {
+        item.classList.remove("active");
+      });
+
+      button.classList.add("active");
+      selectedNominal = button.dataset.value;
+
+      document.getElementById("summaryNominal").textContent =
+        "Rp" + Number(selectedNominal).toLocaleString("id-ID");
+    });
+  });
+
+  function continueOrder() {
+    if (!phone.value.trim()) {
+      alert("Masukkan nomor HP tujuan.");
+      return;
+    }
+
+    if (!/^[0-9]{9,15}$/.test(phone.value.trim())) {
+      alert("Periksa kembali nomor HP tujuan.");
+      return;
+    }
+
+    if (!operator.value) {
+      alert("Pilih operator terlebih dahulu.");
+      return;
+    }
+
+    if (!selectedNominal) {
+      alert("Pilih nominal pulsa.");
+      return;
+    }
+
+    alert(
+      "Pilihan sudah tercatat di halaman ini. " +
+      "Transaksi belum aktif karena supplier belum terhubung."
+    );
+  }
+</script>
+
+</body>
+</html>

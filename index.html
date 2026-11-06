@@ -1025,35 +1025,7 @@ textarea:focus {
   padding: 22px;
   text-align: center;
 }
-/* GIRINATAN - Halaman Unggah */
-#uploadTab .panel {
-  background: #141414;
-  border: 1px solid #806326;
-  border-radius: 16px;
-}
 
-#uploadTab label {
-  color: #D6AD48;
-  font-weight: 700;
-}
-
-#uploadTab input {
-  color: #FFFFFF;
-  background: #202020;
-  border-color: #806326;
-}
-
-#uploadTab .small-note {
-  color: #A8ADA8;
-}
-
-#uploadTab .progress-wrap {
-  background: #202020;
-}
-
-#uploadTab .progress-bar {
-  background: #00C875;
-}
     /* GIRINATAN - Video Saya */
 #myVideosTab .empty-state {
   background: #141414;
@@ -1300,51 +1272,7 @@ textarea:focus {
     <div class="empty-state">HTML GIRINATAN TERBARU</div>
   </div>
 </section>
-   <!-- BAGIAN UNGGAH -->
-    <section id="uploadTab" class="tab-page">
-      <h1 class="page-title">Unggah Video ⬆️</h1>
-      <p class="page-desc">
-        Bagikan video kamu ke komunitas GIRINATAN.
-      </p>
-
-      <div class="panel">
-        <form id="uploadForm">
-          <div class="field">
-            <label for="videoTitle">Judul video</label>
-            <input
-              id="videoTitle"
-              type="text"
-              maxlength="120"
-              placeholder="Tulis judul video..."
-              required
-            >
-          </div>
-
-          <div class="field">
-            <label for="videoFile">Pilih video</label>
-            <input
-              id="videoFile"
-              type="file"
-              accept="video/mp4,video/webm,video/quicktime"
-              required
-            >
-          </div>
-
-          <p class="small-note">
-            Format MP4, WebM, atau MOV. Ukuran maksimal 50 MB per video.
-          </p>
-
-          <button class="btn btn-full" id="uploadBtn" type="submit">
-            Unggah sekarang
-          </button>
-
-          <div class="progress-wrap" id="uploadProgressWrap">
-            <div class="progress-bar" id="uploadProgressBar"></div>
-          </div>
-            <div class="small-note" id="authStatus"></div>
-        </form>
-      </div>
-    </section>
+   
 
     <!-- BAGIAN VIDEO SAYA -->
     <section id="myVideosTab" class="tab-page">
@@ -1653,10 +1581,10 @@ textarea:focus {
       <span class="nav-icon">🏠</span>
       <span>Beranda</span>
     </button>
-    <button class="nav-btn" data-tab="uploadTab" type="button">
-      <span class="nav-icon">⬆️</span>
-      <span>Unggah</span>
-    </button>
+    <a class="nav-btn" href="studio-kreator.html">
+  <span class="nav-icon">✨</span>
+  <span>Berkarya</span>
+</a>
     <button class="nav-btn" data-tab="agencyTab" type="button">
   <span class="nav-icon">🏢</span>
   <span>Agensi</span>
@@ -1729,7 +1657,6 @@ window.addEventListener("unhandledrejection", function(event) {
   function showTab(tabId) {
   const validTabs = [
   "homeTab",
-  "uploadTab",
   "myVideosTab",
   "agencyTab",
   "accountTab",
@@ -1770,9 +1697,6 @@ window.addEventListener("unhandledrejection", function(event) {
     $("accountEmail").textContent = loggedIn
       ? currentUser.email
       : "";
-
-    $("uploadBtn").disabled = !loggedIn;
-  }
 
   async function refreshSession() {
     const { data, error } = await db.auth.getSession();
@@ -1975,116 +1899,6 @@ function formatDate(value) {
     const { data } = db.storage.from(BUCKET).getPublicUrl(path);
     return data.publicUrl;
   }
-
-  async function uploadVideo(event) {
-    event.preventDefault();
-    hideNotice();
-
-    if (!currentUser) {
-      showNotice("Silakan masuk sebelum mengunggah video.", "error");
-      showTab("accountTab");
-      return;
-    }
-
-    const title = $("videoTitle").value.trim();
-    const file = $("videoFile").files[0];
-
-    if (!title || !file) {
-      showNotice("Judul dan file video wajib diisi.", "error");
-      return;
-    }
-
-    if (file.size > MAX_VIDEO_SIZE) {
-      showNotice("Ukuran video maksimal 50 MB.", "error");
-      return;
-    }
-
-    const allowedTypes = [
-      "video/mp4",
-      "video/webm",
-      "video/quicktime"
-    ];
-
-    if (file.type && !allowedTypes.includes(file.type)) {
-      showNotice("Gunakan video MP4, WebM, atau MOV.", "error");
-      return;
-    }
-
-    const extensionFromName = file.name.includes(".")
-      ? file.name.split(".").pop().toLowerCase()
-      : "";
-
-    const extensionByType = {
-      "video/mp4": "mp4",
-      "video/webm": "webm",
-      "video/quicktime": "mov"
-    };
-
-    const extension = extensionByType[file.type] ||
-      (["mp4", "webm", "mov"].includes(extensionFromName)
-        ? extensionFromName
-        : "");
-
-    if (!extension) {
-      showNotice("Format video tidak dikenali.", "error");
-      return;
-    }
-
-    const path = currentUser.id + "/" +
-      crypto.randomUUID() + "." + extension;
-
-    $("uploadBtn").disabled = true;
-    $("uploadStatus").textContent = "Mengunggah video...";
-    $("uploadProgressWrap").style.display = "block";
-    $("uploadProgressBar").style.width = "20%";
-
-    try {
-      const { error: uploadError } = await db.storage
-        .from(BUCKET)
-        .upload(path, file, {
-          contentType: file.type || "video/" + extension,
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      $("uploadProgressBar").style.width = "75%";
-
-      const { error: insertError } = await db
-        .from("videos")
-        .insert({
-          user_id: currentUser.id,
-          title,
-          video_path: path
-        });
-
-      if (insertError) {
-        await db.storage.from(BUCKET).remove([path]);
-        throw insertError;
-      }
-
-      $("uploadProgressBar").style.width = "100%";
-      $("uploadStatus").textContent = "Video berhasil diunggah!";
-      $("uploadForm").reset();
-
-      showNotice("Video berhasil diunggah ke GiriShorts!", "success");
-
-      await loadMyVideos();
-showTab("homeTab");
-    } catch (error) {
-      $("uploadStatus").textContent = "Unggah gagal.";
-      showNotice("Gagal mengunggah video: " + error.message, "error");
-    } finally {
-      $("uploadBtn").disabled = !currentUser;
-
-      setTimeout(() => {
-        $("uploadProgressWrap").style.display = "none";
-        $("uploadProgressBar").style.width = "0%";
-      }, 1200);
-    }
-  }
-
-  $("uploadForm").addEventListener("submit", uploadVideo);
 
 // LOGIN TIKTOK GIRINATAN
 (async function handleTikTokLogin() {

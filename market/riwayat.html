@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080808">
+  <title>Riwayat Transaksi | GIRINATAN</title>
+
+  <style>
+    :root {
+      --bg: #080808;
+      --panel: #151515;
+      --gold: #D6AD48;
+      --green: #00C875;
+      --text: #FFFFFF;
+      --muted: #A8ADA8;
+      --border: #343434;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 18px;
+      border-bottom: 1px solid var(--border);
+      background: #080808;
+    }
+
+    .back {
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 25px;
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 650px;
+      margin: auto;
+    }
+
+    .intro {
+      margin-bottom: 22px;
+    }
+
+    .intro h3 {
+      color: var(--gold);
+      margin-bottom: 7px;
+    }
+
+    .intro p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .filter {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter button {
+      background: var(--panel);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 9px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .filter button.active {
+      background: var(--gold);
+      color: #080808;
+      border-color: var(--gold);
+      font-weight: bold;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 45px 20px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+    }
+
+    .empty .icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .empty h3 {
+      margin: 0 0 10px;
+    }
+
+    .empty p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .shop-btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 12px 22px;
+      background: linear-gradient(135deg, #E5C36A, #B88A2E);
+      color: #080808;
+      text-decoration: none;
+      border-radius: 9px;
+      font-weight: bold;
+    }
+
+    .notice {
+      margin-top: 20px;
+      padding: 13px;
+      background: #202820;
+      border: 1px solid #3C9B65;
+      border-radius: 10px;
+      color: var(--green);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <a href="index.html" class="back">‹</a>
+    <h2>Riwayat Transaksi</h2>
+  </header>
+
+  <main class="container">
+
+    <div class="intro">
+      <h3>Aktivitas Transaksi</h3>
+      <p>
+        Lihat daftar pembelian pulsa, paket data,
+        token listrik, dan transaksi lainnya di sini.
+      </p>
+    </div>
+
+    <div class="filter">
+      <button class="active" onclick="filterHistory(this)">Semua</button>
+      <button onclick="filterHistory(this)">Berhasil</button>
+      <button onclick="filterHistory(this)">Diproses</button>
+      <button onclick="filterHistory(this)">Gagal</button>
+    </div>
+
+    <div class="empty">
+      <div class="icon">📋</div>
+      <h3>Belum Ada Transaksi</h3>
+      <p>
+        Riwayat pembelian kamu akan muncul
+        di halaman ini setelah sistem transaksi
+        GIRINATAN aktif.
+      </p>
+
+      <a href="index.html" class="shop-btn">
+        Kembali ke Market
+      </a>
+    </div>
+
+    <div class="notice">
+      Informasi: Halaman riwayat ini masih berupa
+      tampilan awal. Data transaksi belum tersimpan
+      atau terhubung ke server.
+    </div>
+
+  </main>
+
+  <script>
+    function filterHistory(button) {
+      document.querySelectorAll(".filter button")
+        .forEach(item => item.classList.remove("active"));
+
+      button.classList.add("active");
+    }
+  </script>
+
+</body>
+</html>

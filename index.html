@@ -1694,7 +1694,7 @@ window.addEventListener("unhandledrejection", function(event) {
     $("accountEmail").textContent = loggedIn
       ? currentUser.email
       : "";
-
+  }
   async function refreshSession() {
     const { data, error } = await db.auth.getSession();
 

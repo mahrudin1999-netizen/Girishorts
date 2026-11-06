@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#080808">
-  <title>Paket Data - GIRINATAN</title>
+  <title>Paket Data | GIRINATAN</title>
 
   <style>
     :root {
@@ -13,152 +13,117 @@
       --panel: #151515;
       --gold: #D6AD48;
       --green: #00C875;
-      --text: #FFFFFF;
+      --text: #fff;
       --muted: #A8ADA8;
       --border: #343434;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; }
 
     body {
+      margin: 0;
       background: var(--bg);
       color: var(--text);
       font-family: Arial, sans-serif;
     }
 
     header {
-      padding: 18px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 15px;
+      padding: 18px;
       border-bottom: 1px solid var(--border);
     }
 
-    .brand {
+    header a {
       color: var(--gold);
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .brand span {
-      color: white;
-    }
-
-    a {
+      font-size: 26px;
       text-decoration: none;
     }
 
-    .back {
-      color: var(--green);
-      font-size: 14px;
+    header h2 {
+      margin: 0;
+      font-size: 19px;
     }
 
-    main {
-      max-width: 650px;
+    .container {
+      max-width: 600px;
       margin: auto;
-      padding: 22px 16px 50px;
+      padding: 20px;
     }
 
-    h1 {
-      color: var(--gold);
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 25px;
-      line-height: 1.6;
-    }
-
-    .form-group {
-      margin-bottom: 23px;
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 17px;
+      margin-bottom: 17px;
     }
 
     label {
       display: block;
+      margin-bottom: 9px;
       font-size: 14px;
       font-weight: bold;
-      margin-bottom: 10px;
     }
 
     input, select {
       width: 100%;
-      padding: 15px;
-      background: var(--panel);
-      color: white;
+      padding: 14px;
+      border-radius: 9px;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      outline: none;
+      background: #202020;
+      color: white;
       font-size: 15px;
-    }
-
-    input:focus, select:focus {
-      border-color: var(--gold);
     }
 
     .products {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      gap: 10px;
     }
 
     .product {
-      padding: 16px 12px;
-      background: var(--panel);
+      padding: 15px 10px;
+      background: #202020;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      text-align: left;
+      border-radius: 10px;
       color: white;
+      text-align: left;
       cursor: pointer;
     }
 
-    .product.active {
-      background: #10251A;
-      border-color: var(--green);
-    }
-
-    .product h3 {
+    .product strong {
+      display: block;
       color: var(--gold);
-      font-size: 16px;
-      margin-bottom: 8px;
+      margin-bottom: 7px;
     }
 
-    .product p {
+    .product.selected {
+      border: 2px solid var(--green);
+      background: #14251b;
+    }
+
+    .summary {
+      line-height: 1.8;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .summary strong {
+      color: white;
+    }
+
+    .hint {
       color: var(--muted);
       font-size: 12px;
       line-height: 1.5;
     }
 
-    .summary {
-      margin-top: 25px;
-      padding: 17px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-    }
-
-    .summary h3 {
-      color: var(--gold);
-      margin-bottom: 13px;
-    }
-
-    .summary p {
-      color: var(--muted);
-      font-size: 13px;
-      margin: 9px 0;
-    }
-
     .continue {
       width: 100%;
-      margin-top: 18px;
       padding: 15px;
-      border: none;
+      border: 0;
       border-radius: 10px;
       background: linear-gradient(135deg, #E5C36A, #B88A2E);
       color: #080808;
@@ -166,173 +131,154 @@
       font-size: 15px;
       cursor: pointer;
     }
-
-    .notice {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.6;
-      text-align: center;
-      margin-top: 18px;
-    }
   </style>
 </head>
 
 <body>
 
 <header>
-  <div class="brand">GIRI<span>NATAN</span></div>
-  <a class="back" href="index.html">← Market</a>
+  <a href="index.html">‹</a>
+  <h2>Paket Data</h2>
 </header>
 
-<main>
+<main class="container">
 
-  <h1>Paket Data Internet</h1>
-  <p class="subtitle">
-    Pilih operator dan paket internet sesuai kebutuhanmu.
-  </p>
-
-  <div class="form-group">
+  <div class="card">
     <label for="phone">Nomor HP Tujuan</label>
     <input
       type="tel"
       id="phone"
-      placeholder="Masukkan nomor HP"
+      placeholder="Contoh: 081234567890"
       maxlength="15"
-      inputmode="numeric">
+      inputmode="numeric"
+    >
   </div>
 
-  <div class="form-group">
+  <div class="card">
     <label for="operator">Pilih Operator</label>
     <select id="operator">
-      <option value="">-- Pilih Operator --</option>
-      <option value="Telkomsel">Telkomsel</option>
-      <option value="Indosat">Indosat</option>
-      <option value="XL">XL</option>
-      <option value="Axis">Axis</option>
-      <option value="Tri">Tri</option>
-      <option value="Smartfren">Smartfren</option>
+      <option value="">Pilih operator</option>
+      <option>Telkomsel</option>
+      <option>Indosat</option>
+      <option>XL</option>
+      <option>Axis</option>
+      <option>Tri</option>
+      <option>Smartfren</option>
     </select>
   </div>
 
-  <div class="form-group">
+  <div class="card">
     <label>Pilih Paket Data</label>
 
     <div class="products">
-
-      <button class="product" data-name="Paket 1 GB">
-        <h3>1 GB</h3>
-        <p>Paket internet</p>
+      <button class="product" onclick="chooseProduct(this, 1)">
+        <strong>1 GB</strong>
+        Paket 1 GB
       </button>
 
-      <button class="product" data-name="Paket 3 GB">
-        <h3>3 GB</h3>
-        <p>Paket internet</p>
+      <button class="product" onclick="chooseProduct(this, 3)">
+        <strong>3 GB</strong>
+        Paket 3 GB
       </button>
 
-      <button class="product" data-name="Paket 5 GB">
-        <h3>5 GB</h3>
-        <p>Paket internet</p>
+      <button class="product" onclick="chooseProduct(this, 5)">
+        <strong>5 GB</strong>
+        Paket 5 GB
       </button>
 
-      <button class="product" data-name="Paket 10 GB">
-        <h3>10 GB</h3>
-        <p>Paket internet</p>
+      <button class="product" onclick="chooseProduct(this, 10)">
+        <strong>10 GB</strong>
+        Paket 10 GB
       </button>
 
-      <button class="product" data-name="Paket 15 GB">
-        <h3>15 GB</h3>
-        <p>Paket internet</p>
+      <button class="product" onclick="chooseProduct(this, 15)">
+        <strong>15 GB</strong>
+        Paket 15 GB
       </button>
 
-      <button class="product" data-name="Paket 20 GB">
-        <h3>20 GB</h3>
-        <p>Paket internet</p>
+      <button class="product" onclick="chooseProduct(this, 20)">
+        <strong>20 GB</strong>
+        Paket 20 GB
       </button>
-
     </div>
   </div>
 
-  <section class="summary">
-    <h3>Ringkasan Pesanan</h3>
-    <p>Nomor HP: <span id="summaryPhone">-</span></p>
-    <p>Operator: <span id="summaryOperator">-</span></p>
-    <p>Paket: <span id="summaryPackage">-</span></p>
+  <div class="card summary">
+    <strong>Ringkasan Pesanan</strong>
+    <div>Operator: <strong id="selectedOperator">-</strong></div>
+    <div>Nomor: <strong id="selectedPhone">-</strong></div>
+    <div>Paket: <strong id="selectedPackage">Belum dipilih</strong></div>
+    <p class="hint">
+      Pilihan paket ini masih contoh. Harga, kuota, masa aktif,
+      dan ketersediaan produk belum terhubung ke supplier.
+    </p>
+  </div>
 
-    <button class="continue" onclick="continueOrder()">
-      Lanjutkan
-    </button>
-  </section>
-
-  <p class="notice">
-    Daftar paket di atas hanya contoh tampilan.
-    Produk, kuota, masa aktif, dan harga resmi akan
-    dimuat dari supplier setelah integrasi API selesai.
-  </p>
+  <button class="continue" onclick="continueCheckout()">
+    Lanjut ke Checkout
+  </button>
 
 </main>
 
 <script>
-  let selectedPackage = "";
+  let selectedPackage = 0;
 
-  const phone = document.getElementById("phone");
-  const operator = document.getElementById("operator");
+  function updateSummary() {
+    document.getElementById("selectedOperator").textContent =
+      document.getElementById("operator").value || "-";
 
-  phone.addEventListener("input", () => {
-    document.getElementById("summaryPhone").textContent =
-      phone.value || "-";
-  });
+    document.getElementById("selectedPhone").textContent =
+      document.getElementById("phone").value || "-";
+  }
 
-  operator.addEventListener("change", () => {
-    document.getElementById("summaryOperator").textContent =
-      operator.value || "-";
-
-    selectedPackage = "";
-    document.getElementById("summaryPackage").textContent = "-";
-
+  function chooseProduct(button, gb) {
     document.querySelectorAll(".product").forEach(item => {
-      item.classList.remove("active");
+      item.classList.remove("selected");
     });
-  });
 
-  document.querySelectorAll(".product").forEach(button => {
-    button.addEventListener("click", () => {
-      if (!operator.value) {
-        alert("Pilih operator terlebih dahulu.");
-        return;
-      }
+    button.classList.add("selected");
+    selectedPackage = gb;
 
-      document.querySelectorAll(".product").forEach(item => {
-        item.classList.remove("active");
-      });
+    document.getElementById("selectedPackage").textContent =
+      gb + " GB";
 
-      button.classList.add("active");
-      selectedPackage = button.dataset.name;
+    updateSummary();
+  }
 
-      document.getElementById("summaryPackage").textContent =
-        selectedPackage;
-    });
-  });
+  document.getElementById("operator").addEventListener("change", updateSummary);
+  document.getElementById("phone").addEventListener("input", updateSummary);
 
-  function continueOrder() {
-    if (!/^[0-9]{9,15}$/.test(phone.value.trim())) {
-      alert("Masukkan nomor HP yang valid.");
+  function continueCheckout() {
+    const phone = document.getElementById("phone").value.trim();
+    const operator = document.getElementById("operator").value;
+
+    if (!/^08[0-9]{8,13}$/.test(phone)) {
+      alert("Masukkan nomor HP yang valid, diawali 08.");
       return;
     }
 
-    if (!operator.value) {
-      alert("Pilih operator terlebih dahulu.");
+    if (!operator) {
+      alert("Silakan pilih operator.");
       return;
     }
 
     if (!selectedPackage) {
-      alert("Pilih paket data terlebih dahulu.");
+      alert("Silakan pilih paket data.");
       return;
     }
 
-    alert(
-      "Pilihan paket sudah tercatat. " +
-      "Transaksi belum aktif karena supplier belum terhubung."
-    );
+    const order = {
+      type: "Paket Data",
+      operator: operator,
+      customer: phone,
+      product: "Paket Data " + selectedPackage + " GB",
+      amount: 0,
+      createdAt: new Date().toISOString()
+    };
+
+    sessionStorage.setItem("girINATAN_market_order", JSON.stringify(order));
+
+    window.location.href = "checkout.html";
   }
 </script>
 

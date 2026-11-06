@@ -278,6 +278,33 @@
       document.getElementById("orderTotal").textContent =
         order.amount > 0 ? rupiah(order.amount) : "Belum ditentukan";
 
+            // Simpan pesanan ke riwayat browser
+      const historyKey = "girINATAN_market_history";
+      const history = JSON.parse(
+        localStorage.getItem(historyKey) || "[]"
+      );
+
+      const orderId = order.createdAt ||
+        (order.type + order.customer + order.product);
+
+      const alreadySaved = history.some(item =>
+        item.orderId === orderId
+      );
+
+      if (!alreadySaved) {
+        history.unshift({
+          ...order,
+          orderId: orderId,
+          status: "Menunggu",
+          savedAt: new Date().toISOString()
+        });
+
+        localStorage.setItem(
+          historyKey,
+          JSON.stringify(history)
+        );
+      }
+
       document.getElementById("orderSection").classList.remove("hidden");
 
     } catch (error) {

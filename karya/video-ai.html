@@ -305,16 +305,28 @@ async function startGeneration() {
     setStatus("Memeriksa saldo dan mencadangkan " +
       formatNumber(creditsNeeded) + " kredit...");
 
-    const { data, error } = await db.functions.invoke("video-ai-generate", {
-      body: {
-        action: "start",
-        video_url: videoUrl,
-        image_url: imageUrl,
-        prompt,
-        audio_mode: audioMode,
-        duration_seconds: videoDurationSeconds
-      }
-    });
+    const { data: sessionData, error: sessionError } =
+  await db.auth.getSession();
+
+const accessToken = sessionData?.session?.access_token;
+
+if (sessionError || !accessToken) {
+  throw new Error("Sesi login tidak ditemukan. Silakan login ulang.");
+}
+
+const { data, error } = await db.functions.invoke("video-ai-generate", {
+  headers: {
+    Authorization: `Bearer ${accessToken}`
+  },
+  body: {
+    action: "start",
+    video_url: videoUrl,
+    image_url: imageUrl,
+    prompt,
+    audio_mode: audioMode,
+    duration_seconds: videoDurationSeconds
+  }
+});
 
     if (error) throw error;
     if (data?.error) throw new Error(data.error);
@@ -348,13 +360,25 @@ async function checkPrediction(predictionId, jobId) {
     setStatus("AI sedang memproses video... " +
       Math.round(((i + 1) * 5) / 60) + " menit");
 
-    const { data, error } = await db.functions.invoke("video-ai-generate", {
-      body: {
-        action: "status",
-        prediction_id: predictionId,
-        job_id: jobId
-      }
-    });
+    const { data: sessionData, error: sessionError } =
+  await db.auth.getSession();
+
+const accessToken = sessionData?.session?.access_token;
+
+if (sessionError || !accessToken) {
+  throw new Error("Sesi login tidak ditemukan. Silakan login ulang.");
+}
+
+const { data, error } = await db.functions.invoke("video-ai-generate", {
+  headers: {
+    Authorization: `Bearer ${accessToken}`
+  },
+  body: {
+    action: "status",
+    job_id: jobId,
+    prediction_id: predictionId
+  }
+});
 
     if (error) throw error;
     if (data?.error) throw new Error(data.error);

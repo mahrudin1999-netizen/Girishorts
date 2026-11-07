@@ -279,54 +279,7 @@ async function startGeneration() {
   document.getElementById("resultBox").style.display = "none";
 
   try {
-    const loggedIn = await
-      async function resumeActiveJob() {
-  if (!currentUser) return;
-
-  const key = activeJobKey();
-  const saved = key ? localStorage.getItem(key) : null;
-
-  if (!saved) return;
-
-  let job;
-
-  try {
-    job = JSON.parse(saved);
-  } catch {
-    localStorage.removeItem(key);
-    return;
-  }
-
-  if (!job?.predictionId || !job?.jobId) {
-    localStorage.removeItem(key);
-    return;
-  }
-
-  activeJobUnresolved = true;
-  generateBtn.disabled = true;
-
-  setStatus(
-    "Menemukan pekerjaan Video AI sebelumnya. Melanjutkan pemeriksaan..."
-  );
-
-  try {
-    await checkPrediction(job.predictionId, job.jobId);
-  } catch (error) {
-    setStatus(
-      "Pekerjaan sebelumnya belum dapat diperiksa: " +
-      getErrorMessage(error) +
-      ". Kredit tetap dicadangkan. Coba buka halaman lagi atau hubungi admin."
-    );
-  } finally {
-    generateBtn.disabled = activeJobUnresolved;
-  }
-}
-
-checkLogin().then(async (loggedIn) => {
-  if (loggedIn) {
-    await resumeActiveJob();
-  }
-});
+      const loggedIn = await checkLogin();
     if (!loggedIn) throw new Error("Silakan login terlebih dahulu.");
 
     if (!videoDurationSeconds) {
@@ -379,10 +332,10 @@ saveActiveJob(data.id, data.job_id);
     await checkPrediction(data.id, data.job_id);
 
   } catch (error) {
-    setStatus("Gagal: " + getErrorMessage(error));
-    clearActiveJob();
-    await loadWallet();
-  } finally {
+  setStatus("Gagal: " + getErrorMessage(error));
+  await loadWallet();
+}
+  finally {
   generateBtn.disabled = activeJobUnresolved;
 }
 }
@@ -420,7 +373,8 @@ async function checkPrediction(predictionId, jobId) {
     }
 
     if (data.status === "failed" || data.status === "canceled") {
-      await loadWallet();
+  clearActiveJob();
+  await loadWallet();
       throw new Error((data.error || "Proses AI gagal.") +
         (data.credits_refunded ? " Kredit sudah dikembalikan." : ""));
     }
@@ -430,8 +384,53 @@ async function checkPrediction(predictionId, jobId) {
   await loadWallet();
 }
 
+async function resumeActiveJob() {
+  if (!currentUser) return;
+
+  const key = activeJobKey();
+  const saved = key ? localStorage.getItem(key) : null;
+
+  if (!saved) return;
+
+  let job;
+
+  try {
+    job = JSON.parse(saved);
+  } catch {
+    localStorage.removeItem(key);
+    return;
+  }
+
+  if (!job?.predictionId || !job?.jobId) {
+    localStorage.removeItem(key);
+    return;
+  }
+
+  activeJobUnresolved = true;
+  generateBtn.disabled = true;
+
+  setStatus("Melanjutkan pemeriksaan pekerjaan Video AI sebelumnya...");
+
+  try {
+    await checkPrediction(job.predictionId, job.jobId);
+  } catch (error) {
+    setStatus(
+      "Pekerjaan sebelumnya belum dapat diperiksa: " +
+      getErrorMessage(error) +
+      ". Kredit tetap dicadangkan."
+    );
+  } finally {
+    generateBtn.disabled = activeJobUnresolved;
+  }
+}
+
 generateBtn.addEventListener("click", startGeneration);
-checkLogin();
+
+checkLogin().then(async (loggedIn) => {
+  if (loggedIn) {
+    await resumeActiveJob();
+  }
+});
 </script>
 </body>
 </html>

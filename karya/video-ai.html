@@ -102,7 +102,32 @@ let currentUser = null;
 let videoDurationSeconds = 0;
 let walletBalance = 0;
 const CREDITS_PER_SECOND = 9;
+let activeJobUnresolved = false;
 
+function activeJobKey() {
+  return currentUser
+    ? "girinat an_video_ai_job_" + currentUser.id
+    : null;
+}
+
+function saveActiveJob(predictionId, jobId) {
+  if (!activeJobKey()) return;
+
+  localStorage.setItem(activeJobKey(), JSON.stringify({
+    predictionId,
+    jobId
+  }));
+
+  activeJobUnresolved = true;
+}
+
+function clearActiveJob() {
+  if (activeJobKey()) {
+    localStorage.removeItem(activeJobKey());
+  }
+
+  activeJobUnresolved = false;
+}
 function setStatus(message) { statusText.textContent = message; }
 
 function formatNumber(value) {
@@ -198,7 +223,7 @@ async function checkLogin() {
   }
   currentUser = data.session.user;
   generateBtn.disabled = false;
-  await loadWallet();
+    await loadWallet();
   return true;
 }
 
@@ -254,7 +279,54 @@ async function startGeneration() {
   document.getElementById("resultBox").style.display = "none";
 
   try {
-    const loggedIn = await checkLogin();
+    const loggedIn = await
+      async function resumeActiveJob() {
+  if (!currentUser) return;
+
+  const key = activeJobKey();
+  const saved = key ? localStorage.getItem(key) : null;
+
+  if (!saved) return;
+
+  let job;
+
+  try {
+    job = JSON.parse(saved);
+  } catch {
+    localStorage.removeItem(key);
+    return;
+  }
+
+  if (!job?.predictionId || !job?.jobId) {
+    localStorage.removeItem(key);
+    return;
+  }
+
+  activeJobUnresolved = true;
+  generateBtn.disabled = true;
+
+  setStatus(
+    "Menemukan pekerjaan Video AI sebelumnya. Melanjutkan pemeriksaan..."
+  );
+
+  try {
+    await checkPrediction(job.predictionId, job.jobId);
+  } catch (error) {
+    setStatus(
+      "Pekerjaan sebelumnya belum dapat diperiksa: " +
+      getErrorMessage(error) +
+      ". Kredit tetap dicadangkan. Coba buka halaman lagi atau hubungi admin."
+    );
+  } finally {
+    generateBtn.disabled = activeJobUnresolved;
+  }
+}
+
+checkLogin().then(async (loggedIn) => {
+  if (loggedIn) {
+    await resumeActiveJob();
+  }
+});
     if (!loggedIn) throw new Error("Silakan login terlebih dahulu.");
 
     if (!videoDurationSeconds) {
@@ -296,7 +368,7 @@ async function startGeneration() {
     if (!data?.id || !data?.job_id) {
       throw new Error("ID pekerjaan AI tidak diterima.");
     }
-
+saveActiveJob(data.id, data.job_id);
     walletBalance -= creditsNeeded;
     document.getElementById("walletBalance").textContent =
       formatNumber(walletBalance) + " kredit";
@@ -308,10 +380,11 @@ async function startGeneration() {
 
   } catch (error) {
     setStatus("Gagal: " + getErrorMessage(error));
+    clearActiveJob();
     await loadWallet();
   } finally {
-    generateBtn.disabled = false;
-  }
+  generateBtn.disabled = activeJobUnresolved;
+}
 }
 
 async function checkPrediction(predictionId, jobId) {
@@ -341,6 +414,7 @@ async function checkPrediction(predictionId, jobId) {
       document.getElementById("downloadLink").href = outputUrl;
       document.getElementById("resultBox").style.display = "block";
       setStatus("Berhasil! Video selesai. Kredit telah digunakan.");
+      clearActiveJob();
       await loadWallet();
       return;
     }
